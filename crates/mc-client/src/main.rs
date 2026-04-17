@@ -305,23 +305,46 @@ impl App {
 
     // -- Render scene (extracted for reuse across states) -------------------
 
-    fn render_scene(&self) {
+    fn render_scene(&mut self) {
         let vp = self.camera.view_projection_matrix();
         let frustum = Frustum::from_view_projection(vp);
 
-        if let Some(renderer) = &self.renderer {
-            // Filter to visible meshes for future use when renderer API
-            // is updated to accept references.
-            let _visible: Vec<&ChunkMesh> = self
-                .chunk_meshes
-                .iter()
-                .filter(|m| {
-                    let (min, max) = frustum::chunk_aabb(m.chunk_pos.x, m.chunk_pos.z);
-                    frustum.contains_aabb(min, max)
-                })
-                .collect();
+        // Sort meshes by distance to camera for better rendering and
+        // keep only frustum-visible chunks. Cap at 128 draw calls to
+        // prevent Metal driver overload on first frame.
+        let cam_cx = (self.camera.position.x / 16.0).floor() as i32;
+        let cam_cz = (self.camera.position.z / 16.0).floor() as i32;
 
-            match renderer.render_frame(&self.camera, &self.sky, &self.chunk_meshes) {
+        let mut visible_indices: Vec<usize> = self
+            .chunk_meshes
+            .iter()
+            .enumerate()
+            .filter(|(_, m)| {
+                let (min, max) = frustum::chunk_aabb(m.chunk_pos.x, m.chunk_pos.z);
+                frustum.contains_aabb(min, max)
+            })
+            .map(|(i, _)| i)
+            .collect();
+
+        // Sort by distance (nearest first)
+        visible_indices.sort_by_key(|&i| {
+            let m = &self.chunk_meshes[i];
+            let dx = m.chunk_pos.x - cam_cx;
+            let dz = m.chunk_pos.z - cam_cz;
+            dx * dx + dz * dz
+        });
+
+        // Cap draw calls
+        visible_indices.truncate(128);
+
+        // Build a temporary Vec of references for rendering
+        let visible_meshes: Vec<&ChunkMesh> = visible_indices
+            .iter()
+            .map(|&i| &self.chunk_meshes[i])
+            .collect();
+
+        if let Some(renderer) = &self.renderer {
+            match renderer.render_frame_refs(&self.camera, &self.sky, &visible_meshes) {
                 Ok(()) => {}
                 Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
                     log::warn!("Surface lost/outdated — will reconfigure on next resize");
