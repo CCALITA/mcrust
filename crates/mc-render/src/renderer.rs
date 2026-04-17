@@ -4,7 +4,8 @@ use wgpu::util::DeviceExt;
 
 use crate::camera::{Camera, CameraUniform};
 use crate::mesh::{ChunkMesh, Vertex};
-use crate::shader::SHADER_SOURCE;
+use crate::shader::{SHADER_SOURCE, SKY_SHADER_SOURCE};
+use crate::sky::DayNightCycle;
 use crate::texture::TextureAtlas;
 
 /// Core wgpu renderer. Does NOT own the event loop — mc-client drives that.
@@ -18,6 +19,12 @@ pub struct Renderer {
     camera_buffer: wgpu::Buffer,
     camera_bind_group: wgpu::BindGroup,
     texture_atlas: TextureAtlas,
+    // Sky rendering
+    sky_pipeline: wgpu::RenderPipeline,
+    sky_buffer: wgpu::Buffer,
+    sky_bind_group: wgpu::BindGroup,
+    /// Shared sky bind group used by the terrain pass (bound at group 2).
+    terrain_sky_bind_group: wgpu::BindGroup,
     size: (u32, u32),
 }
 
@@ -92,8 +99,53 @@ impl Renderer {
         // Texture atlas
         let texture_atlas = TextureAtlas::new(&device, &queue);
 
-        // Camera uniform buffer + bind group
-        let camera_uniform = CameraUniform { view_proj: glam::Mat4::IDENTITY.to_cols_array_2d() };
+        // ── Sky uniform buffer + bind group ─────────────────────────────
+        let sky_uniform = DayNightCycle::default().uniform();
+        let sky_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("sky_buffer"),
+            contents: bytemuck::cast_slice(&[sky_uniform]),
+            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+        });
+
+        let sky_bind_group_layout =
+            device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                label: Some("sky_bind_group_layout"),
+                entries: &[wgpu::BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
+                    ty: wgpu::BindingType::Buffer {
+                        ty: wgpu::BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: None,
+                    },
+                    count: None,
+                }],
+            });
+
+        let sky_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("sky_bind_group"),
+            layout: &sky_bind_group_layout,
+            entries: &[wgpu::BindGroupEntry {
+                binding: 0,
+                resource: sky_buffer.as_entire_binding(),
+            }],
+        });
+
+        // A second bind group pointing to the same buffer, for the terrain pass
+        // (bound at group(2) in the terrain shader).
+        let terrain_sky_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("terrain_sky_bind_group"),
+            layout: &sky_bind_group_layout,
+            entries: &[wgpu::BindGroupEntry {
+                binding: 0,
+                resource: sky_buffer.as_entire_binding(),
+            }],
+        });
+
+        // ── Camera uniform buffer + bind group ─────────────────────────
+        let camera_uniform = CameraUniform {
+            view_proj: glam::Mat4::IDENTITY.to_cols_array_2d(),
+        };
         let camera_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("camera_buffer"),
             contents: bytemuck::cast_slice(&[camera_uniform]),
@@ -124,8 +176,57 @@ impl Renderer {
             }],
         });
 
-        // Shader + pipeline
-        let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+        // ── Sky pipeline ────────────────────────────────────────────────
+        let sky_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: Some("sky_shader"),
+            source: wgpu::ShaderSource::Wgsl(SKY_SHADER_SOURCE.into()),
+        });
+
+        let sky_pipeline_layout =
+            device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                label: Some("sky_pipeline_layout"),
+                bind_group_layouts: &[&sky_bind_group_layout],
+                push_constant_ranges: &[],
+            });
+
+        let sky_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("sky_pipeline"),
+            layout: Some(&sky_pipeline_layout),
+            vertex: wgpu::VertexState {
+                module: &sky_shader,
+                entry_point: Some("vs_sky"),
+                buffers: &[],
+                compilation_options: Default::default(),
+            },
+            fragment: Some(wgpu::FragmentState {
+                module: &sky_shader,
+                entry_point: Some("fs_sky"),
+                targets: &[Some(wgpu::ColorTargetState {
+                    format: config.format,
+                    blend: None,
+                    write_mask: wgpu::ColorWrites::ALL,
+                })],
+                compilation_options: Default::default(),
+            }),
+            primitive: wgpu::PrimitiveState {
+                topology: wgpu::PrimitiveTopology::TriangleList,
+                ..Default::default()
+            },
+            // Sky writes at max depth; terrain is drawn with depth test on top.
+            depth_stencil: Some(wgpu::DepthStencilState {
+                format: wgpu::TextureFormat::Depth32Float,
+                depth_write_enabled: true,
+                depth_compare: wgpu::CompareFunction::LessEqual,
+                stencil: wgpu::StencilState::default(),
+                bias: wgpu::DepthBiasState::default(),
+            }),
+            multisample: wgpu::MultisampleState::default(),
+            multiview: None,
+            cache: None,
+        });
+
+        // ── Terrain pipeline ────────────────────────────────────────────
+        let terrain_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("voxel_shader"),
             source: wgpu::ShaderSource::Wgsl(SHADER_SOURCE.into()),
         });
@@ -135,6 +236,7 @@ impl Renderer {
             bind_group_layouts: &[
                 &camera_bind_group_layout,
                 &texture_atlas.bind_group_layout,
+                &sky_bind_group_layout,
             ],
             push_constant_ranges: &[],
         });
@@ -143,13 +245,13 @@ impl Renderer {
             label: Some("render_pipeline"),
             layout: Some(&pipeline_layout),
             vertex: wgpu::VertexState {
-                module: &shader,
+                module: &terrain_shader,
                 entry_point: Some("vs_main"),
                 buffers: &[Vertex::layout()],
                 compilation_options: Default::default(),
             },
             fragment: Some(wgpu::FragmentState {
-                module: &shader,
+                module: &terrain_shader,
                 entry_point: Some("fs_main"),
                 targets: &[Some(wgpu::ColorTargetState {
                     format: config.format,
@@ -193,6 +295,10 @@ impl Renderer {
             camera_buffer,
             camera_bind_group,
             texture_atlas,
+            sky_pipeline,
+            sky_buffer,
+            sky_bind_group,
+            terrain_sky_bind_group,
             size: (width, height),
         }
     }
@@ -226,16 +332,31 @@ impl Renderer {
         self.size
     }
 
-    /// Render a frame with the given camera and chunk meshes.
+    /// Write the sky uniform data to the GPU buffer.
+    pub fn update_sky(&self, sky: &DayNightCycle) {
+        let uniform = sky.uniform();
+        self.queue
+            .write_buffer(&self.sky_buffer, 0, bytemuck::cast_slice(&[uniform]));
+    }
+
+    /// Render a frame with the given camera, sky state, and chunk meshes.
+    ///
+    /// Rendering order:
+    /// 1. Sky full-screen triangle (at max depth)
+    /// 2. Terrain chunks (with depth test on top of sky)
     pub fn render_frame(
         &self,
         camera: &Camera,
+        sky: &DayNightCycle,
         chunk_meshes: &[ChunkMesh],
     ) -> Result<(), wgpu::SurfaceError> {
         // Update camera uniform
         let uniform = camera.uniform();
         self.queue
             .write_buffer(&self.camera_buffer, 0, bytemuck::cast_slice(&[uniform]));
+
+        // Update sky uniform
+        self.update_sky(sky);
 
         let output = self.surface.get_current_texture()?;
         let view = output
@@ -256,9 +377,9 @@ impl Renderer {
                     resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color {
-                            r: 0.53,
-                            g: 0.81,
-                            b: 0.92,
+                            r: 0.0,
+                            g: 0.0,
+                            b: 0.0,
                             a: 1.0,
                         }),
                         store: wgpu::StoreOp::Store,
@@ -276,9 +397,16 @@ impl Renderer {
                 occlusion_query_set: None,
             });
 
+            // 1. Draw sky (full-screen triangle at max depth)
+            render_pass.set_pipeline(&self.sky_pipeline);
+            render_pass.set_bind_group(0, &self.sky_bind_group, &[]);
+            render_pass.draw(0..3, 0..1);
+
+            // 2. Draw terrain chunks
             render_pass.set_pipeline(&self.render_pipeline);
             render_pass.set_bind_group(0, &self.camera_bind_group, &[]);
             render_pass.set_bind_group(1, &self.texture_atlas.bind_group, &[]);
+            render_pass.set_bind_group(2, &self.terrain_sky_bind_group, &[]);
 
             for mesh in chunk_meshes {
                 if mesh.index_count == 0 {
