@@ -1,3 +1,4 @@
+pub mod advancement;
 pub mod ai;
 pub mod behavior;
 pub mod combat;
@@ -8,6 +9,10 @@ pub mod pathfinding;
 pub mod spawning;
 pub mod survival;
 
+pub use advancement::{
+    ADVANCEMENT_REGISTRY, AdvancementId, AdvancementProperties, AdvancementTracker,
+    AdvancementTrigger,
+};
 pub use ai::{AiComponent, AiGoal, AiSystem};
 pub use behavior::{behavior_tick, behavior_tick_with_state, MobAction, MobBehavior};
 pub use combat::{
