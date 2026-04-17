@@ -244,6 +244,22 @@ fn tile_color(index: u32) -> [u8; 4] {
         83 => [80, 160, 50, 255],   // 83: tall_grass (green)
         84 => [240, 220, 50, 255],  // 84: dandelion (yellow)
         85 => [220, 40, 40, 255],   // 85: poppy (red)
+        // --- Redstone texture tiles ---
+        86 => [180, 0, 0, 255],     // 86: redstone_dust (dark red)
+        87 => [200, 30, 10, 255],   // 87: redstone_torch (red-orange)
+        88 => [120, 110, 100, 255], // 88: lever (gray-brown)
+        89 => [140, 140, 140, 255], // 89: stone_button (stone gray)
+        90 => [150, 140, 140, 255], // 90: repeater (gray with red tint)
+        91 => [145, 135, 140, 255], // 91: comparator (gray with slight red)
+        92 => [170, 140, 80, 255],  // 92: piston_top (wood-brown face)
+        93 => [130, 130, 130, 255], // 93: piston_side (mechanism gray)
+        94 => [100, 160, 80, 255],  // 94: sticky_piston_top (green-slime face)
+        95 => [110, 110, 115, 255], // 95: observer (dark gray)
+        96 => [90, 90, 90, 255],    // 96: hopper (iron dark gray)
+        97 => [105, 105, 110, 255], // 97: dispenser_front (dark face)
+        98 => [100, 100, 105, 255], // 98: dropper_front (dark face)
+        99 => [140, 100, 60, 255],  // 99: note_block (brown wood)
+        100 => [120, 80, 50, 255],  // 100: redstone_lamp (dark amber, unpowered)
         _ => [200, 200, 200, 255],  // fallback: light gray
     }
 }
