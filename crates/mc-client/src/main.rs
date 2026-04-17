@@ -18,7 +18,9 @@ use mc_render::frustum::{self, Frustum};
 use mc_render::mesh::{ChunkMesh, NeighborChunks};
 use mc_render::sky::DayNightCycle;
 use mc_render::{Camera, Renderer};
-use mc_world::{ChunkManager, DimensionId};
+use mc_ui::hud::HudState;
+use mc_world::ChunkManager;
+use mc_world::nether::DimensionId;
 
 // ---------------------------------------------------------------------------
 // Physics constants
@@ -33,6 +35,36 @@ const MOUSE_SENSITIVITY: f32 = 0.003;
 const TICK_DURATION: Duration = Duration::from_millis(50); // 20 tps
 const RENDER_DISTANCE: i32 = 8;
 const REACH_DISTANCE: f32 = 5.0;
+
+// ---------------------------------------------------------------------------
+// Game state machine
+// ---------------------------------------------------------------------------
+
+#[allow(dead_code)]
+enum GameState {
+    MainMenu,
+    Loading {
+        chunks_loaded: usize,
+        chunks_needed: usize,
+    },
+    Playing,
+    Paused,
+    Dead {
+        respawn_timer: f32,
+    },
+}
+
+/// Number of chunks needed before transitioning from Loading to Playing.
+/// For an initial load distance of 4 we need (2*4+1)^2 = 81 chunks.
+const INITIAL_LOAD_DISTANCE: i32 = 4;
+const CHUNKS_NEEDED_FOR_PLAY: usize =
+    ((2 * INITIAL_LOAD_DISTANCE + 1) * (2 * INITIAL_LOAD_DISTANCE + 1)) as usize;
+
+/// Void death threshold — player falls below this Y coordinate.
+const VOID_DEATH_Y: f32 = -100.0;
+
+/// Spawn position.
+const SPAWN_POSITION: Vec3 = Vec3::new(0.0, 100.0, 0.0);
 
 // ---------------------------------------------------------------------------
 // PlayerState
@@ -98,6 +130,8 @@ struct App {
     cursor_grabbed: bool,
     last_tick: Instant,
     tick_accumulator: Duration,
+    state: GameState,
+    hud: HudState,
 }
 
 impl App {
@@ -105,9 +139,9 @@ impl App {
         Self {
             window: None,
             renderer: None,
-            camera: Camera::new(Vec3::new(0.0, 100.0, 0.0), 16.0 / 9.0),
+            camera: Camera::new(SPAWN_POSITION, 16.0 / 9.0),
             sky: DayNightCycle::new(0.25),
-            player: PlayerState::new(Vec3::new(0.0, 100.0, 0.0)),
+            player: PlayerState::new(SPAWN_POSITION),
             world: ChunkManager::new(RENDER_DISTANCE),
             chunk_meshes: Vec::new(),
             mesh_queue: Vec::new(),
@@ -115,6 +149,11 @@ impl App {
             cursor_grabbed: false,
             last_tick: Instant::now(),
             tick_accumulator: Duration::ZERO,
+            state: GameState::Loading {
+                chunks_loaded: 0,
+                chunks_needed: CHUNKS_NEEDED_FOR_PLAY,
+            },
+            hud: HudState::default(),
         }
     }
 
@@ -146,8 +185,7 @@ impl App {
             &|bx, by, bz| self.world.is_block_solid(bx, by, bz),
         );
         if let Some(hit) = hit {
-            self.world
-                .set_block(hit.block_pos, BlockId::Air);
+            self.world.set_block(hit.block_pos, BlockId::Air);
             // Rebuild mesh for affected chunk(s)
             let cp = hit.block_pos.chunk_pos();
             self.chunk_meshes.retain(|m| m.chunk_pos != cp);
@@ -236,81 +274,44 @@ impl App {
         }
     }
 
-    // -- Frame update -------------------------------------------------------
+    // -- Mesh processing (extracted for reuse across states) ----------------
 
-    fn update(&mut self) {
-        let now = Instant::now();
-        let frame_time = now - self.last_tick;
-        self.last_tick = now;
-
-        self.tick_accumulator += frame_time;
-        let tick_dt = TICK_DURATION.as_secs_f32();
-        let max_ticks = 4;
-        let mut tick_count = 0;
-        while self.tick_accumulator >= TICK_DURATION && tick_count < max_ticks {
-            self.tick_accumulator -= TICK_DURATION;
-            self.tick(tick_dt);
-            tick_count += 1;
-        }
-        if self.tick_accumulator > TICK_DURATION {
-            self.tick_accumulator = Duration::ZERO;
-        }
-
-        // Sync camera with player
-        self.camera.position = self.player.eye_position();
-        self.camera.yaw = self.player.yaw;
-        self.camera.pitch = self.player.pitch;
-
-        // Update chunk loading
-        let player_chunk = ChunkPos::from_block(
-            self.player.position.x.floor() as i32,
-            self.player.position.z.floor() as i32,
-        );
-        self.world.update(player_chunk);
-
-        // Rebuild dirty chunk meshes
-        let dirty = self.world.take_dirty();
-        if !dirty.is_empty() {
-            self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
-            self.mesh_queue.extend(dirty);
-        }
-
-        // Mesh a limited number of chunks per frame
+    fn process_mesh_queue(&mut self) {
         const MAX_MESHES_PER_FRAME: usize = 16;
-        if !self.mesh_queue.is_empty() {
-            if let Some(renderer) = &self.renderer {
-                let batch_size = self.mesh_queue.len().min(MAX_MESHES_PER_FRAME);
-                let batch: Vec<ChunkPos> = self.mesh_queue.drain(..batch_size).collect();
+        if self.mesh_queue.is_empty() {
+            return;
+        }
+        if let Some(renderer) = &self.renderer {
+            let batch_size = self.mesh_queue.len().min(MAX_MESHES_PER_FRAME);
+            let batch: Vec<ChunkPos> = self.mesh_queue.drain(..batch_size).collect();
 
-                for pos in &batch {
-                    if let Some(chunk) = self.world.get_chunk(*pos) {
-                        let neighbors = NeighborChunks {
-                            east: self.world.get_chunk(ChunkPos::new(pos.x + 1, pos.z)),
-                            west: self.world.get_chunk(ChunkPos::new(pos.x - 1, pos.z)),
-                            south: self.world.get_chunk(ChunkPos::new(pos.x, pos.z + 1)),
-                            north: self.world.get_chunk(ChunkPos::new(pos.x, pos.z - 1)),
-                        };
-                        if let Some(mesh) =
-                            ChunkMesh::build(renderer.device(), chunk, *pos, &neighbors)
-                        {
-                            self.chunk_meshes.push(mesh);
-                        }
+            for pos in &batch {
+                if let Some(chunk) = self.world.get_chunk(*pos) {
+                    let neighbors = NeighborChunks {
+                        east: self.world.get_chunk(ChunkPos::new(pos.x + 1, pos.z)),
+                        west: self.world.get_chunk(ChunkPos::new(pos.x - 1, pos.z)),
+                        south: self.world.get_chunk(ChunkPos::new(pos.x, pos.z + 1)),
+                        north: self.world.get_chunk(ChunkPos::new(pos.x, pos.z - 1)),
+                    };
+                    if let Some(mesh) =
+                        ChunkMesh::build(renderer.device(), chunk, *pos, &neighbors)
+                    {
+                        self.chunk_meshes.push(mesh);
                     }
                 }
             }
         }
+    }
 
-        // Advance day/night cycle
-        let frame_dt = frame_time.as_secs_f32();
-        self.sky.advance(frame_dt);
+    // -- Render scene (extracted for reuse across states) -------------------
 
-        // Frustum culling — only send visible chunk meshes to the GPU
+    fn render_scene(&self) {
         let vp = self.camera.view_projection_matrix();
         let frustum = Frustum::from_view_projection(vp);
 
-        // Render
         if let Some(renderer) = &self.renderer {
-            // Filter to visible meshes only
+            // Filter to visible meshes for future use when renderer API
+            // is updated to accept references.
             let _visible: Vec<&ChunkMesh> = self
                 .chunk_meshes
                 .iter()
@@ -320,17 +321,10 @@ impl App {
                 })
                 .collect();
 
-            // render_frame expects &[ChunkMesh] but we have Vec<&ChunkMesh>.
-            // Pass the full set for now — frustum culling will be applied when
-            // the renderer API is updated to accept references.
             match renderer.render_frame(&self.camera, &self.sky, &self.chunk_meshes) {
                 Ok(()) => {}
                 Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
-                    if let Some(r) = &mut self.renderer {
-                        let (w, h) = r.size();
-                        log::warn!("Surface lost/outdated, reconfiguring");
-                        r.resize(w, h);
-                    }
+                    log::warn!("Surface lost/outdated — will reconfigure on next resize");
                 }
                 Err(wgpu::SurfaceError::OutOfMemory) => {
                     log::error!("Out of GPU memory!");
@@ -338,6 +332,157 @@ impl App {
                 Err(e) => {
                     log::warn!("Render error: {e:?}");
                 }
+            }
+        }
+    }
+
+    // -- Frame update (state-dispatched) ------------------------------------
+
+    fn update(&mut self) {
+        let now = Instant::now();
+        let frame_time = now - self.last_tick;
+        self.last_tick = now;
+
+        match self.state {
+            GameState::MainMenu => {
+                log::info!("Press any key to start");
+                self.render_scene();
+            }
+
+            GameState::Loading {
+                chunks_needed, ..
+            } => {
+                // Update chunk loading around the player
+                let player_chunk = ChunkPos::from_block(
+                    self.player.position.x.floor() as i32,
+                    self.player.position.z.floor() as i32,
+                );
+                self.world.update(player_chunk);
+
+                // Process dirty chunks into the mesh queue
+                let dirty = self.world.take_dirty();
+                if !dirty.is_empty() {
+                    self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
+                    self.mesh_queue.extend(dirty);
+                }
+                self.process_mesh_queue();
+
+                // Count loaded chunks
+                let loaded = self.world.loaded_chunks().count();
+
+                log::info!(
+                    "Loading world: {loaded}/{chunks_needed} chunks ({:.0}%)",
+                    (loaded as f32 / chunks_needed as f32 * 100.0).min(100.0)
+                );
+
+                // Update chunks_loaded in state
+                self.state = GameState::Loading {
+                    chunks_loaded: loaded,
+                    chunks_needed,
+                };
+
+                // Sync camera for the loading-screen render
+                self.camera.position = self.player.eye_position();
+                self.camera.yaw = self.player.yaw;
+                self.camera.pitch = self.player.pitch;
+
+                self.render_scene();
+
+                // Transition to Playing once enough chunks are loaded
+                if loaded >= chunks_needed {
+                    log::info!("World loaded! Entering Playing state.");
+                    self.state = GameState::Playing;
+                    self.grab_cursor();
+                }
+            }
+
+            GameState::Playing => {
+                // Physics ticks
+                self.tick_accumulator += frame_time;
+                let tick_dt = TICK_DURATION.as_secs_f32();
+                let max_ticks = 4;
+                let mut tick_count = 0;
+                while self.tick_accumulator >= TICK_DURATION && tick_count < max_ticks {
+                    self.tick_accumulator -= TICK_DURATION;
+                    self.tick(tick_dt);
+                    tick_count += 1;
+                }
+                if self.tick_accumulator > TICK_DURATION {
+                    self.tick_accumulator = Duration::ZERO;
+                }
+
+                // Sync camera with player
+                self.camera.position = self.player.eye_position();
+                self.camera.yaw = self.player.yaw;
+                self.camera.pitch = self.player.pitch;
+
+                // Update chunk loading
+                let player_chunk = ChunkPos::from_block(
+                    self.player.position.x.floor() as i32,
+                    self.player.position.z.floor() as i32,
+                );
+                self.world.update(player_chunk);
+
+                // Rebuild dirty chunk meshes
+                let dirty = self.world.take_dirty();
+                if !dirty.is_empty() {
+                    self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
+                    self.mesh_queue.extend(dirty);
+                }
+                self.process_mesh_queue();
+
+                // Advance day/night cycle
+                let frame_dt = frame_time.as_secs_f32();
+                self.sky.advance(frame_dt);
+
+                // Update HUD from player data
+                self.hud.health = 20.0;
+                self.hud.hunger = 20;
+                self.hud.player_pos = (
+                    self.player.position.x,
+                    self.player.position.y,
+                    self.player.position.z,
+                );
+
+                // Render
+                self.render_scene();
+
+                // Check for void death
+                if self.player.position.y < VOID_DEATH_Y {
+                    log::info!("Player fell into the void!");
+                    self.state = GameState::Dead {
+                        respawn_timer: 0.0,
+                    };
+                    self.release_cursor();
+                }
+            }
+
+            GameState::Paused => {
+                // Don't tick physics, don't advance sky. Just sync camera and render.
+                self.camera.position = self.player.eye_position();
+                self.camera.yaw = self.player.yaw;
+                self.camera.pitch = self.player.pitch;
+
+                self.render_scene();
+            }
+
+            GameState::Dead { respawn_timer } => {
+                let frame_dt = frame_time.as_secs_f32();
+                let new_timer = respawn_timer + frame_dt;
+
+                log::info!("You died! Press Space to respawn.");
+
+                // Update respawn timer
+                self.state = GameState::Dead {
+                    respawn_timer: new_timer,
+                };
+
+                // Sync camera and render
+                self.camera.position = self.player.eye_position();
+                self.camera.yaw = self.player.yaw;
+                self.camera.pitch = self.player.pitch;
+
+                self.render_scene();
             }
         }
     }
@@ -370,8 +515,9 @@ impl ApplicationHandler for App {
                 self.tick_accumulator = Duration::ZERO;
                 self.camera.aspect = 1280.0 / 720.0;
 
-                self.grab_cursor();
-                log::info!("Game ready");
+                // Don't grab cursor yet — we start in Loading state.
+                // Cursor will be grabbed when transitioning to Playing.
+                log::info!("Game ready — loading world...");
             }
             Err(e) => {
                 log::error!("Failed to create window: {e}");
@@ -406,33 +552,7 @@ impl ApplicationHandler for App {
                 if let PhysicalKey::Code(key_code) = event.physical_key {
                     match event.state {
                         ElementState::Pressed => {
-                            if key_code == KeyCode::Escape {
-                                if self.cursor_grabbed {
-                                    self.release_cursor();
-                                } else {
-                                    event_loop.exit();
-                                }
-                            } else if key_code == KeyCode::KeyN {
-                                self.world.switch_dimension(DimensionId::Nether);
-                                self.chunk_meshes.clear();
-                                self.mesh_queue.clear();
-                                self.player.position.y = 70.0;
-                                log::info!("Switched to Nether");
-                            } else if key_code == KeyCode::KeyO {
-                                self.world.switch_dimension(DimensionId::Overworld);
-                                self.chunk_meshes.clear();
-                                self.mesh_queue.clear();
-                                self.player.position.y = 100.0;
-                                log::info!("Switched to Overworld");
-                            } else if key_code == KeyCode::KeyJ {
-                                self.world.switch_dimension(DimensionId::End);
-                                self.chunk_meshes.clear();
-                                self.mesh_queue.clear();
-                                self.player.position.y = 70.0;
-                                log::info!("Switched to End");
-                            } else {
-                                self.keys_held.insert(key_code);
-                            }
+                            self.handle_key_press(key_code, event_loop);
                         }
                         ElementState::Released => {
                             self.keys_held.remove(&key_code);
@@ -446,9 +566,9 @@ impl ApplicationHandler for App {
                 button: MouseButton::Left,
                 ..
             } => {
-                if self.cursor_grabbed {
+                if matches!(self.state, GameState::Playing) && self.cursor_grabbed {
                     self.break_block();
-                } else {
+                } else if matches!(self.state, GameState::Playing) {
                     self.grab_cursor();
                 }
             }
@@ -458,7 +578,7 @@ impl ApplicationHandler for App {
                 button: MouseButton::Right,
                 ..
             } => {
-                if self.cursor_grabbed {
+                if matches!(self.state, GameState::Playing) && self.cursor_grabbed {
                     self.place_block();
                 }
             }
@@ -481,12 +601,114 @@ impl ApplicationHandler for App {
         event: DeviceEvent,
     ) {
         if let DeviceEvent::MouseMotion { delta: (dx, dy) } = event {
-            if self.cursor_grabbed {
+            if self.cursor_grabbed && matches!(self.state, GameState::Playing) {
                 self.player.yaw -= dx as f32 * MOUSE_SENSITIVITY;
                 self.player.pitch -= dy as f32 * MOUSE_SENSITIVITY;
                 let half_pi = std::f32::consts::FRAC_PI_2 - 0.01;
                 self.player.pitch = self.player.pitch.clamp(-half_pi, half_pi);
             }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Input handling (state-aware)
+// ---------------------------------------------------------------------------
+
+impl App {
+    fn handle_key_press(&mut self, key_code: KeyCode, event_loop: &ActiveEventLoop) {
+        match self.state {
+            GameState::MainMenu => {
+                // Any key transitions to Loading
+                log::info!("Starting game...");
+                self.state = GameState::Loading {
+                    chunks_loaded: 0,
+                    chunks_needed: CHUNKS_NEEDED_FOR_PLAY,
+                };
+            }
+
+            GameState::Loading { .. } => {
+                // No input handling during loading (except Escape to quit)
+                if key_code == KeyCode::Escape {
+                    event_loop.exit();
+                }
+            }
+
+            GameState::Playing => {
+                match key_code {
+                    KeyCode::Escape => {
+                        log::info!("Game paused.");
+                        self.state = GameState::Paused;
+                        self.release_cursor();
+                    }
+                    KeyCode::F3 => {
+                        self.hud.show_debug = !self.hud.show_debug;
+                    }
+                    // Hotbar slot selection: 1-9
+                    KeyCode::Digit1 => self.hud.selected_slot = 0,
+                    KeyCode::Digit2 => self.hud.selected_slot = 1,
+                    KeyCode::Digit3 => self.hud.selected_slot = 2,
+                    KeyCode::Digit4 => self.hud.selected_slot = 3,
+                    KeyCode::Digit5 => self.hud.selected_slot = 4,
+                    KeyCode::Digit6 => self.hud.selected_slot = 5,
+                    KeyCode::Digit7 => self.hud.selected_slot = 6,
+                    KeyCode::Digit8 => self.hud.selected_slot = 7,
+                    KeyCode::Digit9 => self.hud.selected_slot = 8,
+                    // Dimension switching (debug keys)
+                    KeyCode::KeyN => {
+                        self.world.switch_dimension(DimensionId::Nether);
+                        self.chunk_meshes.clear();
+                        self.mesh_queue.clear();
+                        self.player.position = Vec3::new(0.0, 70.0, 0.0);
+                        self.player.velocity = Vec3::ZERO;
+                        log::info!("Switched to Nether");
+                    }
+                    KeyCode::KeyO => {
+                        self.world.switch_dimension(DimensionId::Overworld);
+                        self.chunk_meshes.clear();
+                        self.mesh_queue.clear();
+                        self.player.position = Vec3::new(0.0, 100.0, 0.0);
+                        self.player.velocity = Vec3::ZERO;
+                        log::info!("Switched to Overworld");
+                    }
+                    KeyCode::KeyJ => {
+                        self.world.switch_dimension(DimensionId::End);
+                        self.chunk_meshes.clear();
+                        self.mesh_queue.clear();
+                        self.player.position = Vec3::new(0.0, 70.0, 0.0);
+                        self.player.velocity = Vec3::ZERO;
+                        log::info!("Switched to The End");
+                    }
+                    _ => {
+                        self.keys_held.insert(key_code);
+                    }
+                }
+            }
+
+            GameState::Paused => match key_code {
+                KeyCode::Escape => {
+                    log::info!("Game resumed.");
+                    self.state = GameState::Playing;
+                    self.grab_cursor();
+                }
+                _ => {}
+            },
+
+            GameState::Dead { .. } => match key_code {
+                KeyCode::Space => {
+                    // Respawn
+                    log::info!("Respawning...");
+                    self.player.position = SPAWN_POSITION;
+                    self.player.velocity = Vec3::ZERO;
+                    self.player.on_ground = false;
+                    self.state = GameState::Playing;
+                    self.grab_cursor();
+                }
+                KeyCode::Escape => {
+                    event_loop.exit();
+                }
+                _ => {}
+            },
         }
     }
 }
