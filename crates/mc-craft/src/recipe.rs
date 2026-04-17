@@ -33,6 +33,86 @@ pub const ITEM_DIAMOND_AXE: SlotItem = SlotItem(231);
 pub const ITEM_DIAMOND_SHOVEL: SlotItem = SlotItem(232);
 pub const ITEM_DIAMOND_SWORD: SlotItem = SlotItem(233);
 
+// ── Armor items ────────────────────────────────────────────────────────────
+pub const ITEM_LEATHER: SlotItem = SlotItem(112);
+pub const ITEM_LEATHER_HELMET: SlotItem = SlotItem(300);
+pub const ITEM_LEATHER_CHESTPLATE: SlotItem = SlotItem(301);
+pub const ITEM_LEATHER_LEGGINGS: SlotItem = SlotItem(302);
+pub const ITEM_LEATHER_BOOTS: SlotItem = SlotItem(303);
+pub const ITEM_IRON_HELMET: SlotItem = SlotItem(310);
+pub const ITEM_IRON_CHESTPLATE: SlotItem = SlotItem(311);
+pub const ITEM_IRON_LEGGINGS: SlotItem = SlotItem(312);
+pub const ITEM_IRON_BOOTS: SlotItem = SlotItem(313);
+pub const ITEM_GOLD_HELMET: SlotItem = SlotItem(320);
+pub const ITEM_GOLD_CHESTPLATE: SlotItem = SlotItem(321);
+pub const ITEM_GOLD_LEGGINGS: SlotItem = SlotItem(322);
+pub const ITEM_GOLD_BOOTS: SlotItem = SlotItem(323);
+pub const ITEM_DIAMOND_HELMET: SlotItem = SlotItem(330);
+pub const ITEM_DIAMOND_CHESTPLATE: SlotItem = SlotItem(331);
+pub const ITEM_DIAMOND_LEGGINGS: SlotItem = SlotItem(332);
+pub const ITEM_DIAMOND_BOOTS: SlotItem = SlotItem(333);
+
+// ── Building items ─────────────────────────────────────────────────────────
+pub const ITEM_OAK_STAIRS: SlotItem = SlotItem(400);
+pub const ITEM_COBBLESTONE_STAIRS: SlotItem = SlotItem(401);
+pub const ITEM_OAK_SLAB: SlotItem = SlotItem(402);
+pub const ITEM_COBBLESTONE_SLAB: SlotItem = SlotItem(403);
+pub const ITEM_OAK_FENCE: SlotItem = SlotItem(404);
+pub const ITEM_OAK_FENCE_GATE: SlotItem = SlotItem(405);
+pub const ITEM_OAK_DOOR: SlotItem = SlotItem(406);
+pub const ITEM_OAK_TRAPDOOR: SlotItem = SlotItem(407);
+pub const ITEM_LADDER: SlotItem = SlotItem(408);
+pub const ITEM_OAK_SIGN: SlotItem = SlotItem(409);
+pub const ITEM_WOOL: SlotItem = SlotItem(410);
+pub const ITEM_BED: SlotItem = SlotItem(411);
+
+// ── Utility items ──────────────────────────────────────────────────────────
+pub const ITEM_BUCKET: SlotItem = SlotItem(500);
+pub const ITEM_REDSTONE_DUST: SlotItem = SlotItem(501);
+pub const ITEM_COMPASS: SlotItem = SlotItem(502);
+pub const ITEM_CLOCK: SlotItem = SlotItem(503);
+pub const ITEM_SHEARS: SlotItem = SlotItem(504);
+pub const ITEM_FISHING_ROD: SlotItem = SlotItem(505);
+pub const ITEM_STRING: SlotItem = SlotItem(506);
+pub const ITEM_BOOKSHELF: SlotItem = SlotItem(507);
+pub const ITEM_BOOK: SlotItem = SlotItem(508);
+pub const ITEM_PAPER: SlotItem = SlotItem(509);
+pub const ITEM_SUGAR_CANE: SlotItem = SlotItem(510);
+pub const ITEM_GUNPOWDER: SlotItem = SlotItem(511);
+pub const ITEM_SAND: SlotItem = SlotItem(512);
+pub const ITEM_TNT: SlotItem = SlotItem(513);
+pub const ITEM_PUMPKIN: SlotItem = SlotItem(514);
+pub const ITEM_JACK_O_LANTERN: SlotItem = SlotItem(515);
+
+// ── Weapon items ───────────────────────────────────────────────────────────
+pub const ITEM_BOW: SlotItem = SlotItem(600);
+pub const ITEM_ARROW: SlotItem = SlotItem(601);
+pub const ITEM_FLINT: SlotItem = SlotItem(602);
+pub const ITEM_FEATHER: SlotItem = SlotItem(603);
+pub const ITEM_SHIELD: SlotItem = SlotItem(604);
+
+// ── Redstone items ─────────────────────────────────────────────────────────
+pub const ITEM_REDSTONE_TORCH: SlotItem = SlotItem(700);
+pub const ITEM_REPEATER: SlotItem = SlotItem(701);
+pub const ITEM_COMPARATOR: SlotItem = SlotItem(702);
+pub const ITEM_QUARTZ: SlotItem = SlotItem(703);
+pub const ITEM_PISTON: SlotItem = SlotItem(704);
+pub const ITEM_OBSERVER: SlotItem = SlotItem(705);
+pub const ITEM_DISPENSER: SlotItem = SlotItem(706);
+pub const ITEM_DROPPER: SlotItem = SlotItem(707);
+pub const ITEM_HOPPER: SlotItem = SlotItem(708);
+pub const ITEM_LEVER: SlotItem = SlotItem(709);
+pub const ITEM_STONE_BUTTON: SlotItem = SlotItem(710);
+pub const ITEM_STONE: SlotItem = SlotItem(711);
+
+// ── Misc items ─────────────────────────────────────────────────────────────
+pub const ITEM_NOTE_BLOCK: SlotItem = SlotItem(800);
+pub const ITEM_RAIL: SlotItem = SlotItem(801);
+pub const ITEM_PAINTING: SlotItem = SlotItem(802);
+pub const ITEM_ITEM_FRAME: SlotItem = SlotItem(803);
+pub const ITEM_FLOWER_POT: SlotItem = SlotItem(804);
+pub const ITEM_BRICK: SlotItem = SlotItem(805);
+
 // ── Recipe types ────────────────────────────────────────────────────────────
 
 /// Describes the arrangement of ingredients in a crafting recipe.
@@ -241,7 +321,7 @@ fn try_match_shapeless(grid: &CraftingGrid, ingredients: &[SlotItem]) -> bool {
 
 // ── Default recipes ─────────────────────────────────────────────────────────
 
-/// Populate a registry with ~20 default Minecraft-style recipes.
+/// Populate a registry with 80+ default Minecraft-style recipes.
 #[must_use]
 pub fn default_recipes() -> RecipeRegistry {
     let mut reg = RecipeRegistry::new();
@@ -454,6 +534,857 @@ pub fn default_recipes() -> RecipeRegistry {
         });
     }
 
+    // ── Armor recipes ──────────────────────────────────────────────────────
+
+    // Helmets (3x2: MMM / M_M)
+    for (material, result_item) in [
+        (ITEM_LEATHER, ITEM_LEATHER_HELMET),
+        (ITEM_IRON_INGOT, ITEM_IRON_HELMET),
+        (ITEM_GOLD_INGOT, ITEM_GOLD_HELMET),
+        (ITEM_DIAMOND, ITEM_DIAMOND_HELMET),
+    ] {
+        reg.add(Recipe {
+            pattern: RecipePattern::Shaped {
+                width: 3,
+                height: 2,
+                pattern: vec![
+                    s(material),
+                    s(material),
+                    s(material),
+                    s(material),
+                    n,
+                    s(material),
+                ],
+            },
+            result: ItemStack {
+                item: result_item,
+                count: 1,
+            },
+        });
+    }
+
+    // Chestplates (3x3: M_M / MMM / MMM)
+    for (material, result_item) in [
+        (ITEM_LEATHER, ITEM_LEATHER_CHESTPLATE),
+        (ITEM_IRON_INGOT, ITEM_IRON_CHESTPLATE),
+        (ITEM_GOLD_INGOT, ITEM_GOLD_CHESTPLATE),
+        (ITEM_DIAMOND, ITEM_DIAMOND_CHESTPLATE),
+    ] {
+        reg.add(Recipe {
+            pattern: RecipePattern::Shaped {
+                width: 3,
+                height: 3,
+                pattern: vec![
+                    s(material),
+                    n,
+                    s(material),
+                    s(material),
+                    s(material),
+                    s(material),
+                    s(material),
+                    s(material),
+                    s(material),
+                ],
+            },
+            result: ItemStack {
+                item: result_item,
+                count: 1,
+            },
+        });
+    }
+
+    // Leggings (3x3: MMM / M_M / M_M)
+    for (material, result_item) in [
+        (ITEM_LEATHER, ITEM_LEATHER_LEGGINGS),
+        (ITEM_IRON_INGOT, ITEM_IRON_LEGGINGS),
+        (ITEM_GOLD_INGOT, ITEM_GOLD_LEGGINGS),
+        (ITEM_DIAMOND, ITEM_DIAMOND_LEGGINGS),
+    ] {
+        reg.add(Recipe {
+            pattern: RecipePattern::Shaped {
+                width: 3,
+                height: 3,
+                pattern: vec![
+                    s(material),
+                    s(material),
+                    s(material),
+                    s(material),
+                    n,
+                    s(material),
+                    s(material),
+                    n,
+                    s(material),
+                ],
+            },
+            result: ItemStack {
+                item: result_item,
+                count: 1,
+            },
+        });
+    }
+
+    // Boots (3x2: M_M / M_M)
+    for (material, result_item) in [
+        (ITEM_LEATHER, ITEM_LEATHER_BOOTS),
+        (ITEM_IRON_INGOT, ITEM_IRON_BOOTS),
+        (ITEM_GOLD_INGOT, ITEM_GOLD_BOOTS),
+        (ITEM_DIAMOND, ITEM_DIAMOND_BOOTS),
+    ] {
+        reg.add(Recipe {
+            pattern: RecipePattern::Shaped {
+                width: 3,
+                height: 2,
+                pattern: vec![s(material), n, s(material), s(material), n, s(material)],
+            },
+            result: ItemStack {
+                item: result_item,
+                count: 1,
+            },
+        });
+    }
+
+    // ── Building recipes ───────────────────────────────────────────────────
+
+    // Stairs (3x3: M__ / MM_ / MMM) -- yields 4
+    for (material, result_item) in [
+        (ITEM_OAK_PLANKS, ITEM_OAK_STAIRS),
+        (ITEM_COBBLESTONE, ITEM_COBBLESTONE_STAIRS),
+    ] {
+        reg.add(Recipe {
+            pattern: RecipePattern::Shaped {
+                width: 3,
+                height: 3,
+                pattern: vec![
+                    s(material),
+                    n,
+                    n,
+                    s(material),
+                    s(material),
+                    n,
+                    s(material),
+                    s(material),
+                    s(material),
+                ],
+            },
+            result: ItemStack {
+                item: result_item,
+                count: 4,
+            },
+        });
+    }
+
+    // Slabs (3x1: MMM) -- yields 6
+    for (material, result_item) in [
+        (ITEM_OAK_PLANKS, ITEM_OAK_SLAB),
+        (ITEM_COBBLESTONE, ITEM_COBBLESTONE_SLAB),
+    ] {
+        reg.add(Recipe {
+            pattern: RecipePattern::Shaped {
+                width: 3,
+                height: 1,
+                pattern: vec![s(material), s(material), s(material)],
+            },
+            result: ItemStack {
+                item: result_item,
+                count: 6,
+            },
+        });
+    }
+
+    // Fence (3x2: PSP / PSP) -- yields 3
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 2,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_STICK),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_STICK),
+                s(ITEM_OAK_PLANKS),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_OAK_FENCE,
+            count: 3,
+        },
+    });
+
+    // Fence Gate (3x2: SPS / SPS)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 2,
+            pattern: vec![
+                s(ITEM_STICK),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_STICK),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_OAK_FENCE_GATE,
+            count: 1,
+        },
+    });
+
+    // Door (2x3: PP / PP / PP) -- yields 3
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 2,
+            height: 3,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_OAK_DOOR,
+            count: 3,
+        },
+    });
+
+    // Trapdoor (3x2: PPP / PPP) -- yields 2
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 2,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_OAK_TRAPDOOR,
+            count: 2,
+        },
+    });
+
+    // Ladder (3x3: S_S / SSS / S_S) -- yields 3
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_STICK),
+                n,
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                n,
+                s(ITEM_STICK),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_LADDER,
+            count: 3,
+        },
+    });
+
+    // Sign (3x3: PPP / PPP / _S_) -- yields 3
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                n,
+                s(ITEM_STICK),
+                n,
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_OAK_SIGN,
+            count: 3,
+        },
+    });
+
+    // Bed (3x2: WWW / PPP)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 2,
+            pattern: vec![
+                s(ITEM_WOOL),
+                s(ITEM_WOOL),
+                s(ITEM_WOOL),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_BED,
+            count: 1,
+        },
+    });
+
+    // ── Utility recipes ────────────────────────────────────────────────────
+
+    // Bucket (3x2: I_I / _I_)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 2,
+            pattern: vec![
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+                n,
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_BUCKET,
+            count: 1,
+        },
+    });
+
+    // Compass (3x3: _I_ / IRI / _I_)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                n,
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+                n,
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_COMPASS,
+            count: 1,
+        },
+    });
+
+    // Clock (3x3: _G_ / GRG / _G_)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                n,
+                s(ITEM_GOLD_INGOT),
+                n,
+                s(ITEM_GOLD_INGOT),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_GOLD_INGOT),
+                n,
+                s(ITEM_GOLD_INGOT),
+                n,
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_CLOCK,
+            count: 1,
+        },
+    });
+
+    // Shears (2x2: _I / I_)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 2,
+            height: 2,
+            pattern: vec![n, s(ITEM_IRON_INGOT), s(ITEM_IRON_INGOT), n],
+        },
+        result: ItemStack {
+            item: ITEM_SHEARS,
+            count: 1,
+        },
+    });
+
+    // Fishing Rod (3x3: __S / _SI / S_I)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                n,
+                n,
+                s(ITEM_STICK),
+                n,
+                s(ITEM_STICK),
+                s(ITEM_STRING),
+                s(ITEM_STICK),
+                n,
+                s(ITEM_STRING),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_FISHING_ROD,
+            count: 1,
+        },
+    });
+
+    // Bookshelf (3x3: PPP / BBB / PPP)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_BOOK),
+                s(ITEM_BOOK),
+                s(ITEM_BOOK),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_BOOKSHELF,
+            count: 1,
+        },
+    });
+
+    // Book (shapeless: 3 Paper + 1 Leather)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shapeless {
+            ingredients: vec![ITEM_PAPER, ITEM_PAPER, ITEM_PAPER, ITEM_LEATHER],
+        },
+        result: ItemStack {
+            item: ITEM_BOOK,
+            count: 1,
+        },
+    });
+
+    // Paper (3x1: CCC) -- sugar cane -- yields 3
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 1,
+            pattern: vec![s(ITEM_SUGAR_CANE), s(ITEM_SUGAR_CANE), s(ITEM_SUGAR_CANE)],
+        },
+        result: ItemStack {
+            item: ITEM_PAPER,
+            count: 3,
+        },
+    });
+
+    // TNT (3x3: GSG / SGS / GSG)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_GUNPOWDER),
+                s(ITEM_SAND),
+                s(ITEM_GUNPOWDER),
+                s(ITEM_SAND),
+                s(ITEM_GUNPOWDER),
+                s(ITEM_SAND),
+                s(ITEM_GUNPOWDER),
+                s(ITEM_SAND),
+                s(ITEM_GUNPOWDER),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_TNT,
+            count: 1,
+        },
+    });
+
+    // Jack o'Lantern (shapeless: Pumpkin + Torch)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shapeless {
+            ingredients: vec![ITEM_PUMPKIN, ITEM_TORCH],
+        },
+        result: ItemStack {
+            item: ITEM_JACK_O_LANTERN,
+            count: 1,
+        },
+    });
+
+    // ── Weapon recipes ─────────────────────────────────────────────────────
+
+    // Bow (3x3: _SM / S_M / _SM) -- sticks + string
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                n,
+                s(ITEM_STICK),
+                s(ITEM_STRING),
+                s(ITEM_STICK),
+                n,
+                s(ITEM_STRING),
+                n,
+                s(ITEM_STICK),
+                s(ITEM_STRING),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_BOW,
+            count: 1,
+        },
+    });
+
+    // Arrow (1x3: F / S / Fe) -- flint, stick, feather -- yields 4
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 1,
+            height: 3,
+            pattern: vec![s(ITEM_FLINT), s(ITEM_STICK), s(ITEM_FEATHER)],
+        },
+        result: ItemStack {
+            item: ITEM_ARROW,
+            count: 4,
+        },
+    });
+
+    // Shield (3x3: PIP / PPP / _P_)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_IRON_INGOT),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                n,
+                s(ITEM_OAK_PLANKS),
+                n,
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_SHIELD,
+            count: 1,
+        },
+    });
+
+    // ── Redstone recipes ───────────────────────────────────────────────────
+
+    // Redstone Torch (1x2: R / S)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 1,
+            height: 2,
+            pattern: vec![s(ITEM_REDSTONE_DUST), s(ITEM_STICK)],
+        },
+        result: ItemStack {
+            item: ITEM_REDSTONE_TORCH,
+            count: 1,
+        },
+    });
+
+    // Repeater (3x2: TRT / SSS)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 2,
+            pattern: vec![
+                s(ITEM_REDSTONE_TORCH),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_REDSTONE_TORCH),
+                s(ITEM_STONE),
+                s(ITEM_STONE),
+                s(ITEM_STONE),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_REPEATER,
+            count: 1,
+        },
+    });
+
+    // Comparator (3x3: _T_ / TQT / SSS)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                n,
+                s(ITEM_REDSTONE_TORCH),
+                n,
+                s(ITEM_REDSTONE_TORCH),
+                s(ITEM_QUARTZ),
+                s(ITEM_REDSTONE_TORCH),
+                s(ITEM_STONE),
+                s(ITEM_STONE),
+                s(ITEM_STONE),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_COMPARATOR,
+            count: 1,
+        },
+    });
+
+    // Piston (3x3: PPP / CIC / CRC)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_IRON_INGOT),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_COBBLESTONE),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_PISTON,
+            count: 1,
+        },
+    });
+
+    // Observer (3x3: CCC / RRQ / CCC)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_QUARTZ),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_OBSERVER,
+            count: 1,
+        },
+    });
+
+    // Dispenser (3x3: CCC / CBC / CRC)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_BOW),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_COBBLESTONE),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_DISPENSER,
+            count: 1,
+        },
+    });
+
+    // Dropper (3x3: CCC / C_C / CRC)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                n,
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_COBBLESTONE),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_DROPPER,
+            count: 1,
+        },
+    });
+
+    // Hopper (3x3: I_I / ICI / _I_)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+                s(ITEM_IRON_INGOT),
+                s(ITEM_CHEST),
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+                n,
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_HOPPER,
+            count: 1,
+        },
+    });
+
+    // Lever (shapeless: Stick + Cobblestone)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shapeless {
+            ingredients: vec![ITEM_STICK, ITEM_COBBLESTONE],
+        },
+        result: ItemStack {
+            item: ITEM_LEVER,
+            count: 1,
+        },
+    });
+
+    // Stone Button (shapeless: 1 Stone)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shapeless {
+            ingredients: vec![ITEM_STONE],
+        },
+        result: ItemStack {
+            item: ITEM_STONE_BUTTON,
+            count: 1,
+        },
+    });
+
+    // ── Misc recipes ───────────────────────────────────────────────────────
+
+    // Note Block (3x3: PPP / PRP / PPP)
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_REDSTONE_DUST),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_NOTE_BLOCK,
+            count: 1,
+        },
+    });
+
+    // Rail (3x3: I_I / ISI / I_I) -- yields 16
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+                s(ITEM_IRON_INGOT),
+                s(ITEM_STICK),
+                s(ITEM_IRON_INGOT),
+                s(ITEM_IRON_INGOT),
+                n,
+                s(ITEM_IRON_INGOT),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_RAIL,
+            count: 16,
+        },
+    });
+
+    // Painting (3x3: SSS / SWS / SSS) -- sticks + wool
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_WOOL),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_PAINTING,
+            count: 1,
+        },
+    });
+
+    // Item Frame (3x3: SSS / SLS / SSS) -- sticks + leather
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 3,
+            pattern: vec![
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_LEATHER),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+                s(ITEM_STICK),
+            ],
+        },
+        result: ItemStack {
+            item: ITEM_ITEM_FRAME,
+            count: 1,
+        },
+    });
+
+    // Flower Pot (3x2: B_B / _B_) -- 3 bricks
+    reg.add(Recipe {
+        pattern: RecipePattern::Shaped {
+            width: 3,
+            height: 2,
+            pattern: vec![s(ITEM_BRICK), n, s(ITEM_BRICK), n, s(ITEM_BRICK), n],
+        },
+        result: ItemStack {
+            item: ITEM_FLOWER_POT,
+            count: 1,
+        },
+    });
+
     reg
 }
 
@@ -593,7 +1524,161 @@ mod tests {
     #[test]
     fn registry_recipe_count() {
         let reg = default_recipes();
-        // 1 shapeless + 5 basic shaped + 4 * 4 tools = 22 recipes
-        assert_eq!(reg.recipes().len(), 22);
+        // 22 original + 16 armor + 11 building + 10 utility + 3 weapons
+        // + 10 redstone + 5 misc = 77
+        assert_eq!(reg.recipes().len(), 77);
+    }
+
+    // ── New recipe tests ───────────────────────────────────────────────────
+
+    #[test]
+    fn iron_helmet_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let i = Some(ITEM_IRON_INGOT);
+        // Helmet is 3x2: III / I_I -- placed at top of 3x3
+        grid.slots = vec![i, i, i, i, None, i, None, None, None];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_IRON_HELMET);
+    }
+
+    #[test]
+    fn diamond_chestplate_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let d = Some(ITEM_DIAMOND);
+        // Chestplate: D_D / DDD / DDD
+        grid.slots = vec![d, None, d, d, d, d, d, d, d];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_DIAMOND_CHESTPLATE);
+    }
+
+    #[test]
+    fn gold_leggings_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let g = Some(ITEM_GOLD_INGOT);
+        // Leggings: GGG / G_G / G_G
+        grid.slots = vec![g, g, g, g, None, g, g, None, g];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_GOLD_LEGGINGS);
+    }
+
+    #[test]
+    fn leather_boots_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let l = Some(ITEM_LEATHER);
+        // Boots: L_L / L_L -- placed at top of 3x3
+        grid.slots = vec![l, None, l, l, None, l, None, None, None];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_LEATHER_BOOTS);
+    }
+
+    #[test]
+    fn oak_stairs_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let p = Some(ITEM_OAK_PLANKS);
+        // Stairs: P__ / PP_ / PPP
+        grid.slots = vec![p, None, None, p, p, None, p, p, p];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        let r = result.unwrap();
+        assert_eq!(r.item, ITEM_OAK_STAIRS);
+        assert_eq!(r.count, 4);
+    }
+
+    #[test]
+    fn bed_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let w = Some(ITEM_WOOL);
+        let p = Some(ITEM_OAK_PLANKS);
+        // Bed: WWW / PPP -- placed at top of 3x3
+        grid.slots = vec![w, w, w, p, p, p, None, None, None];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_BED);
+    }
+
+    #[test]
+    fn compass_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let i = Some(ITEM_IRON_INGOT);
+        let r = Some(ITEM_REDSTONE_DUST);
+        // Compass: _I_ / IRI / _I_
+        grid.slots = vec![None, i, None, i, r, i, None, i, None];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_COMPASS);
+    }
+
+    #[test]
+    fn bow_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let st = Some(ITEM_STICK);
+        let sr = Some(ITEM_STRING);
+        // Bow: _SM / S_M / _SM  (M = string here)
+        grid.slots = vec![None, st, sr, st, None, sr, None, st, sr];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_BOW);
+    }
+
+    #[test]
+    fn piston_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let p = Some(ITEM_OAK_PLANKS);
+        let c = Some(ITEM_COBBLESTONE);
+        let i = Some(ITEM_IRON_INGOT);
+        let r = Some(ITEM_REDSTONE_DUST);
+        // Piston: PPP / CIC / CRC
+        grid.slots = vec![p, p, p, c, i, c, c, r, c];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_PISTON);
+    }
+
+    #[test]
+    fn note_block_recipe() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        let p = Some(ITEM_OAK_PLANKS);
+        let r = Some(ITEM_REDSTONE_DUST);
+        // Note Block: PPP / PRP / PPP
+        grid.slots = vec![p, p, p, p, r, p, p, p, p];
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_NOTE_BLOCK);
+    }
+
+    #[test]
+    fn jack_o_lantern_shapeless() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        grid.slots[2] = Some(ITEM_PUMPKIN);
+        grid.slots[5] = Some(ITEM_TORCH);
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_JACK_O_LANTERN);
+    }
+
+    #[test]
+    fn lever_shapeless() {
+        let reg = default_recipes();
+        let mut grid = CraftingGrid::new(3);
+        grid.slots[4] = Some(ITEM_STICK);
+        grid.slots[7] = Some(ITEM_COBBLESTONE);
+        let result = reg.find_match(&grid);
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().item, ITEM_LEVER);
     }
 }
