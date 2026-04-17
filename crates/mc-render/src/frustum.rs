@@ -76,21 +76,9 @@ impl Frustum {
             // Select the p-vertex: for each axis, pick max if the normal
             // component is positive, min otherwise.
             let p_vertex = Vec3::new(
-                if plane.normal.x >= 0.0 {
-                    max.x
-                } else {
-                    min.x
-                },
-                if plane.normal.y >= 0.0 {
-                    max.y
-                } else {
-                    min.y
-                },
-                if plane.normal.z >= 0.0 {
-                    max.z
-                } else {
-                    min.z
-                },
+                if plane.normal.x >= 0.0 { max.x } else { min.x },
+                if plane.normal.y >= 0.0 { max.y } else { min.y },
+                if plane.normal.z >= 0.0 { max.z } else { min.z },
             );
 
             if plane.signed_distance(p_vertex) < 0.0 {
