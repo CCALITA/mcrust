@@ -2,7 +2,7 @@ use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;
 
 use mc_core::direction::Direction;
-use mc_core::pos::{ChunkPos, CHUNK_SIZE, WORLD_BOTTOM, WORLD_TOP};
+use mc_core::pos::{ChunkPos, CHUNK_SIZE, SECTION_HEIGHT, SECTIONS_PER_CHUNK, WORLD_BOTTOM, WORLD_TOP};
 use mc_world::Chunk;
 
 use crate::texture::atlas_uv;
@@ -61,13 +61,18 @@ pub struct ChunkMesh {
 
 impl ChunkMesh {
     /// Build a mesh from a chunk and its optional neighbors.
+    /// Returns `None` if the chunk produces no visible faces.
     pub fn build(
         device: &wgpu::Device,
         chunk: &Chunk,
         chunk_pos: ChunkPos,
         neighbors: &NeighborChunks<'_>,
-    ) -> Self {
+    ) -> Option<Self> {
         let (vertices, indices) = generate_mesh(chunk, chunk_pos, neighbors);
+
+        if vertices.is_empty() || indices.is_empty() {
+            return None;
+        }
 
         let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("chunk_vertex_buffer"),
@@ -81,12 +86,12 @@ impl ChunkMesh {
             usage: wgpu::BufferUsages::INDEX,
         });
 
-        Self {
+        Some(Self {
             vertex_buffer,
             index_buffer,
             index_count: indices.len() as u32,
             chunk_pos,
-        }
+        })
     }
 }
 
@@ -138,6 +143,7 @@ fn is_face_visible(
 }
 
 /// Generate vertices and indices for a chunk.
+/// Skips entirely-empty sections to avoid iterating 384 y-levels of air.
 fn generate_mesh(
     chunk: &Chunk,
     chunk_pos: ChunkPos,
@@ -152,9 +158,18 @@ fn generate_mesh(
 
     let cs = CHUNK_SIZE;
 
-    for y in WORLD_BOTTOM..WORLD_TOP {
-        for z in 0..cs {
-            for x in 0..cs {
+    // Iterate by section, skip empty ones
+    for section_idx in 0..SECTIONS_PER_CHUNK {
+        if chunk.sections[section_idx].is_empty() {
+            continue;
+        }
+
+        let section_base_y = WORLD_BOTTOM + (section_idx as i32) * SECTION_HEIGHT;
+
+        for local_y in 0..SECTION_HEIGHT {
+            let y = section_base_y + local_y;
+            for z in 0..cs {
+                for x in 0..cs {
                 let block = chunk.get_block(x as usize, y, z as usize);
                 if block.is_air() {
                     continue;
@@ -192,6 +207,7 @@ fn generate_mesh(
                     ]);
                 }
             }
+        }
         }
     }
 

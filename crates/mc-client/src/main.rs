@@ -77,6 +77,8 @@ struct App {
     player: PlayerState,
     world: ChunkManager,
     chunk_meshes: Vec<ChunkMesh>,
+    /// Chunks that still need meshing (carried across frames).
+    mesh_queue: Vec<ChunkPos>,
     keys_held: HashSet<KeyCode>,
     cursor_grabbed: bool,
     last_tick: Instant,
@@ -92,6 +94,7 @@ impl App {
             player: PlayerState::new(Vec3::new(0.0, 65.0, 0.0)),
             world: ChunkManager::new(RENDER_DISTANCE),
             chunk_meshes: Vec::new(),
+            mesh_queue: Vec::new(),
             keys_held: HashSet::new(),
             cursor_grabbed: false,
             last_tick: Instant::now(),
@@ -194,11 +197,20 @@ impl App {
         // Rebuild dirty chunk meshes
         let dirty = self.world.take_dirty();
         if !dirty.is_empty() {
-            if let Some(renderer) = &self.renderer {
-                // Remove old meshes for dirty chunks
-                self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
+            // Remove old meshes for dirty chunks
+            self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
+            // Queue dirty chunks for meshing
+            self.mesh_queue.extend(dirty);
+        }
 
-                for pos in &dirty {
+        // Mesh a limited number of chunks per frame to avoid overwhelming the GPU
+        const MAX_MESHES_PER_FRAME: usize = 16;
+        if !self.mesh_queue.is_empty() {
+            if let Some(renderer) = &self.renderer {
+                let batch_size = self.mesh_queue.len().min(MAX_MESHES_PER_FRAME);
+                let batch: Vec<ChunkPos> = self.mesh_queue.drain(..batch_size).collect();
+
+                for pos in &batch {
                     if let Some(chunk) = self.world.get_chunk(*pos) {
                         let neighbors = NeighborChunks {
                             east: self.world.get_chunk(ChunkPos::new(pos.x + 1, pos.z)),
@@ -206,9 +218,9 @@ impl App {
                             south: self.world.get_chunk(ChunkPos::new(pos.x, pos.z + 1)),
                             north: self.world.get_chunk(ChunkPos::new(pos.x, pos.z - 1)),
                         };
-                        let mesh =
-                            ChunkMesh::build(renderer.device(), chunk, *pos, &neighbors);
-                        if mesh.index_count > 0 {
+                        if let Some(mesh) =
+                            ChunkMesh::build(renderer.device(), chunk, *pos, &neighbors)
+                        {
                             self.chunk_meshes.push(mesh);
                         }
                     }

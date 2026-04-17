@@ -33,6 +33,8 @@ impl Renderer {
         let width = size.width.max(1);
         let height = size.height.max(1);
 
+        log::info!("Initializing wgpu ({width}x{height})...");
+
         let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor {
             backends: wgpu::Backends::all(),
             ..Default::default()
@@ -42,6 +44,7 @@ impl Renderer {
             .create_surface(window)
             .expect("failed to create surface");
 
+        log::info!("Requesting GPU adapter...");
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::HighPerformance,
@@ -51,6 +54,7 @@ impl Renderer {
             .await
             .expect("failed to find a suitable GPU adapter");
 
+        log::info!("Adapter: {:?}", adapter.get_info().name);
         let (device, queue) = adapter
             .request_device(
                 &wgpu::DeviceDescriptor {
@@ -64,6 +68,7 @@ impl Renderer {
             .await
             .expect("failed to create device");
 
+        log::info!("GPU device created, configuring surface...");
         let surface_caps = surface.get_capabilities(&adapter);
         let surface_format = surface_caps
             .formats
@@ -175,6 +180,8 @@ impl Renderer {
         });
 
         let depth_texture_view = create_depth_texture(&device, width, height);
+
+        log::info!("Renderer initialized successfully");
 
         Self {
             surface,
