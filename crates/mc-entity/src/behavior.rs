@@ -326,8 +326,7 @@ mod tests {
         };
 
         let player_pos = Vec3::new(5.0, 0.0, 0.0);
-        let (action, _next) =
-            behavior_tick_with_state(&behavior, Vec3::ZERO, player_pos, 5.0);
+        let (action, _next) = behavior_tick_with_state(&behavior, Vec3::ZERO, player_pos, 5.0);
 
         assert_eq!(action, MobAction::FleeFrom(player_pos, PASSIVE_FLEE_SPEED));
     }
@@ -342,8 +341,7 @@ mod tests {
         };
 
         let player_pos = Vec3::new(20.0, 0.0, 0.0);
-        let (action, next) =
-            behavior_tick_with_state(&behavior, Vec3::ZERO, player_pos, 20.0);
+        let (action, next) = behavior_tick_with_state(&behavior, Vec3::ZERO, player_pos, 20.0);
 
         // Out of flee range — should revert to idle.
         assert_eq!(action, MobAction::Idle);

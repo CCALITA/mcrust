@@ -140,13 +140,7 @@ impl SpawnSystem {
         let eligible: Vec<&MobSpawnConfig> = self
             .configs
             .iter()
-            .filter(|c| {
-                if c.hostile {
-                    is_night
-                } else {
-                    true
-                }
-            })
+            .filter(|c| if c.hostile { is_night } else { true })
             .collect();
 
         if eligible.is_empty() {
@@ -227,8 +221,7 @@ fn spawn_position(player_pos: Vec3, seed: u64, tick: u64, index: u64) -> Vec3 {
 
     // Distance in MIN..MAX range.
     let dist_range = MAX_SPAWN_DISTANCE - MIN_SPAWN_DISTANCE;
-    let distance =
-        MIN_SPAWN_DISTANCE + (dist_hash % (dist_range as u64 * 100)) as f32 / 100.0;
+    let distance = MIN_SPAWN_DISTANCE + (dist_hash % (dist_range as u64 * 100)) as f32 / 100.0;
 
     Vec3::new(
         player_pos.x + angle.cos() * distance,
@@ -354,7 +347,10 @@ mod tests {
 
         // Daytime.
         let day_spawns = system.try_spawn(player_pos, 10, 0, 42, 100, 0.3);
-        assert!(!day_spawns.is_empty(), "passive mobs should spawn during day");
+        assert!(
+            !day_spawns.is_empty(),
+            "passive mobs should spawn during day"
+        );
 
         // Nighttime.
         let night_spawns = system.try_spawn(player_pos, 10, 0, 42, 200, 0.7);
