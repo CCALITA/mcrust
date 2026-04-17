@@ -7,6 +7,7 @@ pub mod experience;
 pub mod pathfinding;
 pub mod spawning;
 pub mod survival;
+pub mod villager;
 
 pub use ai::{AiComponent, AiGoal, AiSystem};
 pub use behavior::{behavior_tick, behavior_tick_with_state, MobAction, MobBehavior};
@@ -30,4 +31,8 @@ pub use survival::{
 pub use experience::{
     ExperienceComponent, add_xp, remove_xp_for_enchanting, total_xp_for_level, xp_for_next_level,
     xp_from_block, xp_from_mob, xp_from_smelting,
+};
+pub use villager::{
+    TradeOffer, TradeResult, VillagerData, VillagerProfession, default_trades, execute_trade,
+    xp_for_level,
 };
