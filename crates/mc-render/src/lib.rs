@@ -1,3 +1,4 @@
+pub mod block_break;
 pub mod camera;
 pub mod entity_render;
 pub mod frustum;
@@ -9,6 +10,9 @@ pub mod sky;
 pub mod texture;
 pub mod water;
 
+pub use block_break::{
+    BlockBreakOverlay, BlockBreakResult, crack_color, crack_stage, crack_vertices,
+};
 pub use camera::{Camera, CameraUniform};
 pub use entity_render::{
     EntityRenderData, MobModel, MobModelPart, animate_idle, animate_walk, model_for_mob,
