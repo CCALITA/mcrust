@@ -9,3 +9,4 @@ glam = { workspace = true }
 serde = { workspace = true }
 log = { workspace = true }
 noise = "0.9"
+bincode = "1"
