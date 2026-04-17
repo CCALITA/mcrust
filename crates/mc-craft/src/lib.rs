@@ -1,3 +1,4 @@
+pub mod brewing;
 pub mod inventory;
 pub mod recipe;
 
@@ -13,5 +14,8 @@ pub struct ItemStack {
     pub count: u8,
 }
 
+pub use brewing::{
+    BrewingIngredient, BrewingRecipe, BrewingStand, PotionEffect, PotionType, StatusEffectManager,
+};
 pub use inventory::Inventory;
 pub use recipe::{CraftingGrid, Recipe, RecipePattern, RecipeRegistry};

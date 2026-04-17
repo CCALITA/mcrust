@@ -38,7 +38,10 @@ impl Inventory {
     /// Panics if `idx >= 36`.
     #[must_use]
     pub fn get_slot(&self, idx: usize) -> &Option<ItemStack> {
-        assert!(idx < MAIN_SLOTS, "slot index {idx} out of range (0..{MAIN_SLOTS})");
+        assert!(
+            idx < MAIN_SLOTS,
+            "slot index {idx} out of range (0..{MAIN_SLOTS})"
+        );
         &self.slots[idx]
     }
 
@@ -47,7 +50,10 @@ impl Inventory {
     /// # Panics
     /// Panics if `idx >= 36`.
     pub fn set_slot(&mut self, idx: usize, stack: Option<ItemStack>) {
-        assert!(idx < MAIN_SLOTS, "slot index {idx} out of range (0..{MAIN_SLOTS})");
+        assert!(
+            idx < MAIN_SLOTS,
+            "slot index {idx} out of range (0..{MAIN_SLOTS})"
+        );
         self.slots[idx] = stack;
     }
 
@@ -65,13 +71,14 @@ impl Inventory {
             if remaining == 0 {
                 return None;
             }
-            if let Some(existing) = slot {
-                if existing.item == item && existing.count < MAX_STACK_SIZE {
-                    let space = MAX_STACK_SIZE - existing.count;
-                    let transfer = remaining.min(space);
-                    existing.count += transfer;
-                    remaining -= transfer;
-                }
+            if let Some(existing) = slot
+                && existing.item == item
+                && existing.count < MAX_STACK_SIZE
+            {
+                let space = MAX_STACK_SIZE - existing.count;
+                let transfer = remaining.min(space);
+                existing.count += transfer;
+                remaining -= transfer;
             }
         }
 
@@ -82,13 +89,19 @@ impl Inventory {
             }
             if slot.is_none() {
                 let transfer = remaining.min(MAX_STACK_SIZE);
-                *slot = Some(ItemStack { item, count: transfer });
+                *slot = Some(ItemStack {
+                    item,
+                    count: transfer,
+                });
                 remaining -= transfer;
             }
         }
 
         if remaining > 0 {
-            Some(ItemStack { item, count: remaining })
+            Some(ItemStack {
+                item,
+                count: remaining,
+            })
         } else {
             None
         }
@@ -102,7 +115,10 @@ impl Inventory {
     /// # Panics
     /// Panics if `idx >= 36`.
     pub fn remove_from_slot(&mut self, idx: usize, count: u8) -> Option<ItemStack> {
-        assert!(idx < MAIN_SLOTS, "slot index {idx} out of range (0..{MAIN_SLOTS})");
+        assert!(
+            idx < MAIN_SLOTS,
+            "slot index {idx} out of range (0..{MAIN_SLOTS})"
+        );
 
         let slot = &mut self.slots[idx];
         let existing = slot.as_mut()?;
@@ -126,8 +142,14 @@ impl Inventory {
     /// # Panics
     /// Panics if either index is `>= 36`.
     pub fn swap_slots(&mut self, a: usize, b: usize) {
-        assert!(a < MAIN_SLOTS, "slot index {a} out of range (0..{MAIN_SLOTS})");
-        assert!(b < MAIN_SLOTS, "slot index {b} out of range (0..{MAIN_SLOTS})");
+        assert!(
+            a < MAIN_SLOTS,
+            "slot index {a} out of range (0..{MAIN_SLOTS})"
+        );
+        assert!(
+            b < MAIN_SLOTS,
+            "slot index {b} out of range (0..{MAIN_SLOTS})"
+        );
         self.slots.swap(a, b);
     }
 
@@ -154,7 +176,10 @@ impl Inventory {
     /// # Panics
     /// Panics if `slot >= 9`.
     pub fn select_slot(&mut self, slot: usize) {
-        assert!(slot < HOTBAR_SIZE, "hotbar slot {slot} out of range (0..{HOTBAR_SIZE})");
+        assert!(
+            slot < HOTBAR_SIZE,
+            "hotbar slot {slot} out of range (0..{HOTBAR_SIZE})"
+        );
         self.selected_slot = slot;
     }
 
@@ -164,7 +189,10 @@ impl Inventory {
     /// Panics if `idx >= 4`.
     #[must_use]
     pub fn armor_slot(&self, idx: usize) -> &Option<ItemStack> {
-        assert!(idx < ARMOR_SLOTS, "armor index {idx} out of range (0..{ARMOR_SLOTS})");
+        assert!(
+            idx < ARMOR_SLOTS,
+            "armor index {idx} out of range (0..{ARMOR_SLOTS})"
+        );
         &self.armor[idx]
     }
 
@@ -200,7 +228,10 @@ mod tests {
     #[test]
     fn add_item_fills_empty_slot() {
         let mut inv = Inventory::new();
-        let remainder = inv.add_item(ItemStack { item: stone(), count: 10 });
+        let remainder = inv.add_item(ItemStack {
+            item: stone(),
+            count: 10,
+        });
         assert!(remainder.is_none());
         assert_eq!(inv.get_slot(0).as_ref().unwrap().item, stone());
         assert_eq!(inv.get_slot(0).as_ref().unwrap().count, 10);
@@ -209,8 +240,17 @@ mod tests {
     #[test]
     fn add_item_merges_into_existing_stack() {
         let mut inv = Inventory::new();
-        inv.set_slot(0, Some(ItemStack { item: stone(), count: 50 }));
-        let remainder = inv.add_item(ItemStack { item: stone(), count: 10 });
+        inv.set_slot(
+            0,
+            Some(ItemStack {
+                item: stone(),
+                count: 50,
+            }),
+        );
+        let remainder = inv.add_item(ItemStack {
+            item: stone(),
+            count: 10,
+        });
         assert!(remainder.is_none());
         assert_eq!(inv.get_slot(0).as_ref().unwrap().count, 60);
     }
@@ -218,8 +258,17 @@ mod tests {
     #[test]
     fn add_item_overflow_goes_to_next_slot() {
         let mut inv = Inventory::new();
-        inv.set_slot(0, Some(ItemStack { item: stone(), count: 60 }));
-        let remainder = inv.add_item(ItemStack { item: stone(), count: 10 });
+        inv.set_slot(
+            0,
+            Some(ItemStack {
+                item: stone(),
+                count: 60,
+            }),
+        );
+        let remainder = inv.add_item(ItemStack {
+            item: stone(),
+            count: 10,
+        });
         assert!(remainder.is_none());
         // 4 merged into slot 0, 6 into slot 1
         assert_eq!(inv.get_slot(0).as_ref().unwrap().count, 64);
@@ -230,9 +279,18 @@ mod tests {
     fn add_item_full_inventory_returns_remainder() {
         let mut inv = Inventory::new();
         for i in 0..MAIN_SLOTS {
-            inv.set_slot(i, Some(ItemStack { item: stone(), count: MAX_STACK_SIZE }));
+            inv.set_slot(
+                i,
+                Some(ItemStack {
+                    item: stone(),
+                    count: MAX_STACK_SIZE,
+                }),
+            );
         }
-        let remainder = inv.add_item(ItemStack { item: stone(), count: 5 });
+        let remainder = inv.add_item(ItemStack {
+            item: stone(),
+            count: 5,
+        });
         assert!(remainder.is_some());
         assert_eq!(remainder.unwrap().count, 5);
     }
@@ -240,8 +298,17 @@ mod tests {
     #[test]
     fn add_item_skips_different_item_stacks_when_merging() {
         let mut inv = Inventory::new();
-        inv.set_slot(0, Some(ItemStack { item: dirt(), count: 30 }));
-        let remainder = inv.add_item(ItemStack { item: stone(), count: 10 });
+        inv.set_slot(
+            0,
+            Some(ItemStack {
+                item: dirt(),
+                count: 30,
+            }),
+        );
+        let remainder = inv.add_item(ItemStack {
+            item: stone(),
+            count: 10,
+        });
         assert!(remainder.is_none());
         // dirt unchanged in slot 0, stone placed in slot 1
         assert_eq!(inv.get_slot(0).as_ref().unwrap().item, dirt());
@@ -252,7 +319,13 @@ mod tests {
     #[test]
     fn remove_from_slot_partial() {
         let mut inv = Inventory::new();
-        inv.set_slot(0, Some(ItemStack { item: stone(), count: 10 }));
+        inv.set_slot(
+            0,
+            Some(ItemStack {
+                item: stone(),
+                count: 10,
+            }),
+        );
         let removed = inv.remove_from_slot(0, 3);
         assert!(removed.is_some());
         let removed = removed.unwrap();
@@ -264,7 +337,13 @@ mod tests {
     #[test]
     fn remove_from_slot_entire_stack() {
         let mut inv = Inventory::new();
-        inv.set_slot(0, Some(ItemStack { item: stone(), count: 5 }));
+        inv.set_slot(
+            0,
+            Some(ItemStack {
+                item: stone(),
+                count: 5,
+            }),
+        );
         let removed = inv.remove_from_slot(0, 5);
         assert!(removed.is_some());
         assert!(inv.get_slot(0).is_none());
@@ -279,15 +358,33 @@ mod tests {
     #[test]
     fn remove_more_than_available_returns_none() {
         let mut inv = Inventory::new();
-        inv.set_slot(0, Some(ItemStack { item: stone(), count: 3 }));
+        inv.set_slot(
+            0,
+            Some(ItemStack {
+                item: stone(),
+                count: 3,
+            }),
+        );
         assert!(inv.remove_from_slot(0, 5).is_none());
     }
 
     #[test]
     fn swap_slots_works() {
         let mut inv = Inventory::new();
-        inv.set_slot(0, Some(ItemStack { item: stone(), count: 10 }));
-        inv.set_slot(1, Some(ItemStack { item: dirt(), count: 5 }));
+        inv.set_slot(
+            0,
+            Some(ItemStack {
+                item: stone(),
+                count: 10,
+            }),
+        );
+        inv.set_slot(
+            1,
+            Some(ItemStack {
+                item: dirt(),
+                count: 5,
+            }),
+        );
         inv.swap_slots(0, 1);
         assert_eq!(inv.get_slot(0).as_ref().unwrap().item, dirt());
         assert_eq!(inv.get_slot(1).as_ref().unwrap().item, stone());
@@ -296,7 +393,13 @@ mod tests {
     #[test]
     fn hotbar_returns_first_nine_slots() {
         let mut inv = Inventory::new();
-        inv.set_slot(8, Some(ItemStack { item: stone(), count: 1 }));
+        inv.set_slot(
+            8,
+            Some(ItemStack {
+                item: stone(),
+                count: 1,
+            }),
+        );
         assert_eq!(inv.hotbar().len(), HOTBAR_SIZE);
         assert!(inv.hotbar()[8].is_some());
     }
@@ -304,7 +407,13 @@ mod tests {
     #[test]
     fn held_item_follows_selection() {
         let mut inv = Inventory::new();
-        inv.set_slot(3, Some(ItemStack { item: stone(), count: 1 }));
+        inv.set_slot(
+            3,
+            Some(ItemStack {
+                item: stone(),
+                count: 1,
+            }),
+        );
         assert!(inv.held_item().is_none());
         inv.select_slot(3);
         assert!(inv.held_item().is_some());
