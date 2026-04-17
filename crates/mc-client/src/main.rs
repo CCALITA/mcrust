@@ -18,7 +18,7 @@ use mc_render::frustum::{self, Frustum};
 use mc_render::mesh::{ChunkMesh, NeighborChunks};
 use mc_render::sky::DayNightCycle;
 use mc_render::{Camera, Renderer};
-use mc_world::ChunkManager;
+use mc_world::{ChunkManager, DimensionId};
 
 // ---------------------------------------------------------------------------
 // Physics constants
@@ -412,6 +412,24 @@ impl ApplicationHandler for App {
                                 } else {
                                     event_loop.exit();
                                 }
+                            } else if key_code == KeyCode::KeyN {
+                                self.world.switch_dimension(DimensionId::Nether);
+                                self.chunk_meshes.clear();
+                                self.mesh_queue.clear();
+                                self.player.position.y = 70.0;
+                                log::info!("Switched to Nether");
+                            } else if key_code == KeyCode::KeyO {
+                                self.world.switch_dimension(DimensionId::Overworld);
+                                self.chunk_meshes.clear();
+                                self.mesh_queue.clear();
+                                self.player.position.y = 100.0;
+                                log::info!("Switched to Overworld");
+                            } else if key_code == KeyCode::KeyJ {
+                                self.world.switch_dimension(DimensionId::End);
+                                self.chunk_meshes.clear();
+                                self.mesh_queue.clear();
+                                self.player.position.y = 70.0;
+                                log::info!("Switched to End");
                             } else {
                                 self.keys_held.insert(key_code);
                             }

@@ -5,6 +5,8 @@ use mc_core::pos::{BlockPos, CHUNK_SIZE, ChunkPos, WORLD_BOTTOM, WORLD_TOP};
 
 use crate::caves::CaveCarver;
 use crate::chunk::Chunk;
+use crate::end::EndTerrainGen;
+use crate::nether::{DimensionId, NetherTerrainGen};
 use crate::noise_terrain::NoiseTerrainGen;
 use crate::ores::OreGenerator;
 use crate::trees;
@@ -13,9 +15,12 @@ pub struct ChunkManager {
     chunks: HashMap<ChunkPos, Chunk>,
     render_distance: i32,
     dirty_chunks: HashSet<ChunkPos>,
+    dimension: DimensionId,
     terrain_gen: NoiseTerrainGen,
     cave_carver: CaveCarver,
     ore_gen: OreGenerator,
+    nether_gen: NetherTerrainGen,
+    end_gen: EndTerrainGen,
     seed: u64,
 }
 
@@ -26,10 +31,42 @@ impl ChunkManager {
             chunks: HashMap::new(),
             render_distance,
             dirty_chunks: HashSet::new(),
+            dimension: DimensionId::Overworld,
             terrain_gen: NoiseTerrainGen::new(seed),
             cave_carver: CaveCarver::new(seed),
             ore_gen: OreGenerator::new(seed),
+            nether_gen: NetherTerrainGen::new(seed),
+            end_gen: EndTerrainGen::new(seed),
             seed,
+        }
+    }
+
+    /// Returns the current dimension.
+    pub fn current_dimension(&self) -> DimensionId {
+        self.dimension
+    }
+
+    /// Switches to the given dimension, clearing all loaded chunks and dirty
+    /// state so the world is regenerated on the next update.
+    pub fn switch_dimension(&mut self, dim: DimensionId) {
+        self.chunks.clear();
+        self.dirty_chunks.clear();
+        self.dimension = dim;
+    }
+
+    /// Generates a chunk using the pipeline for the current dimension.
+    fn generate_chunk(&mut self, pos: ChunkPos) -> Chunk {
+        match self.dimension {
+            DimensionId::Overworld => {
+                let mut chunk = self.terrain_gen.generate(pos.x, pos.z);
+                self.cave_carver.carve(&mut chunk, pos.x, pos.z);
+                self.ore_gen.generate_ores(&mut chunk, pos.x, pos.z);
+                trees::place_trees(&mut chunk, pos.x, pos.z, self.seed);
+                trees::place_vegetation(&mut chunk, pos.x, pos.z, self.seed);
+                chunk
+            }
+            DimensionId::Nether => self.nether_gen.generate(pos.x, pos.z),
+            DimensionId::End => self.end_gen.generate(pos.x, pos.z),
         }
     }
 
@@ -44,11 +81,7 @@ impl ChunkManager {
             for dz in -rd..=rd {
                 let pos = ChunkPos::new(player_chunk.x + dx, player_chunk.z + dz);
                 if !self.chunks.contains_key(&pos) {
-                    let mut chunk = self.terrain_gen.generate(pos.x, pos.z);
-                    self.cave_carver.carve(&mut chunk, pos.x, pos.z);
-                    self.ore_gen.generate_ores(&mut chunk, pos.x, pos.z);
-                    trees::place_trees(&mut chunk, pos.x, pos.z, self.seed);
-                    trees::place_vegetation(&mut chunk, pos.x, pos.z, self.seed);
+                    let chunk = self.generate_chunk(pos);
                     self.chunks.insert(pos, chunk);
                     self.dirty_chunks.insert(pos);
                 }
@@ -255,5 +288,63 @@ mod tests {
 
         let count = mgr.loaded_chunks().count();
         assert_eq!(count, 9); // (2*1+1)^2 = 9
+    }
+
+    #[test]
+    fn defaults_to_overworld() {
+        let mgr = ChunkManager::new(2);
+        assert_eq!(mgr.current_dimension(), DimensionId::Overworld);
+    }
+
+    #[test]
+    fn switch_dimension_clears_chunks() {
+        let mut mgr = ChunkManager::new(2);
+        mgr.update(ChunkPos::new(0, 0));
+        assert!(!mgr.chunks.is_empty());
+
+        mgr.switch_dimension(DimensionId::Nether);
+        assert!(mgr.chunks.is_empty());
+        assert!(mgr.dirty_chunks.is_empty());
+        assert_eq!(mgr.current_dimension(), DimensionId::Nether);
+    }
+
+    #[test]
+    fn nether_generates_netherrack() {
+        let mut mgr = ChunkManager::new(1);
+        mgr.switch_dimension(DimensionId::Nether);
+        mgr.update(ChunkPos::new(0, 0));
+
+        // Nether bedrock at floor (y=0)
+        assert_eq!(mgr.get_block(BlockPos::new(0, 0, 0)), BlockId::Bedrock);
+        // High above nether ceiling is air
+        assert_eq!(mgr.get_block(BlockPos::new(0, 200, 0)), BlockId::Air);
+    }
+
+    #[test]
+    fn end_generates_end_stone_at_origin() {
+        let mut mgr = ChunkManager::new(1);
+        mgr.switch_dimension(DimensionId::End);
+        mgr.update(ChunkPos::new(0, 0));
+
+        // End main island has EndStone at y=64 near origin
+        assert_eq!(
+            mgr.get_block(BlockPos::new(0, 64, 0)),
+            BlockId::EndStone
+        );
+    }
+
+    #[test]
+    fn switch_back_to_overworld() {
+        let mut mgr = ChunkManager::new(1);
+        mgr.switch_dimension(DimensionId::Nether);
+        mgr.update(ChunkPos::new(0, 0));
+
+        mgr.switch_dimension(DimensionId::Overworld);
+        assert_eq!(mgr.current_dimension(), DimensionId::Overworld);
+        assert!(mgr.chunks.is_empty());
+
+        mgr.update(ChunkPos::new(0, 0));
+        // Overworld bedrock at y=-64
+        assert_eq!(mgr.get_block(BlockPos::new(0, -64, 0)), BlockId::Bedrock);
     }
 }
