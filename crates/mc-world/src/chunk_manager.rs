@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use mc_core::block::BlockId;
-use mc_core::pos::{BlockPos, ChunkPos, CHUNK_SIZE, WORLD_BOTTOM, WORLD_TOP};
+use mc_core::pos::{BlockPos, CHUNK_SIZE, ChunkPos, WORLD_BOTTOM, WORLD_TOP};
 
 use crate::chunk::Chunk;
 use crate::terrain::FlatWorldGen;
@@ -193,15 +193,9 @@ mod tests {
         mgr.update(ChunkPos::new(0, 0));
 
         // FlatWorldGen places bedrock at y=-64.
-        assert_eq!(
-            mgr.get_block(BlockPos::new(0, -64, 0)),
-            BlockId::Bedrock
-        );
+        assert_eq!(mgr.get_block(BlockPos::new(0, -64, 0)), BlockId::Bedrock);
         // Grass at sea level (63).
-        assert_eq!(
-            mgr.get_block(BlockPos::new(0, 63, 0)),
-            BlockId::GrassBlock
-        );
+        assert_eq!(mgr.get_block(BlockPos::new(0, 63, 0)), BlockId::GrassBlock);
         // Air above grass.
         assert_eq!(mgr.get_block(BlockPos::new(0, 64, 0)), BlockId::Air);
     }
@@ -213,10 +207,7 @@ mod tests {
         let _ = mgr.take_dirty(); // clear initial dirty set
 
         mgr.set_block(BlockPos::new(5, 70, 5), BlockId::Stone);
-        assert_eq!(
-            mgr.get_block(BlockPos::new(5, 70, 5)),
-            BlockId::Stone
-        );
+        assert_eq!(mgr.get_block(BlockPos::new(5, 70, 5)), BlockId::Stone);
 
         let dirty = mgr.take_dirty();
         assert!(dirty.contains(&ChunkPos::new(0, 0)));
