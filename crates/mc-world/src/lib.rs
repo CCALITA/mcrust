@@ -1,3 +1,4 @@
+pub mod async_chunks;
 pub mod biome_terrain;
 pub mod block_entity;
 pub mod block_update;
@@ -18,6 +19,9 @@ pub mod terrain;
 pub mod trees;
 pub mod weather;
 
+pub use async_chunks::{
+    AsyncChunkLoader, ChunkGenConfig, ChunkLoadRequest, generate_chunk_standalone,
+};
 pub use biome_terrain::BiomeTerrainGen;
 pub use block_entity::{
     BlockEntity, BlockEntityManager, BlockEntityType, BrewingStandData, ChestData, FurnaceData,
