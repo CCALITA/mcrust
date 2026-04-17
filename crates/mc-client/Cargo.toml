@@ -12,5 +12,9 @@ mc-craft = { path = "../mc-craft" }
 mc-audio = { path = "../mc-audio" }
 mc-ui = { path = "../mc-ui" }
 mc-physics = { path = "../mc-physics" }
+glam = { workspace = true }
 log = { workspace = true }
 env_logger = { workspace = true }
+winit = "0.30"
+pollster = "0.4"
+wgpu = "24"
