@@ -74,10 +74,25 @@ pub enum BlockId {
     TallGrass,
     Dandelion,
     Poppy,
+    // --- Redstone block types ---
+    RedstoneDust,
+    RedstoneTorch,
+    Lever,
+    StoneButton,
+    Repeater,
+    Comparator,
+    Piston,
+    StickyPiston,
+    Observer,
+    Hopper,
+    Dispenser,
+    Dropper,
+    NoteBlock,
+    RedstoneLamp,
 }
 
 impl BlockId {
-    pub const COUNT: usize = 70;
+    pub const COUNT: usize = 84;
 
     pub fn from_raw(id: u16) -> Option<Self> {
         if (id as usize) < Self::COUNT {
@@ -106,6 +121,12 @@ impl BlockId {
                 | BlockId::RedMushroom
                 | BlockId::BrownMushroom
                 | BlockId::Snow
+                | BlockId::RedstoneDust
+                | BlockId::RedstoneTorch
+                | BlockId::Lever
+                | BlockId::StoneButton
+                | BlockId::Repeater
+                | BlockId::Comparator
         )
     }
 
@@ -130,6 +151,12 @@ impl BlockId {
                 | BlockId::BrownMushroom
                 | BlockId::Cactus
                 | BlockId::Snow
+                | BlockId::RedstoneDust
+                | BlockId::RedstoneTorch
+                | BlockId::Lever
+                | BlockId::StoneButton
+                | BlockId::Repeater
+                | BlockId::Comparator
         )
     }
 
@@ -343,6 +370,35 @@ static BLOCK_REGISTRY: [BlockProperties; BlockId::COUNT] = [
     uniform("dandelion", false, true, 0, 0.0, 84),
     // Poppy
     uniform("poppy", false, true, 0, 0.0, 85),
+    // --- Redstone block types ---
+    // RedstoneDust (non-solid, transparent, flat on ground)
+    uniform("redstone_dust", false, true, 0, 0.0, 86),
+    // RedstoneTorch (non-solid, transparent, emits light)
+    uniform("redstone_torch", false, true, 7, 0.0, 87),
+    // Lever (non-solid, transparent)
+    uniform("lever", false, true, 0, 0.5, 88),
+    // StoneButton (non-solid, transparent)
+    uniform("stone_button", false, true, 0, 0.5, 89),
+    // Repeater (non-solid, transparent, flat component)
+    uniform("repeater", false, true, 0, 0.0, 90),
+    // Comparator (non-solid, transparent, flat component)
+    uniform("comparator", false, true, 0, 0.0, 91),
+    // Piston (solid, opaque)
+    props("piston", true, false, 0, 1.5, [92, 1, 93, 93, 93, 93]),
+    // StickyPiston (solid, opaque)
+    props("sticky_piston", true, false, 0, 1.5, [94, 1, 93, 93, 93, 93]),
+    // Observer (solid, opaque)
+    uniform("observer", true, false, 0, 3.5, 95),
+    // Hopper (solid, opaque)
+    uniform("hopper", true, false, 0, 3.0, 96),
+    // Dispenser: top=1(stone), bottom=1, front=97, sides=13(cobblestone)
+    props("dispenser", true, false, 0, 3.5, [1, 1, 97, 13, 13, 13]),
+    // Dropper: top=1(stone), bottom=1, front=98, sides=13(cobblestone)
+    props("dropper", true, false, 0, 3.5, [1, 1, 98, 13, 13, 13]),
+    // NoteBlock (solid, opaque)
+    uniform("note_block", true, false, 0, 0.8, 99),
+    // RedstoneLamp (solid, opaque, no light by default — powered state tracked separately)
+    uniform("redstone_lamp", true, false, 0, 0.3, 100),
 ];
 
 #[cfg(test)]
@@ -351,12 +407,12 @@ mod tests {
 
     #[test]
     fn count_matches_enum_variants() {
-        // Poppy is the last variant with value 69 (0-indexed), so COUNT = 70
-        assert_eq!(BlockId::COUNT, 70);
+        // RedstoneLamp is the last variant with value 83 (0-indexed), so COUNT = 84
+        assert_eq!(BlockId::COUNT, 84);
         // Verify the last variant can be constructed from raw
-        assert_eq!(BlockId::from_raw(69), Some(BlockId::Poppy));
+        assert_eq!(BlockId::from_raw(83), Some(BlockId::RedstoneLamp));
         // One past the end should return None
-        assert_eq!(BlockId::from_raw(70), None);
+        assert_eq!(BlockId::from_raw(84), None);
     }
 
     #[test]
@@ -434,6 +490,12 @@ mod tests {
             BlockId::RedMushroom,
             BlockId::BrownMushroom,
             BlockId::Snow,
+            BlockId::RedstoneDust,
+            BlockId::RedstoneTorch,
+            BlockId::Lever,
+            BlockId::StoneButton,
+            BlockId::Repeater,
+            BlockId::Comparator,
         ];
         for block in non_solid {
             assert!(!block.is_solid(), "{:?} should not be solid", block);
@@ -450,5 +512,53 @@ mod tests {
     fn registry_get_matches_properties() {
         let block = BlockId::Bricks;
         assert_eq!(BlockRegistry::get(block).name, block.properties().name,);
+    }
+
+    #[test]
+    fn redstone_torch_emits_light() {
+        let props = BlockId::RedstoneTorch.properties();
+        assert_eq!(props.light_emission, 7);
+    }
+
+    #[test]
+    fn redstone_dust_is_non_solid_and_transparent() {
+        assert!(!BlockId::RedstoneDust.is_solid());
+        assert!(BlockId::RedstoneDust.is_transparent());
+    }
+
+    #[test]
+    fn piston_blocks_are_solid() {
+        assert!(BlockId::Piston.is_solid());
+        assert!(BlockId::StickyPiston.is_solid());
+        assert!(!BlockId::Piston.is_transparent());
+        assert!(!BlockId::StickyPiston.is_transparent());
+    }
+
+    #[test]
+    fn redstone_lamp_is_solid_and_opaque() {
+        assert!(BlockId::RedstoneLamp.is_solid());
+        assert!(!BlockId::RedstoneLamp.is_transparent());
+    }
+
+    #[test]
+    fn hopper_and_dispenser_are_solid() {
+        assert!(BlockId::Hopper.is_solid());
+        assert!(BlockId::Dispenser.is_solid());
+        assert!(BlockId::Dropper.is_solid());
+    }
+
+    #[test]
+    fn redstone_components_transparent() {
+        let transparent = [
+            BlockId::RedstoneDust,
+            BlockId::RedstoneTorch,
+            BlockId::Lever,
+            BlockId::StoneButton,
+            BlockId::Repeater,
+            BlockId::Comparator,
+        ];
+        for block in transparent {
+            assert!(block.is_transparent(), "{:?} should be transparent", block);
+        }
     }
 }
