@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 mc-core = { path = "../mc-core" }
-mc-world = { path = "../mc-world" }
-mc-entity = { path = "../mc-entity" }
 log = { workspace = true }
 serde = { workspace = true }
+bincode = "1"
