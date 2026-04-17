@@ -156,11 +156,9 @@ impl App {
         }
 
         let frame_vel = self.player.velocity * dt;
-        let resolved = collision::move_and_slide(
-            self.player.position,
-            frame_vel,
-            &|bx, by, bz| self.world.is_block_solid(bx, by, bz),
-        );
+        let resolved = collision::move_and_slide(self.player.position, frame_vel, &|bx, by, bz| {
+            self.world.is_block_solid(bx, by, bz)
+        });
 
         self.player.on_ground = frame_vel.y < 0.0 && resolved.y.abs() < 1e-6;
         self.player.position += resolved;

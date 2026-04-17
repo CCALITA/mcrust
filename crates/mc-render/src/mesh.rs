@@ -2,7 +2,9 @@ use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;
 
 use mc_core::direction::Direction;
-use mc_core::pos::{ChunkPos, CHUNK_SIZE, SECTION_HEIGHT, SECTIONS_PER_CHUNK, WORLD_BOTTOM, WORLD_TOP};
+use mc_core::pos::{
+    CHUNK_SIZE, ChunkPos, SECTION_HEIGHT, SECTIONS_PER_CHUNK, WORLD_BOTTOM, WORLD_TOP,
+};
 use mc_world::Chunk;
 
 use crate::texture::atlas_uv;
@@ -170,44 +172,44 @@ fn generate_mesh(
             let y = section_base_y + local_y;
             for z in 0..cs {
                 for x in 0..cs {
-                let block = chunk.get_block(x as usize, y, z as usize);
-                if block.is_air() {
-                    continue;
-                }
-
-                let props = block.properties();
-                let wx = world_x0 + x as f32;
-                let wy = y as f32;
-                let wz = world_z0 + z as f32;
-
-                for dir in Direction::ALL {
-                    if !is_face_visible(chunk, neighbors, x, y, z, dir) {
+                    let block = chunk.get_block(x as usize, y, z as usize);
+                    if block.is_air() {
                         continue;
                     }
 
-                    // tex_indices order: [top, bottom, north, south, east, west]
-                    let tex_idx = props.tex_indices[dir as usize];
-                    let (u0, v0, u1, v1) = atlas_uv(tex_idx);
+                    let props = block.properties();
+                    let wx = world_x0 + x as f32;
+                    let wy = y as f32;
+                    let wz = world_z0 + z as f32;
 
-                    let normal = dir.normal();
-                    let n = [normal.x as f32, normal.y as f32, normal.z as f32];
+                    for dir in Direction::ALL {
+                        if !is_face_visible(chunk, neighbors, x, y, z, dir) {
+                            continue;
+                        }
 
-                    let face_verts = face_vertices(wx, wy, wz, dir, u0, v0, u1, v1, n);
-                    let base = vertices.len() as u32;
+                        // tex_indices order: [top, bottom, north, south, east, west]
+                        let tex_idx = props.tex_indices[dir as usize];
+                        let (u0, v0, u1, v1) = atlas_uv(tex_idx);
 
-                    vertices.extend_from_slice(&face_verts);
-                    // Two triangles per quad
-                    indices.extend_from_slice(&[
-                        base,
-                        base + 1,
-                        base + 2,
-                        base + 2,
-                        base + 3,
-                        base,
-                    ]);
+                        let normal = dir.normal();
+                        let n = [normal.x as f32, normal.y as f32, normal.z as f32];
+
+                        let face_verts = face_vertices(wx, wy, wz, dir, u0, v0, u1, v1, n);
+                        let base = vertices.len() as u32;
+
+                        vertices.extend_from_slice(&face_verts);
+                        // Two triangles per quad
+                        indices.extend_from_slice(&[
+                            base,
+                            base + 1,
+                            base + 2,
+                            base + 2,
+                            base + 3,
+                            base,
+                        ]);
+                    }
                 }
             }
-        }
         }
     }
 
@@ -233,44 +235,140 @@ fn face_vertices(
 
     match dir {
         Direction::Up => [
-            Vertex { position: [x0, y1, z0], tex_coords: [u0, v0], normal },
-            Vertex { position: [x0, y1, z1], tex_coords: [u0, v1], normal },
-            Vertex { position: [x1, y1, z1], tex_coords: [u1, v1], normal },
-            Vertex { position: [x1, y1, z0], tex_coords: [u1, v0], normal },
+            Vertex {
+                position: [x0, y1, z0],
+                tex_coords: [u0, v0],
+                normal,
+            },
+            Vertex {
+                position: [x0, y1, z1],
+                tex_coords: [u0, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y1, z1],
+                tex_coords: [u1, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y1, z0],
+                tex_coords: [u1, v0],
+                normal,
+            },
         ],
         Direction::Down => [
-            Vertex { position: [x0, y0, z1], tex_coords: [u0, v0], normal },
-            Vertex { position: [x0, y0, z0], tex_coords: [u0, v1], normal },
-            Vertex { position: [x1, y0, z0], tex_coords: [u1, v1], normal },
-            Vertex { position: [x1, y0, z1], tex_coords: [u1, v0], normal },
+            Vertex {
+                position: [x0, y0, z1],
+                tex_coords: [u0, v0],
+                normal,
+            },
+            Vertex {
+                position: [x0, y0, z0],
+                tex_coords: [u0, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y0, z0],
+                tex_coords: [u1, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y0, z1],
+                tex_coords: [u1, v0],
+                normal,
+            },
         ],
         Direction::North => [
             // -Z face
-            Vertex { position: [x1, y1, z0], tex_coords: [u0, v0], normal },
-            Vertex { position: [x1, y0, z0], tex_coords: [u0, v1], normal },
-            Vertex { position: [x0, y0, z0], tex_coords: [u1, v1], normal },
-            Vertex { position: [x0, y1, z0], tex_coords: [u1, v0], normal },
+            Vertex {
+                position: [x1, y1, z0],
+                tex_coords: [u0, v0],
+                normal,
+            },
+            Vertex {
+                position: [x1, y0, z0],
+                tex_coords: [u0, v1],
+                normal,
+            },
+            Vertex {
+                position: [x0, y0, z0],
+                tex_coords: [u1, v1],
+                normal,
+            },
+            Vertex {
+                position: [x0, y1, z0],
+                tex_coords: [u1, v0],
+                normal,
+            },
         ],
         Direction::South => [
             // +Z face
-            Vertex { position: [x0, y1, z1], tex_coords: [u0, v0], normal },
-            Vertex { position: [x0, y0, z1], tex_coords: [u0, v1], normal },
-            Vertex { position: [x1, y0, z1], tex_coords: [u1, v1], normal },
-            Vertex { position: [x1, y1, z1], tex_coords: [u1, v0], normal },
+            Vertex {
+                position: [x0, y1, z1],
+                tex_coords: [u0, v0],
+                normal,
+            },
+            Vertex {
+                position: [x0, y0, z1],
+                tex_coords: [u0, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y0, z1],
+                tex_coords: [u1, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y1, z1],
+                tex_coords: [u1, v0],
+                normal,
+            },
         ],
         Direction::East => [
             // +X face
-            Vertex { position: [x1, y1, z1], tex_coords: [u0, v0], normal },
-            Vertex { position: [x1, y0, z1], tex_coords: [u0, v1], normal },
-            Vertex { position: [x1, y0, z0], tex_coords: [u1, v1], normal },
-            Vertex { position: [x1, y1, z0], tex_coords: [u1, v0], normal },
+            Vertex {
+                position: [x1, y1, z1],
+                tex_coords: [u0, v0],
+                normal,
+            },
+            Vertex {
+                position: [x1, y0, z1],
+                tex_coords: [u0, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y0, z0],
+                tex_coords: [u1, v1],
+                normal,
+            },
+            Vertex {
+                position: [x1, y1, z0],
+                tex_coords: [u1, v0],
+                normal,
+            },
         ],
         Direction::West => [
             // -X face
-            Vertex { position: [x0, y1, z0], tex_coords: [u0, v0], normal },
-            Vertex { position: [x0, y0, z0], tex_coords: [u0, v1], normal },
-            Vertex { position: [x0, y0, z1], tex_coords: [u1, v1], normal },
-            Vertex { position: [x0, y1, z1], tex_coords: [u1, v0], normal },
+            Vertex {
+                position: [x0, y1, z0],
+                tex_coords: [u0, v0],
+                normal,
+            },
+            Vertex {
+                position: [x0, y0, z0],
+                tex_coords: [u0, v1],
+                normal,
+            },
+            Vertex {
+                position: [x0, y0, z1],
+                tex_coords: [u1, v1],
+                normal,
+            },
+            Vertex {
+                position: [x0, y1, z1],
+                tex_coords: [u1, v0],
+                normal,
+            },
         ],
     }
 }

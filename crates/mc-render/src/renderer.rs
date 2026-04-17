@@ -93,7 +93,9 @@ impl Renderer {
         let texture_atlas = TextureAtlas::new(&device, &queue);
 
         // Camera uniform buffer + bind group
-        let camera_uniform = CameraUniform { view_proj: glam::Mat4::IDENTITY.to_cols_array_2d() };
+        let camera_uniform = CameraUniform {
+            view_proj: glam::Mat4::IDENTITY.to_cols_array_2d(),
+        };
         let camera_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("camera_buffer"),
             contents: bytemuck::cast_slice(&[camera_uniform]),
@@ -132,10 +134,7 @@ impl Renderer {
 
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
             label: Some("render_pipeline_layout"),
-            bind_group_layouts: &[
-                &camera_bind_group_layout,
-                &texture_atlas.bind_group_layout,
-            ],
+            bind_group_layouts: &[&camera_bind_group_layout, &texture_atlas.bind_group_layout],
             push_constant_ranges: &[],
         });
 

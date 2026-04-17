@@ -24,14 +24,66 @@ pub enum BlockId {
     CraftingTable,
     Furnace,
     Chest,
+    // --- New block types ---
+    BirchLog,
+    BirchLeaves,
+    BirchPlanks,
+    SpruceLog,
+    SpruceLeaves,
+    SprucePlanks,
+    JungleLog,
+    JungleLeaves,
+    JunglePlanks,
+    DarkOakLog,
+    DarkOakLeaves,
+    DarkOakPlanks,
+    CopperOre,
+    LapisOre,
+    EmeraldOre,
+    RedstoneOre,
+    Obsidian,
+    Snow,
+    SnowBlock,
+    Ice,
+    PackedIce,
+    Clay,
+    Terracotta,
+    RedWool,
+    BlueWool,
+    GreenWool,
+    YellowWool,
+    WhiteWool,
+    BlackWool,
+    Cactus,
+    SugarCane,
+    Pumpkin,
+    Melon,
+    TNT,
+    Bookshelf,
+    MossyCobblestone,
+    Bricks,
+    StoneBricks,
+    Netherrack,
+    SoulSand,
+    Glowstone,
+    EndStone,
+    Mycelium,
+    Podzol,
+    RedMushroom,
+    BrownMushroom,
+    TallGrass,
+    Dandelion,
+    Poppy,
 }
 
 impl BlockId {
-    pub const COUNT: usize = 21;
+    pub const COUNT: usize = 70;
 
     pub fn from_raw(id: u16) -> Option<Self> {
         if (id as usize) < Self::COUNT {
-            Some(unsafe { std::mem::transmute(id) })
+            // SAFETY: `id` is validated to be within [0, COUNT), and BlockId
+            // is #[repr(u16)] with contiguous discriminants starting at 0.
+            Some(unsafe { std::mem::transmute::<u16, BlockId>(id) })
         } else {
             None
         }
@@ -42,13 +94,42 @@ impl BlockId {
     }
 
     pub fn is_solid(self) -> bool {
-        !matches!(self, BlockId::Air | BlockId::Water | BlockId::Torch)
+        !matches!(
+            self,
+            BlockId::Air
+                | BlockId::Water
+                | BlockId::Torch
+                | BlockId::SugarCane
+                | BlockId::TallGrass
+                | BlockId::Dandelion
+                | BlockId::Poppy
+                | BlockId::RedMushroom
+                | BlockId::BrownMushroom
+                | BlockId::Snow
+        )
     }
 
     pub fn is_transparent(self) -> bool {
         matches!(
             self,
-            BlockId::Air | BlockId::Water | BlockId::Glass | BlockId::Torch | BlockId::OakLeaves
+            BlockId::Air
+                | BlockId::Water
+                | BlockId::Glass
+                | BlockId::Torch
+                | BlockId::OakLeaves
+                | BlockId::BirchLeaves
+                | BlockId::SpruceLeaves
+                | BlockId::JungleLeaves
+                | BlockId::DarkOakLeaves
+                | BlockId::Ice
+                | BlockId::SugarCane
+                | BlockId::TallGrass
+                | BlockId::Dandelion
+                | BlockId::Poppy
+                | BlockId::RedMushroom
+                | BlockId::BrownMushroom
+                | BlockId::Cactus
+                | BlockId::Snow
         )
     }
 
@@ -144,9 +225,230 @@ static BLOCK_REGISTRY: [BlockProperties; BlockId::COUNT] = [
     // Torch
     uniform("torch", false, true, 14, 0.0, 19),
     // CraftingTable: top=20, bottom=12(planks), sides=21
-    props("crafting_table", true, false, 0, 2.5, [20, 12, 21, 21, 21, 21]),
+    props(
+        "crafting_table",
+        true,
+        false,
+        0,
+        2.5,
+        [20, 12, 21, 21, 21, 21],
+    ),
     // Furnace: top=1(stone), bottom=1, front=22, sides=23
     props("furnace", true, false, 0, 3.5, [1, 1, 22, 23, 23, 23]),
     // Chest: top=24, bottom=24, front=25, sides=26
     props("chest", true, false, 0, 2.5, [24, 24, 25, 26, 26, 26]),
+    // --- New block types ---
+    // BirchLog: top/bottom=27, sides=28
+    props("birch_log", true, false, 0, 2.0, [27, 27, 28, 28, 28, 28]),
+    // BirchLeaves
+    uniform("birch_leaves", true, true, 0, 0.2, 29),
+    // BirchPlanks
+    uniform("birch_planks", true, false, 0, 2.0, 30),
+    // SpruceLog: top/bottom=31, sides=32
+    props("spruce_log", true, false, 0, 2.0, [31, 31, 32, 32, 32, 32]),
+    // SpruceLeaves
+    uniform("spruce_leaves", true, true, 0, 0.2, 33),
+    // SprucePlanks
+    uniform("spruce_planks", true, false, 0, 2.0, 34),
+    // JungleLog: top/bottom=35, sides=36
+    props("jungle_log", true, false, 0, 2.0, [35, 35, 36, 36, 36, 36]),
+    // JungleLeaves
+    uniform("jungle_leaves", true, true, 0, 0.2, 37),
+    // JunglePlanks
+    uniform("jungle_planks", true, false, 0, 2.0, 38),
+    // DarkOakLog: top/bottom=39, sides=40
+    props(
+        "dark_oak_log",
+        true,
+        false,
+        0,
+        2.0,
+        [39, 39, 40, 40, 40, 40],
+    ),
+    // DarkOakLeaves
+    uniform("dark_oak_leaves", true, true, 0, 0.2, 41),
+    // DarkOakPlanks
+    uniform("dark_oak_planks", true, false, 0, 2.0, 42),
+    // CopperOre
+    uniform("copper_ore", true, false, 0, 3.0, 43),
+    // LapisOre
+    uniform("lapis_ore", true, false, 0, 3.0, 44),
+    // EmeraldOre
+    uniform("emerald_ore", true, false, 0, 3.0, 45),
+    // RedstoneOre
+    uniform("redstone_ore", true, false, 0, 3.0, 46),
+    // Obsidian
+    uniform("obsidian", true, false, 0, 50.0, 47),
+    // Snow (non-solid layer)
+    uniform("snow", false, true, 0, 0.1, 48),
+    // SnowBlock
+    uniform("snow_block", true, false, 0, 0.2, 49),
+    // Ice
+    uniform("ice", true, true, 0, 0.5, 50),
+    // PackedIce
+    uniform("packed_ice", true, false, 0, 0.5, 51),
+    // Clay
+    uniform("clay", true, false, 0, 0.6, 52),
+    // Terracotta
+    uniform("terracotta", true, false, 0, 1.25, 53),
+    // RedWool
+    uniform("red_wool", true, false, 0, 0.8, 54),
+    // BlueWool
+    uniform("blue_wool", true, false, 0, 0.8, 55),
+    // GreenWool
+    uniform("green_wool", true, false, 0, 0.8, 56),
+    // YellowWool
+    uniform("yellow_wool", true, false, 0, 0.8, 57),
+    // WhiteWool
+    uniform("white_wool", true, false, 0, 0.8, 58),
+    // BlackWool
+    uniform("black_wool", true, false, 0, 0.8, 59),
+    // Cactus
+    uniform("cactus", true, true, 0, 0.4, 60),
+    // SugarCane
+    uniform("sugar_cane", false, true, 0, 0.0, 61),
+    // Pumpkin: top=62, bottom=62, sides=63
+    props("pumpkin", true, false, 0, 1.0, [62, 62, 63, 63, 63, 63]),
+    // Melon: top=64, bottom=64, sides=65
+    props("melon", true, false, 0, 1.0, [64, 64, 65, 65, 65, 65]),
+    // TNT: top=66, bottom=67, sides=68
+    props("tnt", true, false, 0, 0.0, [66, 67, 68, 68, 68, 68]),
+    // Bookshelf: top=12(planks), bottom=12, sides=69
+    props("bookshelf", true, false, 0, 1.5, [12, 12, 69, 69, 69, 69]),
+    // MossyCobblestone
+    uniform("mossy_cobblestone", true, false, 0, 2.0, 70),
+    // Bricks
+    uniform("bricks", true, false, 0, 2.0, 71),
+    // StoneBricks
+    uniform("stone_bricks", true, false, 0, 1.5, 72),
+    // Netherrack
+    uniform("netherrack", true, false, 0, 0.4, 73),
+    // SoulSand
+    uniform("soul_sand", true, false, 0, 0.5, 74),
+    // Glowstone
+    uniform("glowstone", true, false, 15, 0.3, 75),
+    // EndStone
+    uniform("end_stone", true, false, 0, 3.0, 76),
+    // Mycelium: top=77, bottom=2(dirt), sides=78
+    props("mycelium", true, false, 0, 0.6, [77, 2, 78, 78, 78, 78]),
+    // Podzol: top=79, bottom=2(dirt), sides=80
+    props("podzol", true, false, 0, 0.5, [79, 2, 80, 80, 80, 80]),
+    // RedMushroom
+    uniform("red_mushroom", false, true, 0, 0.0, 81),
+    // BrownMushroom
+    uniform("brown_mushroom", false, true, 0, 0.0, 82),
+    // TallGrass
+    uniform("tall_grass", false, true, 0, 0.0, 83),
+    // Dandelion
+    uniform("dandelion", false, true, 0, 0.0, 84),
+    // Poppy
+    uniform("poppy", false, true, 0, 0.0, 85),
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn count_matches_enum_variants() {
+        // Poppy is the last variant with value 69 (0-indexed), so COUNT = 70
+        assert_eq!(BlockId::COUNT, 70);
+        // Verify the last variant can be constructed from raw
+        assert_eq!(BlockId::from_raw(69), Some(BlockId::Poppy));
+        // One past the end should return None
+        assert_eq!(BlockId::from_raw(70), None);
+    }
+
+    #[test]
+    fn all_properties_accessible() {
+        for id in 0..BlockId::COUNT as u16 {
+            let block = BlockId::from_raw(id).unwrap();
+            let props = block.properties();
+            assert!(!props.name.is_empty(), "Block {id} has empty name");
+        }
+    }
+
+    #[test]
+    fn air_is_transparent_and_not_solid() {
+        assert!(BlockId::Air.is_transparent());
+        assert!(!BlockId::Air.is_solid());
+        assert!(BlockId::Air.is_air());
+    }
+
+    #[test]
+    fn stone_is_solid_and_opaque() {
+        assert!(BlockId::Stone.is_solid());
+        assert!(!BlockId::Stone.is_transparent());
+    }
+
+    #[test]
+    fn new_leaves_are_transparent() {
+        let leaves = [
+            BlockId::BirchLeaves,
+            BlockId::SpruceLeaves,
+            BlockId::JungleLeaves,
+            BlockId::DarkOakLeaves,
+        ];
+        for leaf in leaves {
+            assert!(leaf.is_transparent(), "{:?} should be transparent", leaf);
+        }
+    }
+
+    #[test]
+    fn glowstone_emits_light() {
+        let props = BlockId::Glowstone.properties();
+        assert_eq!(props.light_emission, 15);
+    }
+
+    #[test]
+    fn log_blocks_have_different_top_and_side_textures() {
+        let logs = [
+            BlockId::BirchLog,
+            BlockId::SpruceLog,
+            BlockId::JungleLog,
+            BlockId::DarkOakLog,
+        ];
+        for log in logs {
+            let props = log.properties();
+            // top and bottom should be the same
+            assert_eq!(props.tex_indices[0], props.tex_indices[1]);
+            // top should differ from sides
+            assert_ne!(
+                props.tex_indices[0], props.tex_indices[2],
+                "{:?} top and side textures should differ",
+                log
+            );
+        }
+    }
+
+    #[test]
+    fn non_solid_blocks() {
+        let non_solid = [
+            BlockId::Air,
+            BlockId::Water,
+            BlockId::Torch,
+            BlockId::SugarCane,
+            BlockId::TallGrass,
+            BlockId::Dandelion,
+            BlockId::Poppy,
+            BlockId::RedMushroom,
+            BlockId::BrownMushroom,
+            BlockId::Snow,
+        ];
+        for block in non_solid {
+            assert!(!block.is_solid(), "{:?} should not be solid", block);
+        }
+    }
+
+    #[test]
+    fn obsidian_has_high_hardness() {
+        let props = BlockId::Obsidian.properties();
+        assert_eq!(props.hardness, 50.0);
+    }
+
+    #[test]
+    fn registry_get_matches_properties() {
+        let block = BlockId::Bricks;
+        assert_eq!(BlockRegistry::get(block).name, block.properties().name,);
+    }
+}
