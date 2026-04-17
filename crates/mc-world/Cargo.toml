@@ -1,0 +1,11 @@
+[package]
+name = "mc-world"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+mc-core = { path = "../mc-core" }
+glam = { workspace = true }
+serde = { workspace = true }
+log = { workspace = true }
+noise = "0.9"

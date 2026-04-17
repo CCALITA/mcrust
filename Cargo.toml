@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/mc-core",
+    "crates/mc-world",
+    "crates/mc-render",
+    "crates/mc-entity",
+    "crates/mc-craft",
+    "crates/mc-network",
+    "crates/mc-audio",
+    "crates/mc-ui",
+    "crates/mc-physics",
+    "crates/mc-client",
+]
+
+[workspace.dependencies]
+glam = "0.29"
+serde = { version = "1", features = ["derive"] }
+log = "0.4"
+env_logger = "0.11"

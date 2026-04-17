@@ -1,0 +1,16 @@
+[package]
+name = "mc-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+mc-core = { path = "../mc-core" }
+mc-world = { path = "../mc-world" }
+mc-render = { path = "../mc-render" }
+mc-entity = { path = "../mc-entity" }
+mc-craft = { path = "../mc-craft" }
+mc-audio = { path = "../mc-audio" }
+mc-ui = { path = "../mc-ui" }
+mc-physics = { path = "../mc-physics" }
+log = { workspace = true }
+env_logger = { workspace = true }
