@@ -5,6 +5,7 @@ pub mod chunk;
 pub mod chunk_manager;
 pub mod fluid;
 pub mod lighting;
+pub mod nether;
 pub mod noise_terrain;
 pub mod ores;
 pub mod redstone_components;
@@ -20,6 +21,7 @@ pub use chunk::{Chunk, Section};
 pub use chunk_manager::ChunkManager;
 pub use fluid::{process_water_update, FluidWorld};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
+pub use nether::{DimensionId, NetherTerrainGen};
 pub use noise_terrain::NoiseTerrainGen;
 pub use ores::OreGenerator;
 pub use redstone_components::{
