@@ -4,6 +4,7 @@ pub mod combat;
 pub mod component;
 pub mod entity;
 pub mod experience;
+pub mod fishing;
 pub mod pathfinding;
 pub mod spawning;
 pub mod survival;
@@ -19,6 +20,9 @@ pub use component::{
     World,
 };
 pub use entity::{EntityId, EntityManager};
+pub use fishing::{
+    FishType, FishingAction, FishingLoot, FishingState, FishingSystem, JunkType, TreasureType,
+};
 pub use pathfinding::{AStarResult, find_path};
 pub use spawning::{
     default_spawn_configs, MobSpawnConfig, SpawnSystem, DEFAULT_HOSTILE_CAP, DEFAULT_PASSIVE_CAP,
