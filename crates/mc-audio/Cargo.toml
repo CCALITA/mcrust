@@ -7,4 +7,4 @@ edition = "2024"
 mc-core = { path = "../mc-core" }
 glam = { workspace = true }
 log = { workspace = true }
-rand = "0.9"
+rand = { workspace = true }

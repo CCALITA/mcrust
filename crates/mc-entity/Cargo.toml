@@ -8,3 +8,4 @@ mc-core = { path = "../mc-core" }
 mc-world = { path = "../mc-world" }
 glam = { workspace = true }
 log = { workspace = true }
+rand = { workspace = true }
