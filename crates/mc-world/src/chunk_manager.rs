@@ -327,10 +327,7 @@ mod tests {
         mgr.update(ChunkPos::new(0, 0));
 
         // End main island has EndStone at y=64 near origin
-        assert_eq!(
-            mgr.get_block(BlockPos::new(0, 64, 0)),
-            BlockId::EndStone
-        );
+        assert_eq!(mgr.get_block(BlockPos::new(0, 64, 0)), BlockId::EndStone);
     }
 
     #[test]
