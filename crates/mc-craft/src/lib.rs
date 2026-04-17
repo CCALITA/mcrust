@@ -1,5 +1,6 @@
 pub mod brewing;
 pub mod enchanting;
+pub mod furnace;
 pub mod inventory;
 pub mod recipe;
 
@@ -22,6 +23,9 @@ pub use enchanting::{
     apply_enchantment_effect, calculate_enchantment_cost, generate_enchantment_options,
     EnchantOption, EnchantedItem, Enchantment, EnchantmentCategory, EnchantmentId,
     EnchantmentProperties,
+};
+pub use furnace::{
+    default_fuel_values, default_smelting_recipes, FuelValue, Furnace, SmeltingRecipe,
 };
 pub use inventory::Inventory;
 pub use recipe::{CraftingGrid, Recipe, RecipePattern, RecipeRegistry};
