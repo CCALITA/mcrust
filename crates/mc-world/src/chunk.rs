@@ -30,6 +30,10 @@ impl Section {
     pub fn is_empty(&self) -> bool {
         self.blocks.iter().all(|b| b.is_air())
     }
+
+    pub fn blocks(&self) -> &[BlockId] {
+        &self.blocks
+    }
 }
 
 impl Default for Section {
