@@ -182,12 +182,11 @@ impl Renderer {
             source: wgpu::ShaderSource::Wgsl(SKY_SHADER_SOURCE.into()),
         });
 
-        let sky_pipeline_layout =
-            device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-                label: Some("sky_pipeline_layout"),
-                bind_group_layouts: &[&sky_bind_group_layout],
-                push_constant_ranges: &[],
-            });
+        let sky_pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+            label: Some("sky_pipeline_layout"),
+            bind_group_layouts: &[&sky_bind_group_layout],
+            push_constant_ranges: &[],
+        });
 
         let sky_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("sky_pipeline"),
