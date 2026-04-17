@@ -49,7 +49,3 @@ pub use villager::{
     TradeOffer, TradeResult, VillagerData, VillagerProfession, default_trades, execute_trade,
     xp_for_level,
 };
-pub use villager::{
-    TradeOffer, TradeResult, VillagerData, VillagerProfession, default_trades, execute_trade,
-    xp_for_level,
-};
