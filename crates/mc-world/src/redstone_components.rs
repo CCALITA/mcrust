@@ -110,7 +110,10 @@ mod tests {
         let pitches: Vec<f32> = (0..=24).map(noteblock_pitch).collect();
         // Each successive pitch should be higher
         for window in pitches.windows(2) {
-            assert!(window[1] > window[0], "pitches should be monotonically increasing");
+            assert!(
+                window[1] > window[0],
+                "pitches should be monotonically increasing"
+            );
         }
     }
 
