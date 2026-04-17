@@ -1,3 +1,4 @@
+pub mod advancement;
 pub mod ai;
 pub mod behavior;
 pub mod combat;
@@ -11,6 +12,10 @@ pub mod survival;
 pub mod tool_use;
 pub mod villager;
 
+pub use advancement::{
+    ADVANCEMENT_REGISTRY, AdvancementId, AdvancementProperties, AdvancementTracker,
+    AdvancementTrigger,
+};
 pub use ai::{AiComponent, AiGoal, AiSystem};
 pub use behavior::{MobAction, MobBehavior, behavior_tick, behavior_tick_with_state};
 pub use combat::{
