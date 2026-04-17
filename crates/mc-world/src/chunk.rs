@@ -5,13 +5,13 @@ pub const SECTION_VOLUME: usize = (CHUNK_SIZE * SECTION_HEIGHT * CHUNK_SIZE) as 
 
 #[derive(Clone)]
 pub struct Section {
-    blocks: Box<[BlockId; SECTION_VOLUME]>,
+    blocks: Vec<BlockId>,
 }
 
 impl Section {
     pub fn new() -> Self {
         Self {
-            blocks: Box::new([BlockId::Air; SECTION_VOLUME]),
+            blocks: vec![BlockId::Air; SECTION_VOLUME],
         }
     }
 

@@ -177,9 +177,17 @@ impl App {
 
         self.tick_accumulator += frame_time;
         let tick_dt = TICK_DURATION.as_secs_f32();
-        while self.tick_accumulator >= TICK_DURATION {
+        // Cap accumulated ticks to prevent spiral-of-death on first frame
+        let max_ticks = 4;
+        let mut tick_count = 0;
+        while self.tick_accumulator >= TICK_DURATION && tick_count < max_ticks {
             self.tick_accumulator -= TICK_DURATION;
             self.tick(tick_dt);
+            tick_count += 1;
+        }
+        // Discard excess accumulated time
+        if self.tick_accumulator > TICK_DURATION {
+            self.tick_accumulator = Duration::ZERO;
         }
 
         // Sync camera with player
@@ -273,10 +281,15 @@ impl ApplicationHandler for App {
                 self.renderer = Some(renderer);
                 self.window = Some(window);
 
+                // Reset timer so we don't accumulate seconds of gravity from init time
+                self.last_tick = Instant::now();
+                self.tick_accumulator = Duration::ZERO;
+
                 // Update camera aspect ratio
                 self.camera.aspect = 1280.0 / 720.0;
 
                 self.grab_cursor();
+                log::info!("Game ready");
             }
             Err(e) => {
                 log::error!("Failed to create window: {e}");
