@@ -232,10 +232,8 @@ fn try_match_shapeless(grid: &CraftingGrid, ingredients: &[SlotItem]) -> bool {
 
     // Count items present in the grid.
     let mut present: HashMap<SlotItem, usize> = HashMap::new();
-    for slot in &grid.slots {
-        if let Some(item) = slot {
-            *present.entry(*item).or_insert(0) += 1;
-        }
+    for item in grid.slots.iter().flatten() {
+        *present.entry(*item).or_insert(0) += 1;
     }
 
     required == present
@@ -286,8 +284,10 @@ pub fn default_recipes() -> RecipeRegistry {
             width: 2,
             height: 2,
             pattern: vec![
-                s(ITEM_OAK_PLANKS), s(ITEM_OAK_PLANKS),
-                s(ITEM_OAK_PLANKS), s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
             ],
         },
         result: ItemStack {
@@ -302,9 +302,15 @@ pub fn default_recipes() -> RecipeRegistry {
             width: 3,
             height: 3,
             pattern: vec![
-                s(ITEM_COBBLESTONE), s(ITEM_COBBLESTONE), s(ITEM_COBBLESTONE),
-                s(ITEM_COBBLESTONE), n,                   s(ITEM_COBBLESTONE),
-                s(ITEM_COBBLESTONE), s(ITEM_COBBLESTONE), s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                n,
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
+                s(ITEM_COBBLESTONE),
             ],
         },
         result: ItemStack {
@@ -319,9 +325,15 @@ pub fn default_recipes() -> RecipeRegistry {
             width: 3,
             height: 3,
             pattern: vec![
-                s(ITEM_OAK_PLANKS), s(ITEM_OAK_PLANKS), s(ITEM_OAK_PLANKS),
-                s(ITEM_OAK_PLANKS), n,                   s(ITEM_OAK_PLANKS),
-                s(ITEM_OAK_PLANKS), s(ITEM_OAK_PLANKS), s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                n,
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
+                s(ITEM_OAK_PLANKS),
             ],
         },
         result: ItemStack {
@@ -357,9 +369,15 @@ pub fn default_recipes() -> RecipeRegistry {
                 width: 3,
                 height: 3,
                 pattern: vec![
-                    s(material),   s(material),   s(material),
-                    n,             s(ITEM_STICK), n,
-                    n,             s(ITEM_STICK), n,
+                    s(material),
+                    s(material),
+                    s(material),
+                    n,
+                    s(ITEM_STICK),
+                    n,
+                    n,
+                    s(ITEM_STICK),
+                    n,
                 ],
             },
             result: ItemStack {
@@ -381,9 +399,12 @@ pub fn default_recipes() -> RecipeRegistry {
                 width: 2,
                 height: 3,
                 pattern: vec![
-                    s(material),   s(material),
-                    s(material),   s(ITEM_STICK),
-                    n,             s(ITEM_STICK),
+                    s(material),
+                    s(material),
+                    s(material),
+                    s(ITEM_STICK),
+                    n,
+                    s(ITEM_STICK),
                 ],
             },
             result: ItemStack {
@@ -505,9 +526,7 @@ mod tests {
         let mut grid = CraftingGrid::new(3);
         let cobble = Some(ITEM_COBBLESTONE);
         grid.slots = vec![
-            cobble, cobble, cobble,
-            cobble, None,   cobble,
-            cobble, cobble, cobble,
+            cobble, cobble, cobble, cobble, None, cobble, cobble, cobble, cobble,
         ];
         let result = reg.find_match(&grid);
         assert!(result.is_some());
@@ -520,11 +539,7 @@ mod tests {
         let mut grid = CraftingGrid::new(3);
         let m = Some(ITEM_OAK_PLANKS);
         let stick = Some(ITEM_STICK);
-        grid.slots = vec![
-            m,    m,     m,
-            None, stick, None,
-            None, stick, None,
-        ];
+        grid.slots = vec![m, m, m, None, stick, None, None, stick, None];
         let result = reg.find_match(&grid);
         assert!(result.is_some());
         assert_eq!(result.unwrap().item, ITEM_WOODEN_PICKAXE);
@@ -537,11 +552,7 @@ mod tests {
         let m = Some(ITEM_DIAMOND);
         let stick = Some(ITEM_STICK);
         // Sword is 1x3, placed in column 0.
-        grid.slots = vec![
-            m,    None, None,
-            m,    None, None,
-            stick, None, None,
-        ];
+        grid.slots = vec![m, None, None, m, None, None, stick, None, None];
         let result = reg.find_match(&grid);
         assert!(result.is_some());
         assert_eq!(result.unwrap().item, ITEM_DIAMOND_SWORD);
@@ -553,11 +564,7 @@ mod tests {
         // Place a 2x2 crafting table pattern at offset (1,1) in a 3x3 grid.
         let mut grid = CraftingGrid::new(3);
         let p = Some(ITEM_OAK_PLANKS);
-        grid.slots = vec![
-            None, None, None,
-            None, p,    p,
-            None, p,    p,
-        ];
+        grid.slots = vec![None, None, None, None, p, p, None, p, p];
         let result = reg.find_match(&grid);
         assert!(result.is_some());
         assert_eq!(result.unwrap().item, ITEM_CRAFTING_TABLE);
