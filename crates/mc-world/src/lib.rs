@@ -9,6 +9,7 @@ pub mod lighting;
 pub mod nether;
 pub mod noise_terrain;
 pub mod ores;
+pub mod redstone;
 pub mod redstone_components;
 pub mod save;
 pub mod structures;
@@ -26,6 +27,7 @@ pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_lig
 pub use nether::{DimensionId, NetherTerrainGen};
 pub use noise_terrain::NoiseTerrainGen;
 pub use ores::OreGenerator;
+pub use redstone::{RedstoneCircuit, RedstoneWorld, is_power_source, propagate_redstone};
 pub use redstone_components::{
     PistonAction, hopper_tick_rate, lamp_state, noteblock_pitch, piston_can_push,
     piston_push_limit,
