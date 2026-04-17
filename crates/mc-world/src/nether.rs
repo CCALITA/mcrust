@@ -328,7 +328,10 @@ mod tests {
                 break;
             }
         }
-        assert!(found_glowstone, "expected glowstone clusters in nether terrain");
+        assert!(
+            found_glowstone,
+            "expected glowstone clusters in nether terrain"
+        );
     }
 
     #[test]
@@ -355,7 +358,10 @@ mod tests {
                 break;
             }
         }
-        assert!(found_soul_sand, "expected soul sand patches in nether terrain");
+        assert!(
+            found_soul_sand,
+            "expected soul sand patches in nether terrain"
+        );
     }
 
     #[test]
@@ -376,7 +382,10 @@ mod tests {
                 }
             }
         }
-        assert!(differ, "different seeds should produce different nether terrain");
+        assert!(
+            differ,
+            "different seeds should produce different nether terrain"
+        );
     }
 
     #[test]
