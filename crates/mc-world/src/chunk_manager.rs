@@ -16,11 +16,11 @@ pub struct ChunkManager {
     render_distance: i32,
     dirty_chunks: HashSet<ChunkPos>,
     dimension: DimensionId,
-    terrain_gen: NoiseTerrainGen,
-    cave_carver: CaveCarver,
-    ore_gen: OreGenerator,
-    nether_gen: NetherTerrainGen,
-    end_gen: EndTerrainGen,
+    terrain_gen: Box<NoiseTerrainGen>,
+    cave_carver: Box<CaveCarver>,
+    ore_gen: Box<OreGenerator>,
+    nether_gen: Box<NetherTerrainGen>,
+    end_gen: Box<EndTerrainGen>,
     seed: u64,
 }
 
@@ -32,11 +32,11 @@ impl ChunkManager {
             render_distance,
             dirty_chunks: HashSet::new(),
             dimension: DimensionId::Overworld,
-            terrain_gen: NoiseTerrainGen::new(seed),
-            cave_carver: CaveCarver::new(seed),
-            ore_gen: OreGenerator::new(seed),
-            nether_gen: NetherTerrainGen::new(seed),
-            end_gen: EndTerrainGen::new(seed),
+            terrain_gen: Box::new(NoiseTerrainGen::new(seed)),
+            cave_carver: Box::new(CaveCarver::new(seed)),
+            ore_gen: Box::new(OreGenerator::new(seed)),
+            nether_gen: Box::new(NetherTerrainGen::new(seed)),
+            end_gen: Box::new(EndTerrainGen::new(seed)),
             seed,
         }
     }

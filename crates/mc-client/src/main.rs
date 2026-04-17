@@ -56,7 +56,7 @@ enum GameState {
 
 /// Number of chunks needed before transitioning from Loading to Playing.
 /// For an initial load distance of 4 we need (2*4+1)^2 = 81 chunks.
-const INITIAL_LOAD_DISTANCE: i32 = 4;
+const INITIAL_LOAD_DISTANCE: i32 = 2;
 const CHUNKS_NEEDED_FOR_PLAY: usize =
     ((2 * INITIAL_LOAD_DISTANCE + 1) * (2 * INITIAL_LOAD_DISTANCE + 1)) as usize;
 
