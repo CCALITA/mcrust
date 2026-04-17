@@ -99,13 +99,12 @@ impl CaveCarver {
                         || self.should_carve_spaghetti(wx, wy, wz);
 
                     if should_carve {
-                        let replacement = if wy < SEA_LEVEL
-                            && self.has_adjacent_air(chunk, lx, wy, lz)
-                        {
-                            BlockId::Water
-                        } else {
-                            BlockId::Air
-                        };
+                        let replacement =
+                            if wy < SEA_LEVEL && self.has_adjacent_air(chunk, lx, wy, lz) {
+                                BlockId::Water
+                            } else {
+                                BlockId::Air
+                            };
                         chunk.set_block(lx, wy, lz, replacement);
                     }
                 }
