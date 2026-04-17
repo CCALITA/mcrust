@@ -10,8 +10,11 @@ use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::keyboard::{KeyCode, PhysicalKey};
 use winit::window::{CursorGrabMode, Window, WindowAttributes, WindowId};
 
-use mc_core::pos::ChunkPos;
+use mc_core::block::BlockId;
+use mc_core::pos::{BlockPos, ChunkPos};
 use mc_physics::collision;
+use mc_physics::raycast;
+use mc_render::frustum::{self, Frustum};
 use mc_render::mesh::{ChunkMesh, NeighborChunks};
 use mc_render::sky::DayNightCycle;
 use mc_render::{Camera, Renderer};
@@ -29,6 +32,7 @@ const SNEAK_SPEED: f32 = 1.3;
 const MOUSE_SENSITIVITY: f32 = 0.003;
 const TICK_DURATION: Duration = Duration::from_millis(50); // 20 tps
 const RENDER_DISTANCE: i32 = 8;
+const REACH_DISTANCE: f32 = 5.0;
 
 // ---------------------------------------------------------------------------
 // PlayerState
@@ -65,6 +69,16 @@ impl PlayerState {
         let fwd = self.forward_xz();
         Vec3::new(fwd.z, 0.0, -fwd.x)
     }
+
+    /// Full 3D look direction (includes pitch).
+    fn look_direction(&self) -> Vec3 {
+        Vec3::new(
+            -self.yaw.sin() * self.pitch.cos(),
+            self.pitch.sin(),
+            self.yaw.cos() * self.pitch.cos(),
+        )
+        .normalize_or_zero()
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -79,7 +93,6 @@ struct App {
     player: PlayerState,
     world: ChunkManager,
     chunk_meshes: Vec<ChunkMesh>,
-    /// Chunks that still need meshing (carried across frames).
     mesh_queue: Vec<ChunkPos>,
     keys_held: HashSet<KeyCode>,
     cursor_grabbed: bool,
@@ -92,9 +105,9 @@ impl App {
         Self {
             window: None,
             renderer: None,
-            camera: Camera::new(Vec3::new(0.0, 65.62, 0.0), 16.0 / 9.0),
+            camera: Camera::new(Vec3::new(0.0, 100.0, 0.0), 16.0 / 9.0),
             sky: DayNightCycle::new(0.25),
-            player: PlayerState::new(Vec3::new(0.0, 65.0, 0.0)),
+            player: PlayerState::new(Vec3::new(0.0, 100.0, 0.0)),
             world: ChunkManager::new(RENDER_DISTANCE),
             chunk_meshes: Vec::new(),
             mesh_queue: Vec::new(),
@@ -122,6 +135,57 @@ impl App {
             self.cursor_grabbed = false;
         }
     }
+
+    // -- Block interaction --------------------------------------------------
+
+    fn break_block(&mut self) {
+        let hit = raycast::raycast(
+            self.player.eye_position(),
+            self.player.look_direction(),
+            REACH_DISTANCE,
+            &|bx, by, bz| self.world.is_block_solid(bx, by, bz),
+        );
+        if let Some(hit) = hit {
+            self.world
+                .set_block(hit.block_pos, BlockId::Air);
+            // Rebuild mesh for affected chunk(s)
+            let cp = hit.block_pos.chunk_pos();
+            self.chunk_meshes.retain(|m| m.chunk_pos != cp);
+            self.mesh_queue.push(cp);
+        }
+    }
+
+    fn place_block(&mut self) {
+        let hit = raycast::raycast(
+            self.player.eye_position(),
+            self.player.look_direction(),
+            REACH_DISTANCE,
+            &|bx, by, bz| self.world.is_block_solid(bx, by, bz),
+        );
+        if let Some(hit) = hit {
+            let normal = hit.face.normal();
+            let place_pos = BlockPos::new(
+                hit.block_pos.x + normal.x,
+                hit.block_pos.y + normal.y,
+                hit.block_pos.z + normal.z,
+            );
+            // Don't place inside the player
+            let player_block = BlockPos::new(
+                self.player.position.x.floor() as i32,
+                self.player.position.y.floor() as i32,
+                self.player.position.z.floor() as i32,
+            );
+            let player_head = BlockPos::new(player_block.x, player_block.y + 1, player_block.z);
+            if place_pos != player_block && place_pos != player_head {
+                self.world.set_block(place_pos, BlockId::Cobblestone);
+                let cp = place_pos.chunk_pos();
+                self.chunk_meshes.retain(|m| m.chunk_pos != cp);
+                self.mesh_queue.push(cp);
+            }
+        }
+    }
+
+    // -- Physics tick -------------------------------------------------------
 
     fn tick(&mut self, dt: f32) {
         let mut wish_dir = Vec3::ZERO;
@@ -159,9 +223,10 @@ impl App {
         }
 
         let frame_vel = self.player.velocity * dt;
-        let resolved = collision::move_and_slide(self.player.position, frame_vel, &|bx, by, bz| {
-            self.world.is_block_solid(bx, by, bz)
-        });
+        let resolved =
+            collision::move_and_slide(self.player.position, frame_vel, &|bx, by, bz| {
+                self.world.is_block_solid(bx, by, bz)
+            });
 
         self.player.on_ground = frame_vel.y < 0.0 && resolved.y.abs() < 1e-6;
         self.player.position += resolved;
@@ -171,6 +236,8 @@ impl App {
         }
     }
 
+    // -- Frame update -------------------------------------------------------
+
     fn update(&mut self) {
         let now = Instant::now();
         let frame_time = now - self.last_tick;
@@ -178,7 +245,6 @@ impl App {
 
         self.tick_accumulator += frame_time;
         let tick_dt = TICK_DURATION.as_secs_f32();
-        // Cap accumulated ticks to prevent spiral-of-death on first frame
         let max_ticks = 4;
         let mut tick_count = 0;
         while self.tick_accumulator >= TICK_DURATION && tick_count < max_ticks {
@@ -186,7 +252,6 @@ impl App {
             self.tick(tick_dt);
             tick_count += 1;
         }
-        // Discard excess accumulated time
         if self.tick_accumulator > TICK_DURATION {
             self.tick_accumulator = Duration::ZERO;
         }
@@ -206,13 +271,11 @@ impl App {
         // Rebuild dirty chunk meshes
         let dirty = self.world.take_dirty();
         if !dirty.is_empty() {
-            // Remove old meshes for dirty chunks
             self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
-            // Queue dirty chunks for meshing
             self.mesh_queue.extend(dirty);
         }
 
-        // Mesh a limited number of chunks per frame to avoid overwhelming the GPU
+        // Mesh a limited number of chunks per frame
         const MAX_MESHES_PER_FRAME: usize = 16;
         if !self.mesh_queue.is_empty() {
             if let Some(renderer) = &self.renderer {
@@ -241,8 +304,25 @@ impl App {
         let frame_dt = frame_time.as_secs_f32();
         self.sky.advance(frame_dt);
 
+        // Frustum culling — only send visible chunk meshes to the GPU
+        let vp = self.camera.view_projection_matrix();
+        let frustum = Frustum::from_view_projection(vp);
+
         // Render
         if let Some(renderer) = &self.renderer {
+            // Filter to visible meshes only
+            let _visible: Vec<&ChunkMesh> = self
+                .chunk_meshes
+                .iter()
+                .filter(|m| {
+                    let (min, max) = frustum::chunk_aabb(m.chunk_pos.x, m.chunk_pos.z);
+                    frustum.contains_aabb(min, max)
+                })
+                .collect();
+
+            // render_frame expects &[ChunkMesh] but we have Vec<&ChunkMesh>.
+            // Pass the full set for now — frustum culling will be applied when
+            // the renderer API is updated to accept references.
             match renderer.render_frame(&self.camera, &self.sky, &self.chunk_meshes) {
                 Ok(()) => {}
                 Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
@@ -286,11 +366,8 @@ impl ApplicationHandler for App {
                 self.renderer = Some(renderer);
                 self.window = Some(window);
 
-                // Reset timer so we don't accumulate seconds of gravity from init time
                 self.last_tick = Instant::now();
                 self.tick_accumulator = Duration::ZERO;
-
-                // Update camera aspect ratio
                 self.camera.aspect = 1280.0 / 720.0;
 
                 self.grab_cursor();
@@ -351,8 +428,20 @@ impl ApplicationHandler for App {
                 button: MouseButton::Left,
                 ..
             } => {
-                if !self.cursor_grabbed {
+                if self.cursor_grabbed {
+                    self.break_block();
+                } else {
                     self.grab_cursor();
+                }
+            }
+
+            WindowEvent::MouseInput {
+                state: ElementState::Pressed,
+                button: MouseButton::Right,
+                ..
+            } => {
+                if self.cursor_grabbed {
+                    self.place_block();
                 }
             }
 
