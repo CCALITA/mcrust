@@ -13,6 +13,7 @@ use winit::window::{CursorGrabMode, Window, WindowAttributes, WindowId};
 use mc_core::pos::ChunkPos;
 use mc_physics::collision;
 use mc_render::mesh::{ChunkMesh, NeighborChunks};
+use mc_render::sky::DayNightCycle;
 use mc_render::{Camera, Renderer};
 use mc_world::ChunkManager;
 
@@ -74,6 +75,7 @@ struct App {
     window: Option<Arc<Window>>,
     renderer: Option<Renderer>,
     camera: Camera,
+    sky: DayNightCycle,
     player: PlayerState,
     world: ChunkManager,
     chunk_meshes: Vec<ChunkMesh>,
@@ -91,6 +93,7 @@ impl App {
             window: None,
             renderer: None,
             camera: Camera::new(Vec3::new(0.0, 65.62, 0.0), 16.0 / 9.0),
+            sky: DayNightCycle::new(0.25),
             player: PlayerState::new(Vec3::new(0.0, 65.0, 0.0)),
             world: ChunkManager::new(RENDER_DISTANCE),
             chunk_meshes: Vec::new(),
@@ -234,9 +237,13 @@ impl App {
             }
         }
 
+        // Advance day/night cycle
+        let frame_dt = frame_time.as_secs_f32();
+        self.sky.advance(frame_dt);
+
         // Render
         if let Some(renderer) = &self.renderer {
-            match renderer.render_frame(&self.camera, &self.chunk_meshes) {
+            match renderer.render_frame(&self.camera, &self.sky, &self.chunk_meshes) {
                 Ok(()) => {}
                 Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
                     if let Some(r) = &mut self.renderer {

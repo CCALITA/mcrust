@@ -169,6 +169,9 @@ impl ItemId {
             BlockId::Chest => Some(ItemId::Chest),
             // Air, Bedrock, Water have no item form
             BlockId::Air | BlockId::Bedrock | BlockId::Water => None,
+            // New block types — map to themselves if a matching ItemId exists,
+            // otherwise None (item variants will be added incrementally)
+            _ => None,
         }
     }
 }

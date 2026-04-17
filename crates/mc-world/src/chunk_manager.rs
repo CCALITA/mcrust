@@ -3,23 +3,33 @@ use std::collections::{HashMap, HashSet};
 use mc_core::block::BlockId;
 use mc_core::pos::{BlockPos, CHUNK_SIZE, ChunkPos, WORLD_BOTTOM, WORLD_TOP};
 
+use crate::caves::CaveCarver;
 use crate::chunk::Chunk;
-use crate::terrain::FlatWorldGen;
+use crate::noise_terrain::NoiseTerrainGen;
+use crate::ores::OreGenerator;
+use crate::trees;
 
 pub struct ChunkManager {
     chunks: HashMap<ChunkPos, Chunk>,
     render_distance: i32,
     dirty_chunks: HashSet<ChunkPos>,
-    generator: FlatWorldGen,
+    terrain_gen: NoiseTerrainGen,
+    cave_carver: CaveCarver,
+    ore_gen: OreGenerator,
+    seed: u64,
 }
 
 impl ChunkManager {
     pub fn new(render_distance: i32) -> Self {
+        let seed = 42;
         Self {
             chunks: HashMap::new(),
             render_distance,
             dirty_chunks: HashSet::new(),
-            generator: FlatWorldGen::new(),
+            terrain_gen: NoiseTerrainGen::new(seed),
+            cave_carver: CaveCarver::new(seed),
+            ore_gen: OreGenerator::new(seed),
+            seed,
         }
     }
 
@@ -34,7 +44,11 @@ impl ChunkManager {
             for dz in -rd..=rd {
                 let pos = ChunkPos::new(player_chunk.x + dx, player_chunk.z + dz);
                 if !self.chunks.contains_key(&pos) {
-                    let chunk = self.generator.generate(pos.x, pos.z);
+                    let mut chunk = self.terrain_gen.generate(pos.x, pos.z);
+                    self.cave_carver.carve(&mut chunk, pos.x, pos.z);
+                    self.ore_gen.generate_ores(&mut chunk, pos.x, pos.z);
+                    trees::place_trees(&mut chunk, pos.x, pos.z, self.seed);
+                    trees::place_vegetation(&mut chunk, pos.x, pos.z, self.seed);
                     self.chunks.insert(pos, chunk);
                     self.dirty_chunks.insert(pos);
                 }
@@ -192,12 +206,10 @@ mod tests {
         let mut mgr = ChunkManager::new(2);
         mgr.update(ChunkPos::new(0, 0));
 
-        // FlatWorldGen places bedrock at y=-64.
+        // NoiseTerrainGen always places bedrock at y=-64.
         assert_eq!(mgr.get_block(BlockPos::new(0, -64, 0)), BlockId::Bedrock);
-        // Grass at sea level (63).
-        assert_eq!(mgr.get_block(BlockPos::new(0, 63, 0)), BlockId::GrassBlock);
-        // Air above grass.
-        assert_eq!(mgr.get_block(BlockPos::new(0, 64, 0)), BlockId::Air);
+        // High above terrain is always air.
+        assert_eq!(mgr.get_block(BlockPos::new(0, 200, 0)), BlockId::Air);
     }
 
     #[test]
@@ -230,8 +242,10 @@ mod tests {
         let mut mgr = ChunkManager::new(2);
         mgr.update(ChunkPos::new(0, 0));
 
-        assert!(mgr.is_block_solid(0, 63, 0)); // Grass is solid.
-        assert!(!mgr.is_block_solid(0, 64, 0)); // Air is not solid.
+        // Bedrock at bottom is always solid.
+        assert!(mgr.is_block_solid(0, -64, 0));
+        // High up is always air.
+        assert!(!mgr.is_block_solid(0, 200, 0));
     }
 
     #[test]
