@@ -25,8 +25,7 @@ pub struct ChunkManager {
 }
 
 impl ChunkManager {
-    pub fn new(render_distance: i32) -> Self {
-        let seed = 42;
+    pub fn new(render_distance: i32, seed: u64) -> Self {
         Self {
             chunks: HashMap::new(),
             render_distance,
@@ -191,7 +190,7 @@ mod tests {
 
     #[test]
     fn loads_chunks_around_origin() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
 
         // Should have (2*2+1)^2 = 25 chunks loaded.
@@ -205,7 +204,7 @@ mod tests {
 
     #[test]
     fn unloads_distant_chunks() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
         assert_eq!(mgr.chunks.len(), 25);
 
@@ -217,14 +216,14 @@ mod tests {
 
     #[test]
     fn get_block_returns_air_for_unloaded() {
-        let mgr = ChunkManager::new(2);
+        let mgr = ChunkManager::new(2, 42);
         let block = mgr.get_block(BlockPos::new(0, 64, 0));
         assert_eq!(block, BlockId::Air);
     }
 
     #[test]
     fn get_block_returns_air_out_of_bounds() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
 
         assert_eq!(mgr.get_block(BlockPos::new(0, WORLD_TOP, 0)), BlockId::Air);
@@ -236,7 +235,7 @@ mod tests {
 
     #[test]
     fn get_block_reads_terrain() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
 
         // NoiseTerrainGen always places bedrock at y=-64.
@@ -247,7 +246,7 @@ mod tests {
 
     #[test]
     fn set_block_marks_dirty() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
         let _ = mgr.take_dirty(); // clear initial dirty set
 
@@ -260,7 +259,7 @@ mod tests {
 
     #[test]
     fn take_dirty_drains() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
 
         let first = mgr.take_dirty();
@@ -272,7 +271,7 @@ mod tests {
 
     #[test]
     fn is_block_solid_checks_terrain() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
 
         // Bedrock at bottom is always solid.
@@ -283,7 +282,7 @@ mod tests {
 
     #[test]
     fn loaded_chunks_iterates_all() {
-        let mut mgr = ChunkManager::new(1);
+        let mut mgr = ChunkManager::new(1, 42);
         mgr.update(ChunkPos::new(0, 0));
 
         let count = mgr.loaded_chunks().count();
@@ -292,13 +291,13 @@ mod tests {
 
     #[test]
     fn defaults_to_overworld() {
-        let mgr = ChunkManager::new(2);
+        let mgr = ChunkManager::new(2, 42);
         assert_eq!(mgr.current_dimension(), DimensionId::Overworld);
     }
 
     #[test]
     fn switch_dimension_clears_chunks() {
-        let mut mgr = ChunkManager::new(2);
+        let mut mgr = ChunkManager::new(2, 42);
         mgr.update(ChunkPos::new(0, 0));
         assert!(!mgr.chunks.is_empty());
 
@@ -310,7 +309,7 @@ mod tests {
 
     #[test]
     fn nether_generates_netherrack() {
-        let mut mgr = ChunkManager::new(1);
+        let mut mgr = ChunkManager::new(1, 42);
         mgr.switch_dimension(DimensionId::Nether);
         mgr.update(ChunkPos::new(0, 0));
 
@@ -322,20 +321,17 @@ mod tests {
 
     #[test]
     fn end_generates_end_stone_at_origin() {
-        let mut mgr = ChunkManager::new(1);
+        let mut mgr = ChunkManager::new(1, 42);
         mgr.switch_dimension(DimensionId::End);
         mgr.update(ChunkPos::new(0, 0));
 
         // End main island has EndStone at y=64 near origin
-        assert_eq!(
-            mgr.get_block(BlockPos::new(0, 64, 0)),
-            BlockId::EndStone
-        );
+        assert_eq!(mgr.get_block(BlockPos::new(0, 64, 0)), BlockId::EndStone);
     }
 
     #[test]
     fn switch_back_to_overworld() {
-        let mut mgr = ChunkManager::new(1);
+        let mut mgr = ChunkManager::new(1, 42);
         mgr.switch_dimension(DimensionId::Nether);
         mgr.update(ChunkPos::new(0, 0));
 

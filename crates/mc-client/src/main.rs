@@ -22,6 +22,9 @@ use mc_ui::hud::HudState;
 use mc_world::ChunkManager;
 use mc_world::nether::DimensionId;
 
+mod settings;
+use settings::GameSettings;
+
 // ---------------------------------------------------------------------------
 // Physics constants
 // ---------------------------------------------------------------------------
@@ -31,9 +34,7 @@ const JUMP_VELOCITY: f32 = 8.5;
 const WALK_SPEED: f32 = 4.3;
 const SPRINT_SPEED: f32 = 5.6;
 const SNEAK_SPEED: f32 = 1.3;
-const MOUSE_SENSITIVITY: f32 = 0.003;
 const TICK_DURATION: Duration = Duration::from_millis(50); // 20 tps
-const RENDER_DISTANCE: i32 = 8;
 const REACH_DISTANCE: f32 = 5.0;
 
 // ---------------------------------------------------------------------------
@@ -118,6 +119,7 @@ impl PlayerState {
 // ---------------------------------------------------------------------------
 
 struct App {
+    settings: GameSettings,
     window: Option<Arc<Window>>,
     renderer: Option<Renderer>,
     camera: Camera,
@@ -135,14 +137,15 @@ struct App {
 }
 
 impl App {
-    fn new() -> Self {
+    fn new(settings: GameSettings) -> Self {
+        let render_distance = settings.render_distance as i32;
         Self {
             window: None,
             renderer: None,
             camera: Camera::new(SPAWN_POSITION, 16.0 / 9.0),
             sky: DayNightCycle::new(0.25),
             player: PlayerState::new(SPAWN_POSITION),
-            world: ChunkManager::new(RENDER_DISTANCE),
+            world: ChunkManager::new(render_distance, settings.seed),
             chunk_meshes: Vec::new(),
             mesh_queue: Vec::new(),
             keys_held: HashSet::new(),
@@ -154,6 +157,7 @@ impl App {
                 chunks_needed: CHUNKS_NEEDED_FOR_PLAY,
             },
             hud: HudState::default(),
+            settings,
         }
     }
 
@@ -261,10 +265,9 @@ impl App {
         }
 
         let frame_vel = self.player.velocity * dt;
-        let resolved =
-            collision::move_and_slide(self.player.position, frame_vel, &|bx, by, bz| {
-                self.world.is_block_solid(bx, by, bz)
-            });
+        let resolved = collision::move_and_slide(self.player.position, frame_vel, &|bx, by, bz| {
+            self.world.is_block_solid(bx, by, bz)
+        });
 
         self.player.on_ground = frame_vel.y < 0.0 && resolved.y.abs() < 1e-6;
         self.player.position += resolved;
@@ -293,8 +296,7 @@ impl App {
                         south: self.world.get_chunk(ChunkPos::new(pos.x, pos.z + 1)),
                         north: self.world.get_chunk(ChunkPos::new(pos.x, pos.z - 1)),
                     };
-                    if let Some(mesh) =
-                        ChunkMesh::build(renderer.device(), chunk, *pos, &neighbors)
+                    if let Some(mesh) = ChunkMesh::build(renderer.device(), chunk, *pos, &neighbors)
                     {
                         self.chunk_meshes.push(mesh);
                     }
@@ -349,9 +351,7 @@ impl App {
                 self.render_scene();
             }
 
-            GameState::Loading {
-                chunks_needed, ..
-            } => {
+            GameState::Loading { chunks_needed, .. } => {
                 // Update chunk loading around the player
                 let player_chunk = ChunkPos::from_block(
                     self.player.position.x.floor() as i32,
@@ -450,9 +450,7 @@ impl App {
                 // Check for void death
                 if self.player.position.y < VOID_DEATH_Y {
                     log::info!("Player fell into the void!");
-                    self.state = GameState::Dead {
-                        respawn_timer: 0.0,
-                    };
+                    self.state = GameState::Dead { respawn_timer: 0.0 };
                     self.release_cursor();
                 }
             }
@@ -602,8 +600,9 @@ impl ApplicationHandler for App {
     ) {
         if let DeviceEvent::MouseMotion { delta: (dx, dy) } = event {
             if self.cursor_grabbed && matches!(self.state, GameState::Playing) {
-                self.player.yaw -= dx as f32 * MOUSE_SENSITIVITY;
-                self.player.pitch -= dy as f32 * MOUSE_SENSITIVITY;
+                let sensitivity = self.settings.mouse_sensitivity;
+                self.player.yaw -= dx as f32 * sensitivity;
+                self.player.pitch -= dy as f32 * sensitivity;
                 let half_pi = std::f32::consts::FRAC_PI_2 - 0.01;
                 self.player.pitch = self.player.pitch.clamp(-half_pi, half_pi);
             }
@@ -722,10 +721,18 @@ fn main() {
 
     log::info!("MCRust starting...");
 
+    let settings = GameSettings::load("settings.toml");
+    log::info!(
+        "Settings: render_distance={}, seed={}, mouse_sensitivity={}",
+        settings.render_distance,
+        settings.seed,
+        settings.mouse_sensitivity
+    );
+
     let event_loop = EventLoop::new().expect("failed to create event loop");
     event_loop.set_control_flow(ControlFlow::Poll);
 
-    let mut app = App::new();
+    let mut app = App::new(settings);
     if let Err(e) = event_loop.run_app(&mut app) {
         log::error!("Event loop exited with error: {e}");
     }
