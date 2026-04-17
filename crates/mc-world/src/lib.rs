@@ -16,6 +16,7 @@ pub mod save;
 pub mod structures;
 pub mod terrain;
 pub mod trees;
+pub mod weather;
 
 pub use biome_terrain::BiomeTerrainGen;
 pub use block_entity::{
@@ -43,3 +44,4 @@ pub use save::{
 pub use structures::StructureGenerator;
 pub use terrain::FlatWorldGen;
 pub use trees::{birch_tree, oak_tree, place_trees, place_vegetation, spruce_tree};
+pub use weather::{WeatherState, WeatherSystem};
