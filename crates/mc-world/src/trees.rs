@@ -159,9 +159,8 @@ pub fn place_trees(chunk: &mut Chunk, cx: i32, cz: i32, seed: u64) {
 
             // Ensure enough vertical space (at least 12 blocks of air above)
             let tree_base = surface_y + 1;
-            let has_space = (1..=12).all(|dy| {
-                chunk.get_block(x, tree_base + dy - 1, z) == BlockId::Air
-            });
+            let has_space =
+                (1..=12).all(|dy| chunk.get_block(x, tree_base + dy - 1, z) == BlockId::Air);
             if !has_space {
                 continue;
             }
@@ -424,7 +423,10 @@ mod tests {
                 }
             }
         }
-        assert_eq!(log_count, 0, "No trees should be placed on non-grass blocks");
+        assert_eq!(
+            log_count, 0,
+            "No trees should be placed on non-grass blocks"
+        );
     }
 
     #[test]

@@ -56,10 +56,18 @@ struct PosRng {
 impl PosRng {
     fn new(seed: u64, cx: i32, cz: i32, ore_index: u32, vein_index: u32) -> Self {
         let mut s = seed;
-        s = s.wrapping_add(cx as u64).wrapping_mul(6_364_136_223_846_793_005);
-        s = s.wrapping_add(cz as u64).wrapping_mul(6_364_136_223_846_793_005);
-        s = s.wrapping_add(ore_index as u64).wrapping_mul(6_364_136_223_846_793_005);
-        s = s.wrapping_add(vein_index as u64).wrapping_mul(6_364_136_223_846_793_005);
+        s = s
+            .wrapping_add(cx as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
+        s = s
+            .wrapping_add(cz as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
+        s = s
+            .wrapping_add(ore_index as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
+        s = s
+            .wrapping_add(vein_index as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
         // Run a few rounds to diffuse the bits
         let mut rng = Self { state: s };
         for _ in 0..4 {
@@ -127,13 +135,7 @@ impl OreGenerator {
             }
 
             for vein_index in 0..config.veins_per_chunk {
-                let mut rng = PosRng::new(
-                    self.seed,
-                    cx,
-                    cz,
-                    ore_index as u32,
-                    vein_index,
-                );
+                let mut rng = PosRng::new(self.seed, cx, cz, ore_index as u32, vein_index);
 
                 let center_x = rng.next_bounded(CHUNK_SIZE as u32) as i32;
                 let center_y = rng.next_range(clamped_min_y, clamped_max_y);
@@ -271,10 +273,7 @@ mod tests {
         ore_gen.generate_ores(&mut chunk, 0, 0);
 
         let diamond_valid = count_block_in_range(&chunk, BlockId::DiamondOre, -64, 16);
-        assert!(
-            diamond_valid > 0,
-            "Expected diamond ore between y=-64..16"
-        );
+        assert!(diamond_valid > 0, "Expected diamond ore between y=-64..16");
 
         // Diamond should NOT appear at y >= 16.
         let diamond_above = count_block_in_range(&chunk, BlockId::DiamondOre, 16, WORLD_TOP);
@@ -302,10 +301,7 @@ mod tests {
             total_ore >= 10,
             "Expected at least 10 ore blocks total, got {total_ore}"
         );
-        assert!(
-            total_ore < 5000,
-            "Ore count suspiciously high: {total_ore}"
-        );
+        assert!(total_ore < 5000, "Ore count suspiciously high: {total_ore}");
     }
 
     #[test]

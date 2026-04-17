@@ -1,10 +1,10 @@
+use crate::chunk::Chunk;
 use mc_core::block::BlockId;
 use mc_core::pos::CHUNK_SIZE;
-use noise::NoiseFn;
 use noise::Fbm;
 use noise::MultiFractal;
+use noise::NoiseFn;
 use noise::Perlin;
-use crate::chunk::Chunk;
 
 /// Sea level constant (y=63, matching vanilla Minecraft).
 const SEA_LEVEL: i32 = 63;
@@ -83,9 +83,7 @@ impl NoiseTerrainGen {
         let continent_value = self
             .continent_noise
             .get([x * CONTINENT_SCALE, z * CONTINENT_SCALE]);
-        let detail_value = self
-            .detail_noise
-            .get([x * DETAIL_SCALE, z * DETAIL_SCALE]);
+        let detail_value = self.detail_noise.get([x * DETAIL_SCALE, z * DETAIL_SCALE]);
 
         let height =
             BASE_HEIGHT + continent_value * CONTINENT_AMPLITUDE + detail_value * DETAIL_AMPLITUDE;
