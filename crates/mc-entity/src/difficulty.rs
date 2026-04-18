@@ -8,6 +8,21 @@ pub enum Difficulty {
     Hard,
 }
 
+impl std::str::FromStr for Difficulty {
+    type Err = String;
+
+    /// Parses a difficulty from a case-insensitive string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_ascii_lowercase().as_str() {
+            "peaceful" => Ok(Difficulty::Peaceful),
+            "easy" => Ok(Difficulty::Easy),
+            "normal" => Ok(Difficulty::Normal),
+            "hard" => Ok(Difficulty::Hard),
+            _ => Err(format!("unknown difficulty: {s}")),
+        }
+    }
+}
+
 impl Difficulty {
     /// Returns the damage multiplier applied to mob attacks.
     /// Peaceful: 0.0, Easy: 0.5, Normal: 1.0, Hard: 1.5
@@ -76,17 +91,6 @@ impl Difficulty {
     /// Returns whether fire spreads to adjacent blocks (everything except Peaceful).
     pub fn fire_spreads(&self) -> bool {
         !matches!(self, Difficulty::Peaceful)
-    }
-
-    /// Parses a difficulty from a case-insensitive string.
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s.to_ascii_lowercase().as_str() {
-            "peaceful" => Some(Difficulty::Peaceful),
-            "easy" => Some(Difficulty::Easy),
-            "normal" => Some(Difficulty::Normal),
-            "hard" => Some(Difficulty::Hard),
-            _ => None,
-        }
     }
 }
 
@@ -307,24 +311,24 @@ mod tests {
 
     #[test]
     fn from_str_lowercase() {
-        assert_eq!(Difficulty::from_str("peaceful"), Some(Difficulty::Peaceful));
-        assert_eq!(Difficulty::from_str("easy"), Some(Difficulty::Easy));
-        assert_eq!(Difficulty::from_str("normal"), Some(Difficulty::Normal));
-        assert_eq!(Difficulty::from_str("hard"), Some(Difficulty::Hard));
+        assert_eq!("peaceful".parse::<Difficulty>(), Ok(Difficulty::Peaceful));
+        assert_eq!("easy".parse::<Difficulty>(), Ok(Difficulty::Easy));
+        assert_eq!("normal".parse::<Difficulty>(), Ok(Difficulty::Normal));
+        assert_eq!("hard".parse::<Difficulty>(), Ok(Difficulty::Hard));
     }
 
     #[test]
     fn from_str_mixed_case() {
-        assert_eq!(Difficulty::from_str("Peaceful"), Some(Difficulty::Peaceful));
-        assert_eq!(Difficulty::from_str("EASY"), Some(Difficulty::Easy));
-        assert_eq!(Difficulty::from_str("Normal"), Some(Difficulty::Normal));
-        assert_eq!(Difficulty::from_str("HARD"), Some(Difficulty::Hard));
+        assert_eq!("Peaceful".parse::<Difficulty>(), Ok(Difficulty::Peaceful));
+        assert_eq!("EASY".parse::<Difficulty>(), Ok(Difficulty::Easy));
+        assert_eq!("Normal".parse::<Difficulty>(), Ok(Difficulty::Normal));
+        assert_eq!("HARD".parse::<Difficulty>(), Ok(Difficulty::Hard));
     }
 
     #[test]
     fn from_str_invalid() {
-        assert_eq!(Difficulty::from_str(""), None);
-        assert_eq!(Difficulty::from_str("medium"), None);
-        assert_eq!(Difficulty::from_str("hardcore"), None);
+        assert!("".parse::<Difficulty>().is_err());
+        assert!("medium".parse::<Difficulty>().is_err());
+        assert!("hardcore".parse::<Difficulty>().is_err());
     }
 }

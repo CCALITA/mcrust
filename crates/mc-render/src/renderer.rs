@@ -28,14 +28,37 @@ pub struct Renderer {
     size: (u32, u32),
 }
 
+/// Errors that can occur during renderer initialization.
+#[derive(Debug)]
+pub enum RendererError {
+    /// Failed to create the wgpu surface from the window.
+    SurfaceCreation(String),
+    /// No compatible GPU adapter was found.
+    NoAdapter,
+    /// Failed to request a logical device from the adapter.
+    DeviceCreation(String),
+}
+
+impl std::fmt::Display for RendererError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SurfaceCreation(msg) => write!(f, "failed to create surface: {msg}"),
+            Self::NoAdapter => write!(f, "no suitable GPU adapter found"),
+            Self::DeviceCreation(msg) => write!(f, "failed to create device: {msg}"),
+        }
+    }
+}
+
+impl std::error::Error for RendererError {}
+
 impl Renderer {
     /// Initialize the renderer using a winit window.
     /// This blocks on async wgpu initialization via pollster.
-    pub fn new(window: Arc<winit::window::Window>) -> Self {
+    pub fn new(window: Arc<winit::window::Window>) -> Result<Self, RendererError> {
         pollster::block_on(Self::new_async(window))
     }
 
-    async fn new_async(window: Arc<winit::window::Window>) -> Self {
+    async fn new_async(window: Arc<winit::window::Window>) -> Result<Self, RendererError> {
         let size = window.inner_size();
         let width = size.width.max(1);
         let height = size.height.max(1);
@@ -49,7 +72,7 @@ impl Renderer {
 
         let surface = instance
             .create_surface(window)
-            .expect("failed to create surface");
+            .map_err(|e| RendererError::SurfaceCreation(e.to_string()))?;
 
         log::info!("Requesting GPU adapter...");
         let adapter = instance
@@ -59,7 +82,7 @@ impl Renderer {
                 force_fallback_adapter: false,
             })
             .await
-            .expect("failed to find a suitable GPU adapter");
+            .ok_or(RendererError::NoAdapter)?;
 
         log::info!("Adapter: {:?}", adapter.get_info().name);
         let (device, queue) = adapter
@@ -73,7 +96,7 @@ impl Renderer {
                 None,
             )
             .await
-            .expect("failed to create device");
+            .map_err(|e| RendererError::DeviceCreation(e.to_string()))?;
 
         log::info!("GPU device created, configuring surface...");
         let surface_caps = surface.get_capabilities(&adapter);
@@ -284,7 +307,7 @@ impl Renderer {
 
         log::info!("Renderer initialized successfully");
 
-        Self {
+        Ok(Self {
             surface,
             device,
             queue,
@@ -299,7 +322,7 @@ impl Renderer {
             sky_bind_group,
             terrain_sky_bind_group,
             size: (width, height),
-        }
+        })
     }
 
     /// Access the device (needed by ChunkMesh::build).

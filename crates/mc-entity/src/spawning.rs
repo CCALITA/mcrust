@@ -133,7 +133,7 @@ impl SpawnSystem {
             return Vec::new();
         }
 
-        let is_night = time_of_day >= 0.5 || time_of_day < 0.1;
+        let is_night = !(0.1..0.5).contains(&time_of_day);
         let remaining = mob_cap.saturating_sub(current_count);
 
         // Collect eligible configs for the current time of day.

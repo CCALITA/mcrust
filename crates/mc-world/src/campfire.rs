@@ -1,4 +1,4 @@
-/// Campfire block entity — cooking, extinguishing, and smoke.
+//! Campfire block entity — cooking, extinguishing, and smoke.
 
 /// Maps a raw food item ID to its cooked variant.
 pub fn cooked_item(raw: u16) -> Option<u16> {

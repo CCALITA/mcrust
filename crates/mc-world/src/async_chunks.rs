@@ -1,3 +1,4 @@
+use std::io;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender};
@@ -107,7 +108,7 @@ impl AsyncChunkLoader {
     ///
     /// Each worker thread receives chunk generation requests and sends back
     /// completed `(ChunkPos, Chunk)` pairs through a shared response channel.
-    pub fn new(num_threads: usize, seed: u64) -> Self {
+    pub fn new(num_threads: usize, seed: u64) -> io::Result<Self> {
         let config = Arc::new(ChunkGenConfig { seed });
         let (response_tx, response_rx) = mpsc::channel();
         let pending = Arc::new(AtomicUsize::new(0));
@@ -126,21 +127,20 @@ impl AsyncChunkLoader {
                 .name(format!("chunk-worker-{worker_id}"))
                 .spawn(move || {
                     Self::worker_loop(req_rx, resp_tx, &cfg, &pending_count);
-                })
-                .expect("failed to spawn chunk worker thread");
+                })?;
 
             request_senders.push(req_tx);
             workers.push(handle);
         }
 
-        Self {
+        Ok(Self {
             request_senders,
             response_receiver: response_rx,
             workers,
             next_worker: 0,
             pending,
             shutdown_flag,
-        }
+        })
     }
 
     /// The main loop for a worker thread.
@@ -308,7 +308,7 @@ mod tests {
 
     #[test]
     fn request_and_receive_single_chunk() {
-        let mut loader = AsyncChunkLoader::new(2, 42);
+        let mut loader = AsyncChunkLoader::new(2, 42).unwrap();
         let pos = ChunkPos::new(0, 0);
         loader.request_chunk(pos, 0, 1.0);
 
@@ -338,7 +338,7 @@ mod tests {
 
     #[test]
     fn multiple_requests_complete() {
-        let mut loader = AsyncChunkLoader::new(2, 42);
+        let mut loader = AsyncChunkLoader::new(2, 42).unwrap();
         let positions = vec![
             ChunkPos::new(0, 0),
             ChunkPos::new(1, 0),
@@ -387,7 +387,7 @@ mod tests {
 
     #[test]
     fn pending_count_tracks_inflight_requests() {
-        let mut loader = AsyncChunkLoader::new(1, 42);
+        let mut loader = AsyncChunkLoader::new(1, 42).unwrap();
 
         assert_eq!(loader.pending_count(), 0, "initial pending should be 0");
 
@@ -421,7 +421,7 @@ mod tests {
 
     #[test]
     fn shutdown_is_clean() {
-        let mut loader = AsyncChunkLoader::new(4, 42);
+        let mut loader = AsyncChunkLoader::new(4, 42).unwrap();
 
         // Request a few chunks
         for i in 0..3 {
@@ -434,7 +434,7 @@ mod tests {
 
     #[test]
     fn single_thread_works() {
-        let mut loader = AsyncChunkLoader::new(1, 42);
+        let mut loader = AsyncChunkLoader::new(1, 42).unwrap();
         let pos = ChunkPos::new(5, 5);
         loader.request_chunk(pos, 0, 1.0);
 
@@ -455,7 +455,7 @@ mod tests {
 
     #[test]
     fn nether_chunk_via_async() {
-        let mut loader = AsyncChunkLoader::new(1, 42);
+        let mut loader = AsyncChunkLoader::new(1, 42).unwrap();
         let pos = ChunkPos::new(0, 0);
         loader.request_chunk(pos, 1, 1.0);
 

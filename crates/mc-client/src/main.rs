@@ -193,7 +193,7 @@ impl App {
                 let block_to_place = self
                     .inventory
                     .on_block_place()
-                    .and_then(|id| mc_core::block::BlockId::from_raw(id))
+                    .and_then(mc_core::block::BlockId::from_raw)
                     .unwrap_or(BlockId::Cobblestone);
                 self.world.set_block(place_pos, block_to_place);
                 let cp = place_pos.chunk_pos();
@@ -567,17 +567,24 @@ impl ApplicationHandler for App {
                 log::info!("Window created: {:?}", window.inner_size());
                 let window = Arc::new(window);
 
-                let renderer = Renderer::new(window.clone());
-                self.renderer = Some(renderer);
-                self.window = Some(window);
+                match Renderer::new(window.clone()) {
+                    Ok(renderer) => {
+                        self.renderer = Some(renderer);
+                        self.window = Some(window);
 
-                self.last_tick = Instant::now();
-                self.tick_accumulator = Duration::ZERO;
-                self.camera.aspect = 1280.0 / 720.0;
+                        self.last_tick = Instant::now();
+                        self.tick_accumulator = Duration::ZERO;
+                        self.camera.aspect = 1280.0 / 720.0;
 
-                // Don't grab cursor yet — we start in Loading state.
-                // Cursor will be grabbed when transitioning to Playing.
-                log::info!("Game ready — loading world...");
+                        // Don't grab cursor yet — we start in Loading state.
+                        // Cursor will be grabbed when transitioning to Playing.
+                        log::info!("Game ready — loading world...");
+                    }
+                    Err(e) => {
+                        log::error!("Failed to initialize renderer: {e}");
+                        event_loop.exit();
+                    }
+                }
             }
             Err(e) => {
                 log::error!("Failed to create window: {e}");
@@ -660,13 +667,13 @@ impl ApplicationHandler for App {
         _device_id: DeviceId,
         event: DeviceEvent,
     ) {
-        if let DeviceEvent::MouseMotion { delta: (dx, dy) } = event {
-            if self.cursor_grabbed && matches!(self.state, GameState::Playing) {
-                self.player.yaw -= dx as f32 * MOUSE_SENSITIVITY;
-                self.player.pitch -= dy as f32 * MOUSE_SENSITIVITY;
-                let half_pi = std::f32::consts::FRAC_PI_2 - 0.01;
-                self.player.pitch = self.player.pitch.clamp(-half_pi, half_pi);
-            }
+        if let DeviceEvent::MouseMotion { delta: (dx, dy) } = event
+            && self.cursor_grabbed && matches!(self.state, GameState::Playing)
+        {
+            self.player.yaw -= dx as f32 * MOUSE_SENSITIVITY;
+            self.player.pitch -= dy as f32 * MOUSE_SENSITIVITY;
+            let half_pi = std::f32::consts::FRAC_PI_2 - 0.01;
+            self.player.pitch = self.player.pitch.clamp(-half_pi, half_pi);
         }
     }
 }
@@ -745,13 +752,10 @@ impl App {
                 }
             }
 
-            GameState::Paused => match key_code {
-                KeyCode::Escape => {
-                    log::info!("Game resumed.");
-                    self.state = GameState::Playing;
-                    self.grab_cursor();
-                }
-                _ => {}
+            GameState::Paused => if key_code == KeyCode::Escape {
+                log::info!("Game resumed.");
+                self.state = GameState::Playing;
+                self.grab_cursor();
             },
 
             GameState::Dead { .. } => match key_code {

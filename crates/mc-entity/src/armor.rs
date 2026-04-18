@@ -258,10 +258,10 @@ pub fn apply_armor_damage(set: &mut ArmorSet, damage: f32) {
         return;
     }
     for slot in &mut set.slots {
-        if let Some(piece) = slot.as_mut() {
-            if !piece.is_broken() {
-                piece.durability = piece.durability.saturating_sub(1);
-            }
+        if let Some(piece) = slot.as_mut()
+            && !piece.is_broken()
+        {
+            piece.durability = piece.durability.saturating_sub(1);
         }
     }
 }

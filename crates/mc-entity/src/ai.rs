@@ -260,11 +260,12 @@ impl AiSystem {
         if done {
             let hash3 = simple_hash(id.0, 3);
             let idle_time = 2.0 + (hash3 % 300) as f32 / 100.0;
-            let ai = ai_components.get_mut(id).unwrap();
-            ai.current_goal = AiGoal::Idle;
-            ai.retarget_timer = idle_time;
-            ai.path.clear();
-            ai.path_index = 0;
+            if let Some(ai) = ai_components.get_mut(id) {
+                ai.current_goal = AiGoal::Idle;
+                ai.retarget_timer = idle_time;
+                ai.path.clear();
+                ai.path_index = 0;
+            }
         }
     }
 

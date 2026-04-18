@@ -1,5 +1,5 @@
-/// Chest interaction logic — double-chest detection, open/close state,
-/// lid animation, blockage checks, and trapped-chest redstone signal.
+//! Chest interaction logic — double-chest detection, open/close state,
+//! lid animation, blockage checks, and trapped-chest redstone signal.
 
 /// Cardinal neighbor offsets: north, south, east, west.
 const CARDINAL_OFFSETS: [(i32, i32, i32); 4] = [(1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1)];

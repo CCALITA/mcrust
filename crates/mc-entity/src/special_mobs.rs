@@ -41,7 +41,7 @@ pub fn is_player_looking_at(
     let to_head = head_center - player_pos;
     let distance = to_head.length();
 
-    if distance > ENDERMAN_LOOK_RANGE || distance < f32::EPSILON {
+    if !(f32::EPSILON..=ENDERMAN_LOOK_RANGE).contains(&distance) {
         return false;
     }
 

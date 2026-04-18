@@ -1,4 +1,4 @@
-/// Status effects system for entities (potions, beacons, etc.)
+//! Status effects system for entities (potions, beacons, etc.)
 
 /// All possible status effects matching vanilla Minecraft.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

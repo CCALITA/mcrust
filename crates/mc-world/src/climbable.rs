@@ -47,7 +47,7 @@ pub fn can_place_scaffolding(
             if dist == 0 || dist > SCAFFOLDING_MAX_DISTANCE {
                 continue;
             }
-            if get_block(x + dx, y - 1 + 0, z + dz) {
+            if get_block(x + dx, y - 1, z + dz) {
                 // There is a solid block below (x+dx, y, z+dz),
                 // meaning scaffolding there would be supported, and it is
                 // within range.

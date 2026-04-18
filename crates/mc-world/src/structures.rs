@@ -99,9 +99,9 @@ fn structure_hash(seed: u64, cx: i32, cz: i32, structure_type: StructureType) ->
 fn should_generate_structure(cx: i32, cz: i32, seed: u64, structure_type: StructureType) -> bool {
     let h = structure_hash(seed, cx, cz, structure_type);
     match structure_type {
-        StructureType::Dungeon => h % 4 == 0,
-        StructureType::Village => h % 50 == 0,
-        StructureType::Mineshaft => h % 10 == 0,
+        StructureType::Dungeon => h.is_multiple_of(4),
+        StructureType::Village => h.is_multiple_of(50),
+        StructureType::Mineshaft => h.is_multiple_of(10),
     }
 }
 
@@ -197,7 +197,7 @@ fn place_dungeon(chunk: &mut Chunk, x: usize, y: i32, z: usize, rng: &mut PosRng
                 if bx >= CHUNK_SIZE as usize || bz >= CHUNK_SIZE as usize {
                     continue;
                 }
-                if by < WORLD_BOTTOM || by >= WORLD_TOP {
+                if !(WORLD_BOTTOM..WORLD_TOP).contains(&by) {
                     continue;
                 }
 
@@ -257,7 +257,7 @@ pub fn place_house(chunk: &mut Chunk, x: usize, y: i32, z: usize) {
                 if bx >= CHUNK_SIZE as usize || bz >= CHUNK_SIZE as usize {
                     continue;
                 }
-                if by < WORLD_BOTTOM || by >= WORLD_TOP {
+                if !(WORLD_BOTTOM..WORLD_TOP).contains(&by) {
                     continue;
                 }
 
@@ -266,9 +266,7 @@ pub fn place_house(chunk: &mut Chunk, x: usize, y: i32, z: usize) {
                 let is_floor = dy == 0;
                 let is_roof = dy == height - 1;
 
-                let block = if is_floor || is_roof {
-                    BlockId::OakPlanks
-                } else if is_wall_x || is_wall_z {
+                let block = if is_floor || is_roof || is_wall_x || is_wall_z {
                     BlockId::OakPlanks
                 } else {
                     BlockId::Air
@@ -346,28 +344,28 @@ pub fn place_corridor(
             let bx = base_x + px * w;
             let bz = base_z + pz * w;
 
-            if bx < 0 || bx >= CHUNK_SIZE || bz < 0 || bz >= CHUNK_SIZE {
+            if !(0..CHUNK_SIZE).contains(&bx) || !(0..CHUNK_SIZE).contains(&bz) {
                 continue;
             }
             let ux = bx as usize;
             let uz = bz as usize;
 
             // Floor
-            if y >= WORLD_BOTTOM && y < WORLD_TOP {
+            if (WORLD_BOTTOM..WORLD_TOP).contains(&y) {
                 chunk.set_block(ux, y, uz, BlockId::OakPlanks);
             }
 
             // Air interior (y+1 and y+2)
             for dy in 1..=2 {
                 let by = y + dy;
-                if by >= WORLD_BOTTOM && by < WORLD_TOP {
+                if (WORLD_BOTTOM..WORLD_TOP).contains(&by) {
                     chunk.set_block(ux, by, uz, BlockId::Air);
                 }
             }
 
             // Ceiling level (y+3) — air by default, beams placed below.
             let ceiling_y = y + 3;
-            if ceiling_y >= WORLD_BOTTOM && ceiling_y < WORLD_TOP {
+            if (WORLD_BOTTOM..WORLD_TOP).contains(&ceiling_y) {
                 chunk.set_block(ux, ceiling_y, uz, BlockId::Air);
             }
         }
@@ -379,7 +377,7 @@ pub fn place_corridor(
                 let sx = base_x + px * side;
                 let sz = base_z + pz * side;
 
-                if sx < 0 || sx >= CHUNK_SIZE || sz < 0 || sz >= CHUNK_SIZE {
+                if !(0..CHUNK_SIZE).contains(&sx) || !(0..CHUNK_SIZE).contains(&sz) {
                     continue;
                 }
                 let ux = sx as usize;
@@ -388,26 +386,23 @@ pub fn place_corridor(
                 // Vertical support posts (y+1 and y+2).
                 for dy in 1..=2 {
                     let by = y + dy;
-                    if by >= WORLD_BOTTOM && by < WORLD_TOP {
+                    if (WORLD_BOTTOM..WORLD_TOP).contains(&by) {
                         chunk.set_block(ux, by, uz, BlockId::OakLog);
                     }
                 }
 
                 // Torch on top of the support (y+3, the ceiling level).
                 let torch_y = y + 3;
-                if torch_y >= WORLD_BOTTOM && torch_y < WORLD_TOP {
+                if (WORLD_BOTTOM..WORLD_TOP).contains(&torch_y) {
                     chunk.set_block(ux, torch_y, uz, BlockId::Torch);
                 }
             }
 
             // Horizontal beam across the top (y+3) on the center column.
             let beam_y = y + 3;
-            if base_x >= 0
-                && base_x < CHUNK_SIZE
-                && base_z >= 0
-                && base_z < CHUNK_SIZE
-                && beam_y >= WORLD_BOTTOM
-                && beam_y < WORLD_TOP
+            if (0..CHUNK_SIZE).contains(&base_x)
+                && (0..CHUNK_SIZE).contains(&base_z)
+                && (WORLD_BOTTOM..WORLD_TOP).contains(&beam_y)
             {
                 chunk.set_block(base_x as usize, beam_y, base_z as usize, BlockId::OakLog);
             }

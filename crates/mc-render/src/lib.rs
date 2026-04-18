@@ -17,7 +17,7 @@ pub use entity_render::{
 pub use frustum::Frustum;
 pub use mesh::{ChunkMesh, NeighborChunks, Vertex};
 pub use particle::{Particle, ParticleSystem, ParticleType};
-pub use renderer::Renderer;
+pub use renderer::{Renderer, RendererError};
 pub use sky::{DayNightCycle, SkyUniform};
 pub use water::{
     TransparentMeshData, WATER_SHADER_SOURCE, WaterAnimation, separate_transparent_faces,

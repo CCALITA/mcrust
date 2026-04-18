@@ -10,7 +10,6 @@ use rand::Rng;
 
 const COBBLESTONE: u16 = BlockId::Cobblestone as u16;
 const DIRT: u16 = BlockId::Dirt as u16;
-const COAL_ORE: u16 = BlockId::CoalOre as u16;
 const IRON_ORE: u16 = BlockId::IronOre as u16;
 const GOLD_ORE: u16 = BlockId::GoldOre as u16;
 const GRAVEL: u16 = BlockId::Gravel as u16;
@@ -249,7 +248,7 @@ pub fn spawn_block_drops(block: BlockId) -> Vec<(u16, u8)> {
             if rng.random_range(0..10) == 0 {
                 vec![(FLINT, 1)]
             } else {
-                vec![(GRAVEL as u16, 1)]
+                vec![(GRAVEL, 1)]
             }
         }
         // Blocks that drop nothing

@@ -97,10 +97,10 @@ impl SaveSystem {
     /// Deletes the save file at `<save_dir>/world.bin` if it exists.
     pub fn delete_save(&self) {
         let path = Path::new(&self.save_dir).join("world.bin");
-        if path.exists() {
-            if let Err(e) = fs::remove_file(&path) {
-                log::error!("Failed to delete save: {e}");
-            }
+        if path.exists()
+            && let Err(e) = fs::remove_file(&path)
+        {
+            log::error!("Failed to delete save: {e}");
         }
     }
 }

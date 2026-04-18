@@ -89,7 +89,12 @@ impl ProgressionState {
         self.advancements
             .check_triggers()
             .into_iter()
-            .map(|id| ADVANCEMENT_REGISTRY[id as u8 as usize].name.to_string())
+            .filter_map(|id| {
+                let index = id as u8 as usize;
+                ADVANCEMENT_REGISTRY
+                    .get(index)
+                    .map(|entry| entry.name.to_string())
+            })
             .collect()
     }
 

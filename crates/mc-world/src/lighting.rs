@@ -104,12 +104,9 @@ pub fn propagate_block_light(chunk: &crate::Chunk) -> LightMap {
             let ny = y as i32 + dy;
             let nz = z as i32 + dz;
 
-            if nx < 0
-                || nx >= CHUNK_SIZE
-                || ny < 0
-                || ny >= WORLD_HEIGHT
-                || nz < 0
-                || nz >= CHUNK_SIZE
+            if !(0..CHUNK_SIZE).contains(&nx)
+                || !(0..WORLD_HEIGHT).contains(&ny)
+                || !(0..CHUNK_SIZE).contains(&nz)
             {
                 continue;
             }
@@ -179,12 +176,9 @@ pub fn propagate_sky_light(chunk: &crate::Chunk) -> LightMap {
             let ny = y as i32 + dy;
             let nz = z as i32 + dz;
 
-            if nx < 0
-                || nx >= CHUNK_SIZE
-                || ny < 0
-                || ny >= WORLD_HEIGHT
-                || nz < 0
-                || nz >= CHUNK_SIZE
+            if !(0..CHUNK_SIZE).contains(&nx)
+                || !(0..WORLD_HEIGHT).contains(&ny)
+                || !(0..CHUNK_SIZE).contains(&nz)
             {
                 continue;
             }

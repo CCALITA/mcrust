@@ -74,7 +74,9 @@ impl ClientConnection {
 
     /// Encode and send a server packet to this client.
     pub fn send(&mut self, packet: &ServerPacket) -> io::Result<()> {
-        let encoded = encode_server(packet);
+        let encoded = encode_server(packet).map_err(|e| {
+            io::Error::new(io::ErrorKind::InvalidData, e.to_string())
+        })?;
         let framed = frame(encoded);
         self.stream.write_all(&framed)
     }
@@ -130,7 +132,7 @@ mod tests {
             protocol_version: 1,
             player_name: "Steve".into(),
         };
-        let data = proto_frame(encode_client(&pkt));
+        let data = proto_frame(encode_client(&pkt).unwrap());
         client_stream.write_all(&data).unwrap();
         client_stream.flush().unwrap();
 
@@ -160,8 +162,8 @@ mod tests {
         let pkt2 = ClientPacket::ChatMessage {
             message: "hello".into(),
         };
-        let mut data = proto_frame(encode_client(&pkt1));
-        data.extend_from_slice(&proto_frame(encode_client(&pkt2)));
+        let mut data = proto_frame(encode_client(&pkt1).unwrap());
+        data.extend_from_slice(&proto_frame(encode_client(&pkt2).unwrap()));
         client_stream.write_all(&data).unwrap();
         client_stream.flush().unwrap();
 

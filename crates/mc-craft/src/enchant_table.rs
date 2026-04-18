@@ -3,6 +3,10 @@ use std::hash::{Hash, Hasher};
 
 // ── Enchant Table State ───────────────────────────────────────────────────
 
+/// A single enchantment option: `(cost, enchantments)` where enchantments is
+/// a list of `(enchantment_id, level)` pairs.
+pub type EnchantOption = Option<(u8, Vec<(u16, u8)>)>;
+
 /// Represents the state of an enchanting table, including the item in the slot,
 /// lapis lazuli count, surrounding bookshelves, generated enchantment options,
 /// and the deterministic seed for option generation.
@@ -14,9 +18,8 @@ pub struct EnchantTableState {
     pub lapis_count: u8,
     /// Number of bookshelves surrounding the table (effective max 15).
     pub bookshelves: u8,
-    /// Three enchantment options: each is `(cost, enchantments)` where
-    /// enchantments is a list of `(enchantment_id, level)` pairs.
-    pub options: [Option<(u8, Vec<(u16, u8)>)>; 3],
+    /// Three enchantment options.
+    pub options: [EnchantOption; 3],
     /// Deterministic seed for reproducible option generation.
     pub seed: u64,
 }

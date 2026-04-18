@@ -5,6 +5,7 @@ use crate::packet::{ClientPacket, ServerPacket};
 /// Errors that can occur during protocol encoding/decoding.
 #[derive(Debug)]
 pub enum ProtocolError {
+    SerializeFailed(String),
     DeserializeFailed(String),
     InvalidPacket,
 }
@@ -12,6 +13,7 @@ pub enum ProtocolError {
 impl fmt::Display for ProtocolError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::SerializeFailed(msg) => write!(f, "serialize failed: {msg}"),
             Self::DeserializeFailed(msg) => write!(f, "deserialize failed: {msg}"),
             Self::InvalidPacket => write!(f, "invalid packet"),
         }
@@ -25,8 +27,8 @@ impl std::error::Error for ProtocolError {}
 // ---------------------------------------------------------------------------
 
 /// Serialize a `ClientPacket` to bytes using bincode.
-pub fn encode_client(packet: &ClientPacket) -> Vec<u8> {
-    bincode::serialize(packet).expect("ClientPacket serialization should not fail")
+pub fn encode_client(packet: &ClientPacket) -> Result<Vec<u8>, ProtocolError> {
+    bincode::serialize(packet).map_err(|e| ProtocolError::SerializeFailed(e.to_string()))
 }
 
 /// Deserialize bytes into a `ClientPacket`.
@@ -35,8 +37,8 @@ pub fn decode_client(bytes: &[u8]) -> Result<ClientPacket, ProtocolError> {
 }
 
 /// Serialize a `ServerPacket` to bytes using bincode.
-pub fn encode_server(packet: &ServerPacket) -> Vec<u8> {
-    bincode::serialize(packet).expect("ServerPacket serialization should not fail")
+pub fn encode_server(packet: &ServerPacket) -> Result<Vec<u8>, ProtocolError> {
+    bincode::serialize(packet).map_err(|e| ProtocolError::SerializeFailed(e.to_string()))
 }
 
 /// Deserialize bytes into a `ServerPacket`.
@@ -89,7 +91,7 @@ mod tests {
             protocol_version: 42,
             player_name: "Alex".into(),
         };
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         match decoded {
             ClientPacket::Handshake {
                 protocol_version,
@@ -110,7 +112,7 @@ mod tests {
             z: -3.5,
             on_ground: true,
         };
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         match decoded {
             ClientPacket::PlayerPosition { x, y, z, on_ground } => {
                 assert_eq!(x, 1.0);
@@ -128,7 +130,7 @@ mod tests {
             yaw: 90.0,
             pitch: -45.0,
         };
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         match decoded {
             ClientPacket::PlayerLook { yaw, pitch } => {
                 assert_eq!(yaw, 90.0);
@@ -145,7 +147,7 @@ mod tests {
             face: 2,
             status: DiggingStatus::Finished,
         };
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         match decoded {
             ClientPacket::PlayerDigging { pos, face, status } => {
                 assert_eq!(pos, (10, 20, 30));
@@ -163,7 +165,7 @@ mod tests {
             face: 1,
             block_id: 4,
         };
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         match decoded {
             ClientPacket::PlayerBlockPlace {
                 pos,
@@ -183,7 +185,7 @@ mod tests {
         let pkt = ClientPacket::ChatMessage {
             message: "hello".into(),
         };
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         match decoded {
             ClientPacket::ChatMessage { message } => assert_eq!(message, "hello"),
             _ => panic!("wrong variant"),
@@ -193,7 +195,7 @@ mod tests {
     #[test]
     fn roundtrip_client_keepalive() {
         let pkt = ClientPacket::KeepAlive { id: 999 };
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         match decoded {
             ClientPacket::KeepAlive { id } => assert_eq!(id, 999),
             _ => panic!("wrong variant"),
@@ -203,7 +205,7 @@ mod tests {
     #[test]
     fn roundtrip_client_disconnect() {
         let pkt = ClientPacket::Disconnect;
-        let decoded = decode_client(&encode_client(&pkt)).unwrap();
+        let decoded = decode_client(&encode_client(&pkt).unwrap()).unwrap();
         assert!(matches!(decoded, ClientPacket::Disconnect));
     }
 
@@ -212,7 +214,7 @@ mod tests {
     #[test]
     fn roundtrip_server_login_success() {
         let pkt = ServerPacket::LoginSuccess { player_id: 7 };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::LoginSuccess { player_id } => assert_eq!(player_id, 7),
             _ => panic!("wrong variant"),
@@ -226,7 +228,7 @@ mod tests {
             cz: -1,
             sections: vec![(0, vec![1, 2, 3])],
         };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::ChunkData { cx, cz, sections } => {
                 assert_eq!(cx, 0);
@@ -245,7 +247,7 @@ mod tests {
             z: 3,
             block_id: 10,
         };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::BlockChange { x, y, z, block_id } => {
                 assert_eq!((x, y, z, block_id), (1, 2, 3, 10));
@@ -263,7 +265,7 @@ mod tests {
             y: 2.0,
             z: 3.0,
         };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::EntitySpawn {
                 entity_id,
@@ -288,7 +290,7 @@ mod tests {
             dy: -1.0,
             dz: 0.0,
         };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::EntityMove {
                 entity_id,
@@ -306,7 +308,7 @@ mod tests {
     #[test]
     fn roundtrip_server_entity_despawn() {
         let pkt = ServerPacket::EntityDespawn { entity_id: 77 };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::EntityDespawn { entity_id } => assert_eq!(entity_id, 77),
             _ => panic!("wrong variant"),
@@ -322,7 +324,7 @@ mod tests {
             yaw: 180.0,
             pitch: 0.0,
         };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::PlayerPositionAndLook {
                 x,
@@ -341,7 +343,7 @@ mod tests {
     #[test]
     fn roundtrip_server_time_update() {
         let pkt = ServerPacket::TimeUpdate { time_of_day: 0.25 };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::TimeUpdate { time_of_day } => assert_eq!(time_of_day, 0.25),
             _ => panic!("wrong variant"),
@@ -354,7 +356,7 @@ mod tests {
             sender: "Admin".into(),
             message: "Welcome!".into(),
         };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::ChatMessage { sender, message } => {
                 assert_eq!(sender, "Admin");
@@ -367,7 +369,7 @@ mod tests {
     #[test]
     fn roundtrip_server_keepalive() {
         let pkt = ServerPacket::KeepAlive { id: 123456 };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::KeepAlive { id } => assert_eq!(id, 123456),
             _ => panic!("wrong variant"),
@@ -379,7 +381,7 @@ mod tests {
         let pkt = ServerPacket::Disconnect {
             reason: "Server shutting down".into(),
         };
-        let decoded = decode_server(&encode_server(&pkt)).unwrap();
+        let decoded = decode_server(&encode_server(&pkt).unwrap()).unwrap();
         match decoded {
             ServerPacket::Disconnect { reason } => {
                 assert_eq!(reason, "Server shutting down");
@@ -439,7 +441,7 @@ mod tests {
     #[test]
     fn frame_decode_integration_client() {
         let pkt = ClientPacket::KeepAlive { id: 42 };
-        let framed = frame(encode_client(&pkt));
+        let framed = frame(encode_client(&pkt).unwrap());
         let (payload, consumed) = unframe(&framed).unwrap();
         assert_eq!(consumed, framed.len());
         let decoded = decode_client(payload).unwrap();
@@ -449,7 +451,7 @@ mod tests {
     #[test]
     fn frame_decode_integration_server() {
         let pkt = ServerPacket::TimeUpdate { time_of_day: 0.5 };
-        let framed = frame(encode_server(&pkt));
+        let framed = frame(encode_server(&pkt).unwrap());
         let (payload, _consumed) = unframe(&framed).unwrap();
         let decoded = decode_server(payload).unwrap();
         match decoded {

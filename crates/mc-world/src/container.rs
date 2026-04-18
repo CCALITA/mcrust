@@ -16,7 +16,7 @@ pub trait Container {
     fn is_empty(&self) -> bool {
         (0..self.slot_count()).all(|i| {
             self.get_slot(i)
-                .map_or(true, |slot| slot.is_none())
+                .is_none_or(|slot| slot.is_none())
         })
     }
 }
@@ -201,19 +201,19 @@ pub fn transfer_item(
 
     // Try to stack into an existing matching slot first
     for i in 0..to.slot_count() {
-        if let Some(Some((existing_id, existing_count))) = to.get_slot(i) {
-            if existing_id == item_id && existing_count < max_stack {
-                let space = max_stack - existing_count;
-                let moved = count.min(space);
-                to.set_slot(i, Some((item_id, existing_count + moved)));
-                let remaining = count - moved;
-                if remaining == 0 {
-                    from.set_slot(from_slot, None);
-                } else {
-                    from.set_slot(from_slot, Some((item_id, remaining)));
-                }
-                return true;
+        if let Some(Some((existing_id, existing_count))) = to.get_slot(i)
+            && existing_id == item_id && existing_count < max_stack
+        {
+            let space = max_stack - existing_count;
+            let moved = count.min(space);
+            to.set_slot(i, Some((item_id, existing_count + moved)));
+            let remaining = count - moved;
+            if remaining == 0 {
+                from.set_slot(from_slot, None);
+            } else {
+                from.set_slot(from_slot, Some((item_id, remaining)));
             }
+            return true;
         }
     }
 
@@ -282,13 +282,13 @@ pub fn add_to_container(
         if remaining == 0 {
             break;
         }
-        if let Some(Some((existing_id, existing_count))) = container.get_slot(i) {
-            if existing_id == item_id && existing_count < max_stack {
-                let space = max_stack - existing_count;
-                let added = remaining.min(space);
-                container.set_slot(i, Some((item_id, existing_count + added)));
-                remaining -= added;
-            }
+        if let Some(Some((existing_id, existing_count))) = container.get_slot(i)
+            && existing_id == item_id && existing_count < max_stack
+        {
+            let space = max_stack - existing_count;
+            let added = remaining.min(space);
+            container.set_slot(i, Some((item_id, existing_count + added)));
+            remaining -= added;
         }
     }
 

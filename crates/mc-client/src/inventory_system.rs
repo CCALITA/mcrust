@@ -86,10 +86,10 @@ impl PlayerInventory {
         let target = SlotItem(item_id);
         let mut total: u16 = 0;
         for i in 0..36 {
-            if let Some(stack) = self.inner.get_slot(i) {
-                if stack.item == target {
-                    total += stack.count as u16;
-                }
+            if let Some(stack) = self.inner.get_slot(i)
+                && stack.item == target
+            {
+                total += stack.count as u16;
             }
         }
         // Saturate to u8::MAX — in practice never exceeded with 36 slots * 64 max.

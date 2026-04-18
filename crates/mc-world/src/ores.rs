@@ -197,11 +197,11 @@ fn place_vein(
                 let bz = center_z + dz;
 
                 // Stay within chunk boundaries (0..CHUNK_SIZE) horizontally.
-                if bx < 0 || bx >= CHUNK_SIZE || bz < 0 || bz >= CHUNK_SIZE {
+                if !(0..CHUNK_SIZE).contains(&bx) || !(0..CHUNK_SIZE).contains(&bz) {
                     continue;
                 }
                 // Stay within world height.
-                if by < WORLD_BOTTOM || by >= WORLD_TOP {
+                if !(WORLD_BOTTOM..WORLD_TOP).contains(&by) {
                     continue;
                 }
 

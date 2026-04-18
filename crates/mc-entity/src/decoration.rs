@@ -1,4 +1,4 @@
-/// Painting variants and banner decorations for in-world entity placement.
+//! Painting variants and banner decorations for in-world entity placement.
 
 // ---------------------------------------------------------------------------
 // Painting

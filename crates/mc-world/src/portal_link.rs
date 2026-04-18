@@ -1,4 +1,4 @@
-/// Nether portal linking: coordinate scaling, portal search, and frame creation.
+//! Nether portal linking: coordinate scaling, portal search, and frame creation.
 
 /// Scale overworld coordinates to nether coordinates (divide x and z by 8).
 pub fn nether_coordinate_scale(pos: (i32, i32, i32)) -> (i32, i32, i32) {

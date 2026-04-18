@@ -1,4 +1,4 @@
-/// Anvil mechanics: combining, renaming, repairing, and enchantment merging.
+//! Anvil mechanics: combining, renaming, repairing, and enchantment merging.
 
 /// The result of an anvil operation.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -10,6 +10,7 @@ pub struct AnvilResult {
 }
 
 /// Maximum enchantment level cap used when merging enchantments.
+#[cfg(test)]
 const MAX_ENCHANT_LEVEL: u8 = 255;
 
 /// Combine two items on an anvil.
@@ -73,8 +74,7 @@ pub fn repair_cost(uses: u32) -> u32 {
 
 /// Merge two sets of enchantments. For enchantments present on both items:
 /// - If one level is higher, the higher level wins.
-/// - If both levels are equal, the level is incremented by 1 (capped at
-///   `MAX_ENCHANT_LEVEL`).
+/// - If both levels are equal, the level is incremented by 1 (capped at 255).
 ///
 /// Enchantments only on the left or only on the right are kept as-is.
 pub fn merge_enchantments(left: &[(u16, u8)], right: &[(u16, u8)]) -> Vec<(u16, u8)> {
@@ -86,7 +86,7 @@ pub fn merge_enchantments(left: &[(u16, u8)], right: &[(u16, u8)]) -> Vec<(u16, 
             if r_level > entry.1 {
                 entry.1 = r_level;
             } else if r_level == entry.1 {
-                entry.1 = entry.1.saturating_add(1).min(MAX_ENCHANT_LEVEL);
+                entry.1 = entry.1.saturating_add(1);
             }
             // If r_level < entry.1, left already has the higher level — keep it.
         } else {
