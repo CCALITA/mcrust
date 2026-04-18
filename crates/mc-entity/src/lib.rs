@@ -25,6 +25,7 @@ pub mod tool_use;
 pub mod trident;
 pub mod vehicle;
 pub mod villager;
+pub mod villager_job;
 pub mod wither;
 
 pub use advancement::{
@@ -90,6 +91,10 @@ pub use trident::{
 pub use villager::{
     TradeOffer, TradeResult, VillagerData, VillagerProfession, default_trades, execute_trade,
     xp_for_level,
+};
+pub use villager_job::{
+    VillagerJobBinding, WorkstationType, bind_villager, find_workstation, try_restock, unbind,
+    workstation_profession,
 };
 
 pub use special_mobs::{
