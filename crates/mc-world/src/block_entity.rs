@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use mc_core::pos::BlockPos;
 
+use crate::sign::SignData;
+
 /// The type of block entity, used for identification and filtering.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BlockEntityType {
@@ -59,26 +61,6 @@ impl FurnaceData {
 }
 
 impl Default for FurnaceData {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-/// Text data for a sign (4 lines).
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SignData {
-    pub lines: [String; 4],
-}
-
-impl SignData {
-    pub fn new() -> Self {
-        Self {
-            lines: [String::new(), String::new(), String::new(), String::new()],
-        }
-    }
-}
-
-impl Default for SignData {
     fn default() -> Self {
         Self::new()
     }
