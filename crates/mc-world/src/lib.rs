@@ -22,6 +22,7 @@ pub mod map_data;
 pub mod nether;
 pub mod noise_terrain;
 pub mod ores;
+pub mod piston;
 pub mod portal_link;
 pub mod rails;
 pub mod redstone;
@@ -83,6 +84,9 @@ pub use map_data::{
 pub use nether::{DimensionId, NetherTerrainGen};
 pub use noise_terrain::NoiseTerrainGen;
 pub use ores::OreGenerator;
+pub use piston::{
+    PUSH_LIMIT, PistonState, can_push_block, extend_piston, push_line, retract, retract_piston,
+};
 pub use portal_link::{
     PortalLink, create_portal_frame, find_nearest_portal, nether_coordinate_scale,
     overworld_coordinate_scale, search_radius,
