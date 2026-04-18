@@ -89,10 +89,18 @@ pub enum BlockId {
     Dropper,
     NoteBlock,
     RedstoneLamp,
+    // --- Farming block types ---
+    Farmland,
+    WheatCrop,
+    CarrotCrop,
+    PotatoCrop,
+    BeetrootCrop,
+    MelonStem,
+    PumpkinStem,
 }
 
 impl BlockId {
-    pub const COUNT: usize = 84;
+    pub const COUNT: usize = 91;
 
     pub fn from_raw(id: u16) -> Option<Self> {
         if (id as usize) < Self::COUNT {
@@ -127,6 +135,12 @@ impl BlockId {
                 | BlockId::StoneButton
                 | BlockId::Repeater
                 | BlockId::Comparator
+                | BlockId::WheatCrop
+                | BlockId::CarrotCrop
+                | BlockId::PotatoCrop
+                | BlockId::BeetrootCrop
+                | BlockId::MelonStem
+                | BlockId::PumpkinStem
         )
     }
 
@@ -157,6 +171,12 @@ impl BlockId {
                 | BlockId::StoneButton
                 | BlockId::Repeater
                 | BlockId::Comparator
+                | BlockId::WheatCrop
+                | BlockId::CarrotCrop
+                | BlockId::PotatoCrop
+                | BlockId::BeetrootCrop
+                | BlockId::MelonStem
+                | BlockId::PumpkinStem
         )
     }
 
@@ -399,6 +419,21 @@ static BLOCK_REGISTRY: [BlockProperties; BlockId::COUNT] = [
     uniform("note_block", true, false, 0, 0.8, 99),
     // RedstoneLamp (solid, opaque, no light by default — powered state tracked separately)
     uniform("redstone_lamp", true, false, 0, 0.3, 100),
+    // --- Farming block types ---
+    // Farmland: top=101, bottom=2(dirt), sides=2(dirt)
+    props("farmland", true, false, 0, 0.6, [101, 2, 2, 2, 2, 2]),
+    // WheatCrop (non-solid, transparent, plant)
+    uniform("wheat_crop", false, true, 0, 0.0, 102),
+    // CarrotCrop (non-solid, transparent, plant)
+    uniform("carrot_crop", false, true, 0, 0.0, 103),
+    // PotatoCrop (non-solid, transparent, plant)
+    uniform("potato_crop", false, true, 0, 0.0, 104),
+    // BeetrootCrop (non-solid, transparent, plant)
+    uniform("beetroot_crop", false, true, 0, 0.0, 105),
+    // MelonStem (non-solid, transparent, plant)
+    uniform("melon_stem", false, true, 0, 0.0, 106),
+    // PumpkinStem (non-solid, transparent, plant)
+    uniform("pumpkin_stem", false, true, 0, 0.0, 107),
 ];
 
 #[cfg(test)]
@@ -407,12 +442,13 @@ mod tests {
 
     #[test]
     fn count_matches_enum_variants() {
-        // RedstoneLamp is the last variant with value 83 (0-indexed), so COUNT = 84
-        assert_eq!(BlockId::COUNT, 84);
+        // RedstoneLamp is the last non-farming variant with value 83,
+        // plus 7 farming block types: Farmland..PumpkinStem => COUNT = 91
+        assert_eq!(BlockId::COUNT, 91);
         // Verify the last variant can be constructed from raw
-        assert_eq!(BlockId::from_raw(83), Some(BlockId::RedstoneLamp));
+        assert_eq!(BlockId::from_raw(90), Some(BlockId::PumpkinStem));
         // One past the end should return None
-        assert_eq!(BlockId::from_raw(84), None);
+        assert_eq!(BlockId::from_raw(91), None);
     }
 
     #[test]

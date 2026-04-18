@@ -9,6 +9,7 @@ pub mod chunk_manager;
 pub mod container;
 pub mod end;
 pub mod explosion;
+pub mod farming;
 pub mod fluid;
 pub mod lighting;
 pub mod map_data;
@@ -52,6 +53,7 @@ pub use explosion::{
     CHARGED_CREEPER_POWER, CREEPER_POWER, ExplosionResult, TNT_POWER, apply_explosion,
     block_resistance, calculate_entity_damage, calculate_explosion,
 };
+pub use farming::{CropState, CropType, can_plant_on, harvest, is_hydrated, tick_crop};
 pub use fluid::{FluidWorld, process_water_update};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
 pub use map_data::{

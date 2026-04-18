@@ -154,6 +154,15 @@ pub fn block_to_map_color(block: BlockId) -> u8 {
         | BlockId::StoneButton
         | BlockId::Repeater
         | BlockId::Comparator => map_color::STONE,
+
+        // Farming blocks
+        BlockId::Farmland => map_color::DIRT,
+        BlockId::WheatCrop
+        | BlockId::CarrotCrop
+        | BlockId::PotatoCrop
+        | BlockId::BeetrootCrop
+        | BlockId::MelonStem
+        | BlockId::PumpkinStem => map_color::GRASS,
     }
 }
 
