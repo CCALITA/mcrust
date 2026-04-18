@@ -419,7 +419,7 @@ pub fn calculate_enchantment_cost(bookshelves: u8, seed: u64) -> [u8; 3] {
 
 /// Determine which enchantment categories apply to a given item type.
 ///
-/// Uses the `SlotItem(u16)` value ranges established in `recipe.rs`:
+/// Uses the `SlotItem` (u16) value ranges established in `recipe.rs`:
 /// - 200..=233  tools (pickaxe, axe, shovel, sword)
 /// - Swords (x03, x13, x23, x33 suffixes) map to Weapon
 /// - Other tools map to Tool
@@ -429,15 +429,9 @@ pub fn calculate_enchantment_cost(bookshelves: u8, seed: u64) -> [u8; 3] {
 fn applicable_categories(item_type: u16) -> Vec<EnchantmentCategory> {
     match item_type {
         // Swords: 203, 213, 223, 233
-        203 | 213 | 223 | 233 => vec![
-            EnchantmentCategory::Weapon,
-            EnchantmentCategory::General,
-        ],
+        203 | 213 | 223 | 233 => vec![EnchantmentCategory::Weapon, EnchantmentCategory::General],
         // Pickaxes, axes, shovels
-        200..=232 => vec![
-            EnchantmentCategory::Tool,
-            EnchantmentCategory::General,
-        ],
+        200..=232 => vec![EnchantmentCategory::Tool, EnchantmentCategory::General],
         _ => vec![EnchantmentCategory::General],
     }
 }
@@ -456,7 +450,7 @@ fn applicable_enchantments(item_type: u16) -> Vec<EnchantmentId> {
 
 /// Generate three enchantment options for the enchanting table UI.
 ///
-/// `item_type` is the `SlotItem.0` value of the item being enchanted.
+/// `item_type` is the `SlotItem` value of the item being enchanted.
 /// `bookshelves` is clamped to 0..=15.
 /// `seed` drives deterministic "random" selection.
 #[must_use]
@@ -508,8 +502,7 @@ pub fn generate_enchantment_options(
                         || fallback.properties().incompatible_with.contains(&s.id)
                 });
                 if !still_bad {
-                    let level_hash =
-                        deterministic_hash(seed, (tier as u64 + 1) * 200 + i as u64);
+                    let level_hash = deterministic_hash(seed, (tier as u64 + 1) * 200 + i as u64);
                     let max_lvl = fallback.properties().max_level as u64;
                     let level = ((level_hash % max_lvl) + 1) as u8;
                     selected.push(Enchantment::new(fallback, level));
@@ -568,9 +561,9 @@ fn roman_numeral(n: u8) -> &'static str {
 pub fn apply_enchantment_effect(enchantment: &Enchantment, base_value: f32) -> f32 {
     let level = enchantment.level as f32;
     match enchantment.id {
-        EnchantmentId::Sharpness
-        | EnchantmentId::Smite
-        | EnchantmentId::BaneOfArthropods => base_value + 1.25 * level,
+        EnchantmentId::Sharpness | EnchantmentId::Smite | EnchantmentId::BaneOfArthropods => {
+            base_value + 1.25 * level
+        }
 
         EnchantmentId::Protection
         | EnchantmentId::FireProtection
@@ -648,14 +641,14 @@ mod tests {
 
     #[test]
     fn cannot_add_duplicate_enchantment() {
-        let mut item = EnchantedItem::new(SlotItem(200));
+        let mut item = EnchantedItem::new(200);
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::Efficiency, 3)));
         assert!(!item.add_enchantment(Enchantment::new(EnchantmentId::Efficiency, 5)));
     }
 
     #[test]
     fn cannot_add_incompatible_enchantment() {
-        let mut item = EnchantedItem::new(SlotItem(203));
+        let mut item = EnchantedItem::new(203);
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::Sharpness, 5)));
         assert!(!item.add_enchantment(Enchantment::new(EnchantmentId::Smite, 3)));
         assert!(!item.add_enchantment(Enchantment::new(EnchantmentId::BaneOfArthropods, 3)));
@@ -663,7 +656,7 @@ mod tests {
 
     #[test]
     fn can_add_compatible_enchantments() {
-        let mut item = EnchantedItem::new(SlotItem(200));
+        let mut item = EnchantedItem::new(200);
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::Efficiency, 3)));
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::Unbreaking, 3)));
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::Fortune, 2)));
@@ -672,28 +665,28 @@ mod tests {
 
     #[test]
     fn silk_touch_and_fortune_are_incompatible() {
-        let mut item = EnchantedItem::new(SlotItem(200));
+        let mut item = EnchantedItem::new(200);
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::SilkTouch, 1)));
         assert!(!item.add_enchantment(Enchantment::new(EnchantmentId::Fortune, 3)));
     }
 
     #[test]
     fn infinity_and_mending_are_incompatible() {
-        let mut item = EnchantedItem::new(SlotItem(200));
+        let mut item = EnchantedItem::new(200);
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::Infinity, 1)));
         assert!(!item.add_enchantment(Enchantment::new(EnchantmentId::Mending, 1)));
     }
 
     #[test]
     fn depth_strider_and_frost_walker_are_incompatible() {
-        let mut item = EnchantedItem::new(SlotItem(200));
+        let mut item = EnchantedItem::new(200);
         assert!(item.add_enchantment(Enchantment::new(EnchantmentId::DepthStrider, 3)));
         assert!(!item.add_enchantment(Enchantment::new(EnchantmentId::FrostWalker, 2)));
     }
 
     #[test]
     fn enchantment_level_query() {
-        let mut item = EnchantedItem::new(SlotItem(200));
+        let mut item = EnchantedItem::new(200);
         item.add_enchantment(Enchantment::new(EnchantmentId::Efficiency, 4));
         assert_eq!(item.enchantment_level(EnchantmentId::Efficiency), Some(4));
         assert_eq!(item.enchantment_level(EnchantmentId::Fortune), None);
@@ -935,7 +928,7 @@ mod tests {
                 if i == j {
                     continue;
                 }
-                let mut item = EnchantedItem::new(SlotItem(200));
+                let mut item = EnchantedItem::new(200);
                 item.add_enchantment(Enchantment::new(a, 1));
                 assert!(
                     !item.add_enchantment(Enchantment::new(b, 1)),

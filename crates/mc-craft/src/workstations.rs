@@ -45,30 +45,110 @@ pub struct StonecutterRecipe {
 pub fn default_stonecutter_recipes() -> Vec<StonecutterRecipe> {
     vec![
         // Stone variants
-        StonecutterRecipe { input: recipe::ITEM_STONE.0,       output: ITEM_STONE_STAIRS,          count: 1 },
-        StonecutterRecipe { input: recipe::ITEM_STONE.0,       output: ITEM_STONE_SLAB,            count: 2 },
-        StonecutterRecipe { input: recipe::ITEM_STONE.0,       output: ITEM_STONE_BRICKS,          count: 1 },
-        StonecutterRecipe { input: recipe::ITEM_STONE.0,       output: ITEM_STONE_BRICK_STAIRS,    count: 1 },
-        StonecutterRecipe { input: recipe::ITEM_STONE.0,       output: ITEM_STONE_BRICK_SLAB,      count: 2 },
-        StonecutterRecipe { input: recipe::ITEM_STONE.0,       output: ITEM_STONE_BRICK_WALL,      count: 1 },
-        StonecutterRecipe { input: recipe::ITEM_STONE.0,       output: ITEM_STONE_WALL,            count: 1 },
+        StonecutterRecipe {
+            input: recipe::ITEM_STONE,
+            output: ITEM_STONE_STAIRS,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_STONE,
+            output: ITEM_STONE_SLAB,
+            count: 2,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_STONE,
+            output: ITEM_STONE_BRICKS,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_STONE,
+            output: ITEM_STONE_BRICK_STAIRS,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_STONE,
+            output: ITEM_STONE_BRICK_SLAB,
+            count: 2,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_STONE,
+            output: ITEM_STONE_BRICK_WALL,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_STONE,
+            output: ITEM_STONE_WALL,
+            count: 1,
+        },
         // Smooth stone
-        StonecutterRecipe { input: ITEM_SMOOTH_STONE,          output: ITEM_SMOOTH_STONE_SLAB,     count: 2 },
+        StonecutterRecipe {
+            input: ITEM_SMOOTH_STONE,
+            output: ITEM_SMOOTH_STONE_SLAB,
+            count: 2,
+        },
         // Cobblestone variants
-        StonecutterRecipe { input: recipe::ITEM_COBBLESTONE.0, output: recipe::ITEM_COBBLESTONE_STAIRS.0, count: 1 },
-        StonecutterRecipe { input: recipe::ITEM_COBBLESTONE.0, output: recipe::ITEM_COBBLESTONE_SLAB.0,   count: 2 },
-        StonecutterRecipe { input: recipe::ITEM_COBBLESTONE.0, output: ITEM_COBBLESTONE_WALL,      count: 1 },
+        StonecutterRecipe {
+            input: recipe::ITEM_COBBLESTONE,
+            output: recipe::ITEM_COBBLESTONE_STAIRS,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_COBBLESTONE,
+            output: recipe::ITEM_COBBLESTONE_SLAB,
+            count: 2,
+        },
+        StonecutterRecipe {
+            input: recipe::ITEM_COBBLESTONE,
+            output: ITEM_COBBLESTONE_WALL,
+            count: 1,
+        },
         // Granite variants
-        StonecutterRecipe { input: ITEM_GRANITE,               output: ITEM_GRANITE_STAIRS,        count: 1 },
-        StonecutterRecipe { input: ITEM_GRANITE,               output: ITEM_GRANITE_SLAB,          count: 2 },
-        StonecutterRecipe { input: ITEM_GRANITE,               output: ITEM_GRANITE_WALL,          count: 1 },
-        StonecutterRecipe { input: ITEM_GRANITE,               output: ITEM_POLISHED_GRANITE,      count: 1 },
-        StonecutterRecipe { input: ITEM_POLISHED_GRANITE,      output: ITEM_POLISHED_GRANITE_STAIRS, count: 1 },
-        StonecutterRecipe { input: ITEM_POLISHED_GRANITE,      output: ITEM_POLISHED_GRANITE_SLAB, count: 2 },
+        StonecutterRecipe {
+            input: ITEM_GRANITE,
+            output: ITEM_GRANITE_STAIRS,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: ITEM_GRANITE,
+            output: ITEM_GRANITE_SLAB,
+            count: 2,
+        },
+        StonecutterRecipe {
+            input: ITEM_GRANITE,
+            output: ITEM_GRANITE_WALL,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: ITEM_GRANITE,
+            output: ITEM_POLISHED_GRANITE,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: ITEM_POLISHED_GRANITE,
+            output: ITEM_POLISHED_GRANITE_STAIRS,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: ITEM_POLISHED_GRANITE,
+            output: ITEM_POLISHED_GRANITE_SLAB,
+            count: 2,
+        },
         // Diorite variants
-        StonecutterRecipe { input: ITEM_DIORITE,               output: ITEM_DIORITE_STAIRS,        count: 1 },
-        StonecutterRecipe { input: ITEM_DIORITE,               output: ITEM_DIORITE_SLAB,          count: 2 },
-        StonecutterRecipe { input: ITEM_DIORITE,               output: ITEM_DIORITE_WALL,          count: 1 },
+        StonecutterRecipe {
+            input: ITEM_DIORITE,
+            output: ITEM_DIORITE_STAIRS,
+            count: 1,
+        },
+        StonecutterRecipe {
+            input: ITEM_DIORITE,
+            output: ITEM_DIORITE_SLAB,
+            count: 2,
+        },
+        StonecutterRecipe {
+            input: ITEM_DIORITE,
+            output: ITEM_DIORITE_WALL,
+            count: 1,
+        },
     ]
 }
 
@@ -127,11 +207,7 @@ pub fn grindstone_repair(item1: (u16, u8), item2: (u16, u8)) -> Option<(u16, u8)
 /// Returns `None` if the banner already has the maximum of 6 layers.
 /// Otherwise returns a new vector with the added layer.
 #[must_use]
-pub fn loom_apply(
-    existing: &[(u8, u8)],
-    new_pattern: u8,
-    new_color: u8,
-) -> Option<Vec<(u8, u8)>> {
+pub fn loom_apply(existing: &[(u8, u8)], new_pattern: u8, new_color: u8) -> Option<Vec<(u8, u8)>> {
     if existing.len() >= MAX_LOOM_LAYERS {
         return None;
     }
@@ -160,7 +236,7 @@ mod tests {
         let recipes = default_stonecutter_recipes();
         let r = recipes
             .iter()
-            .find(|r| r.input == recipe::ITEM_STONE.0 && r.output == ITEM_STONE_STAIRS);
+            .find(|r| r.input == recipe::ITEM_STONE && r.output == ITEM_STONE_STAIRS);
         assert!(r.is_some());
         assert_eq!(r.expect("stone stairs recipe").count, 1);
     }
@@ -179,15 +255,15 @@ mod tests {
 
     #[test]
     fn disenchant_returns_correct_xp() {
-        let result = grindstone_disenchant(recipe::ITEM_DIAMOND_SWORD.0, 1, 3);
+        let result = grindstone_disenchant(recipe::ITEM_DIAMOND_SWORD, 1, 3);
         assert_eq!(result.xp_returned, 6); // 3 enchantments * 2 xp each
-        assert_eq!(result.output_item, recipe::ITEM_DIAMOND_SWORD.0);
+        assert_eq!(result.output_item, recipe::ITEM_DIAMOND_SWORD);
         assert_eq!(result.output_count, 1);
     }
 
     #[test]
     fn disenchant_zero_enchantments_returns_zero_xp() {
-        let result = grindstone_disenchant(recipe::ITEM_IRON_PICKAXE.0, 1, 0);
+        let result = grindstone_disenchant(recipe::ITEM_IRON_PICKAXE, 1, 0);
         assert_eq!(result.xp_returned, 0);
     }
 
@@ -195,28 +271,24 @@ mod tests {
 
     #[test]
     fn repair_combines_durability_with_bonus() {
-        let result = grindstone_repair(
-            (recipe::ITEM_IRON_SWORD.0, 20),
-            (recipe::ITEM_IRON_SWORD.0, 20),
-        );
+        let result =
+            grindstone_repair((recipe::ITEM_IRON_SWORD, 20), (recipe::ITEM_IRON_SWORD, 20));
         // 20 + 20 + 5% of 64 = 20 + 20 + 3 = 43
-        assert_eq!(result, Some((recipe::ITEM_IRON_SWORD.0, 43)));
+        assert_eq!(result, Some((recipe::ITEM_IRON_SWORD, 43)));
     }
 
     #[test]
     fn repair_caps_at_max_durability() {
-        let result = grindstone_repair(
-            (recipe::ITEM_IRON_SWORD.0, 60),
-            (recipe::ITEM_IRON_SWORD.0, 60),
-        );
-        assert_eq!(result, Some((recipe::ITEM_IRON_SWORD.0, 64)));
+        let result =
+            grindstone_repair((recipe::ITEM_IRON_SWORD, 60), (recipe::ITEM_IRON_SWORD, 60));
+        assert_eq!(result, Some((recipe::ITEM_IRON_SWORD, 64)));
     }
 
     #[test]
     fn repair_rejects_different_items() {
         let result = grindstone_repair(
-            (recipe::ITEM_IRON_SWORD.0, 20),
-            (recipe::ITEM_DIAMOND_SWORD.0, 20),
+            (recipe::ITEM_IRON_SWORD, 20),
+            (recipe::ITEM_DIAMOND_SWORD, 20),
         );
         assert!(result.is_none());
     }

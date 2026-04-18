@@ -48,15 +48,60 @@ pub fn default_smithing_recipes() -> Vec<SmithingRecipe> {
     let a = ITEM_NETHERITE_INGOT;
 
     vec![
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_SWORD.0,      addition: a, output: ITEM_NETHERITE_SWORD },
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_PICKAXE.0,    addition: a, output: ITEM_NETHERITE_PICKAXE },
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_AXE.0,        addition: a, output: ITEM_NETHERITE_AXE },
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_SHOVEL.0,     addition: a, output: ITEM_NETHERITE_SHOVEL },
-        SmithingRecipe { template: t, base: ITEM_DIAMOND_HOE,                  addition: a, output: ITEM_NETHERITE_HOE },
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_HELMET.0,     addition: a, output: ITEM_NETHERITE_HELMET },
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_CHESTPLATE.0, addition: a, output: ITEM_NETHERITE_CHESTPLATE },
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_LEGGINGS.0,   addition: a, output: ITEM_NETHERITE_LEGGINGS },
-        SmithingRecipe { template: t, base: recipe::ITEM_DIAMOND_BOOTS.0,      addition: a, output: ITEM_NETHERITE_BOOTS },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_SWORD,
+            addition: a,
+            output: ITEM_NETHERITE_SWORD,
+        },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_PICKAXE,
+            addition: a,
+            output: ITEM_NETHERITE_PICKAXE,
+        },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_AXE,
+            addition: a,
+            output: ITEM_NETHERITE_AXE,
+        },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_SHOVEL,
+            addition: a,
+            output: ITEM_NETHERITE_SHOVEL,
+        },
+        SmithingRecipe {
+            template: t,
+            base: ITEM_DIAMOND_HOE,
+            addition: a,
+            output: ITEM_NETHERITE_HOE,
+        },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_HELMET,
+            addition: a,
+            output: ITEM_NETHERITE_HELMET,
+        },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_CHESTPLATE,
+            addition: a,
+            output: ITEM_NETHERITE_CHESTPLATE,
+        },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_LEGGINGS,
+            addition: a,
+            output: ITEM_NETHERITE_LEGGINGS,
+        },
+        SmithingRecipe {
+            template: t,
+            base: recipe::ITEM_DIAMOND_BOOTS,
+            addition: a,
+            output: ITEM_NETHERITE_BOOTS,
+        },
     ]
 }
 
@@ -66,7 +111,12 @@ pub fn default_smithing_recipes() -> Vec<SmithingRecipe> {
 ///
 /// Returns `None` if no recipe matches the given template, base, and addition.
 #[must_use]
-pub fn try_smith(template: u16, base: u16, addition: u16, recipes: &[SmithingRecipe]) -> Option<u16> {
+pub fn try_smith(
+    template: u16,
+    base: u16,
+    addition: u16,
+    recipes: &[SmithingRecipe],
+) -> Option<u16> {
     recipes
         .iter()
         .find(|r| r.template == template && r.base == base && r.addition == addition)
@@ -133,63 +183,108 @@ mod tests {
     #[test]
     fn upgrade_diamond_sword_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_SWORD.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_SWORD,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_SWORD));
     }
 
     #[test]
     fn upgrade_diamond_pickaxe_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_PICKAXE.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_PICKAXE,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_PICKAXE));
     }
 
     #[test]
     fn upgrade_diamond_axe_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_AXE.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_AXE,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_AXE));
     }
 
     #[test]
     fn upgrade_diamond_shovel_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_SHOVEL.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_SHOVEL,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_SHOVEL));
     }
 
     #[test]
     fn upgrade_diamond_hoe_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, ITEM_DIAMOND_HOE, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            ITEM_DIAMOND_HOE,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_HOE));
     }
 
     #[test]
     fn upgrade_diamond_helmet_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_HELMET.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_HELMET,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_HELMET));
     }
 
     #[test]
     fn upgrade_diamond_chestplate_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_CHESTPLATE.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_CHESTPLATE,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_CHESTPLATE));
     }
 
     #[test]
     fn upgrade_diamond_leggings_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_LEGGINGS.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_LEGGINGS,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_LEGGINGS));
     }
 
     #[test]
     fn upgrade_diamond_boots_to_netherite() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_BOOTS.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_BOOTS,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, Some(ITEM_NETHERITE_BOOTS));
     }
 
@@ -205,7 +300,7 @@ mod tests {
     #[test]
     fn wrong_template_returns_none() {
         let r = recipes();
-        let out = try_smith(9999, recipe::ITEM_DIAMOND_SWORD.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(9999, recipe::ITEM_DIAMOND_SWORD, ITEM_NETHERITE_INGOT, &r);
         assert_eq!(out, None);
     }
 
@@ -213,14 +308,24 @@ mod tests {
     fn wrong_base_returns_none() {
         let r = recipes();
         // Iron sword is not a valid base for netherite upgrade.
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_IRON_SWORD.0, ITEM_NETHERITE_INGOT, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_IRON_SWORD,
+            ITEM_NETHERITE_INGOT,
+            &r,
+        );
         assert_eq!(out, None);
     }
 
     #[test]
     fn wrong_addition_returns_none() {
         let r = recipes();
-        let out = try_smith(ITEM_NETHERITE_UPGRADE_TEMPLATE, recipe::ITEM_DIAMOND_SWORD.0, 9999, &r);
+        let out = try_smith(
+            ITEM_NETHERITE_UPGRADE_TEMPLATE,
+            recipe::ITEM_DIAMOND_SWORD,
+            9999,
+            &r,
+        );
         assert_eq!(out, None);
     }
 
@@ -275,7 +380,7 @@ mod tests {
         let r = recipes();
         let table = SmithingTable {
             template_slot: Some(ITEM_NETHERITE_UPGRADE_TEMPLATE),
-            base_slot: Some(recipe::ITEM_DIAMOND_SWORD.0),
+            base_slot: Some(recipe::ITEM_DIAMOND_SWORD),
             addition_slot: None,
         };
         assert!(!table.can_craft(&r));
@@ -286,7 +391,7 @@ mod tests {
         let r = recipes();
         let table = SmithingTable {
             template_slot: None,
-            base_slot: Some(recipe::ITEM_DIAMOND_SWORD.0),
+            base_slot: Some(recipe::ITEM_DIAMOND_SWORD),
             addition_slot: Some(ITEM_NETHERITE_INGOT),
         };
         assert!(!table.can_craft(&r));
@@ -310,7 +415,7 @@ mod tests {
         let r = recipes();
         let table = SmithingTable {
             template_slot: Some(ITEM_NETHERITE_UPGRADE_TEMPLATE),
-            base_slot: Some(recipe::ITEM_DIAMOND_SWORD.0),
+            base_slot: Some(recipe::ITEM_DIAMOND_SWORD),
             addition_slot: Some(ITEM_NETHERITE_INGOT),
         };
         assert!(table.can_craft(&r));
@@ -321,7 +426,7 @@ mod tests {
         let r = recipes();
         let mut table = SmithingTable {
             template_slot: Some(ITEM_NETHERITE_UPGRADE_TEMPLATE),
-            base_slot: Some(recipe::ITEM_DIAMOND_PICKAXE.0),
+            base_slot: Some(recipe::ITEM_DIAMOND_PICKAXE),
             addition_slot: Some(ITEM_NETHERITE_INGOT),
         };
 
@@ -337,7 +442,7 @@ mod tests {
         let r = recipes();
         let mut table = SmithingTable {
             template_slot: Some(ITEM_NETHERITE_UPGRADE_TEMPLATE),
-            base_slot: Some(recipe::ITEM_IRON_SWORD.0),
+            base_slot: Some(recipe::ITEM_IRON_SWORD),
             addition_slot: Some(ITEM_NETHERITE_INGOT),
         };
 
@@ -345,7 +450,7 @@ mod tests {
         assert_eq!(output, None);
         // Slots should remain untouched on failure.
         assert_eq!(table.template_slot, Some(ITEM_NETHERITE_UPGRADE_TEMPLATE));
-        assert_eq!(table.base_slot, Some(recipe::ITEM_IRON_SWORD.0));
+        assert_eq!(table.base_slot, Some(recipe::ITEM_IRON_SWORD));
         assert_eq!(table.addition_slot, Some(ITEM_NETHERITE_INGOT));
     }
 }
