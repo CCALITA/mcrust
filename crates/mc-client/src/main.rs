@@ -142,6 +142,15 @@ struct App {
     tick_accumulator: Duration,
     state: GameState,
     hud: HudState,
+    // Bridge modules connecting library systems to the game loop
+    mob_world: mob_system::MobWorld,
+    inventory: inventory_system::PlayerInventory,
+    survival: survival_system::SurvivalState,
+    world_state: world_tick::WorldTickState,
+    progression: progression_system::ProgressionState,
+    sounds: sound_system::GameSoundSystem,
+    save: save_system::SaveSystem,
+    chat: command_system::ChatState,
 }
 
 impl App {
@@ -164,6 +173,14 @@ impl App {
                 chunks_needed: CHUNKS_NEEDED_FOR_PLAY,
             },
             hud: HudState::default(),
+            mob_world: mob_system::MobWorld::new(),
+            inventory: inventory_system::PlayerInventory::new(),
+            survival: survival_system::SurvivalState::new(),
+            world_state: world_tick::WorldTickState::new(42),
+            progression: progression_system::ProgressionState::new(),
+            sounds: sound_system::GameSoundSystem::new(),
+            save: save_system::SaveSystem::new("saves"),
+            chat: command_system::ChatState::new(),
         }
     }
 
@@ -195,11 +212,16 @@ impl App {
             &|bx, by, bz| self.world.is_block_solid(bx, by, bz),
         );
         if let Some(hit) = hit {
+            let block = self.world.get_block(hit.block_pos);
             self.world.set_block(hit.block_pos, BlockId::Air);
-            // Rebuild mesh for affected chunk(s)
             let cp = hit.block_pos.chunk_pos();
             self.chunk_meshes.retain(|m| m.chunk_pos != cp);
             self.mesh_queue.push(cp);
+
+            // Bridge: collect drops, add XP, play sound, track stats
+            self.inventory.on_block_broken(block as u16);
+            self.progression.on_block_mined(block as u16);
+            self.sounds.on_block_break(hit.point);
         }
     }
 
@@ -225,10 +247,17 @@ impl App {
             );
             let player_head = BlockPos::new(player_block.x, player_block.y + 1, player_block.z);
             if place_pos != player_block && place_pos != player_head {
-                self.world.set_block(place_pos, BlockId::Cobblestone);
+                // Use block from inventory if available, otherwise cobblestone
+                let block_to_place = self
+                    .inventory
+                    .on_block_place()
+                    .and_then(|id| mc_core::block::BlockId::from_raw(id))
+                    .unwrap_or(BlockId::Cobblestone);
+                self.world.set_block(place_pos, block_to_place);
                 let cp = place_pos.chunk_pos();
                 self.chunk_meshes.retain(|m| m.chunk_pos != cp);
                 self.mesh_queue.push(cp);
+                self.sounds.on_block_place(hit.point);
             }
         }
     }
@@ -481,9 +510,49 @@ impl App {
                 let frame_dt = frame_time.as_secs_f32();
                 self.sky.advance(frame_dt);
 
-                // Update HUD from player data
-                self.hud.health = 20.0;
-                self.hud.hunger = 20;
+                // --- Bridge module ticks ---
+                // Mob spawning + AI
+                self.mob_world.tick(
+                    self.player.position,
+                    self.sky.time_of_day,
+                    frame_dt,
+                );
+
+                // Weather + world tick scheduler
+                self.world_state.tick(frame_dt);
+
+                // Survival (hunger/health) tick
+                let is_sprinting = self.keys_held.contains(&KeyCode::ControlLeft);
+                self.survival.tick(frame_dt, is_sprinting, 0.0);
+
+                // Progression (distance tracking)
+                self.progression.on_distance_walked(0.0);
+
+                // Sound system music tick
+                let _music_action = self.sounds.tick_music(frame_dt, 0);
+
+                // Auto-save check
+                if self.save.tick(frame_dt) {
+                    let p = self.player.position;
+                    self.save.save_game(
+                        (p.x, p.y, p.z),
+                        self.player.yaw,
+                        self.player.pitch,
+                        self.sky.time_of_day,
+                        42,
+                    );
+                    log::info!("Auto-saved");
+                }
+
+                // Drain sound events (placeholder for audio playback)
+                let _events = self.sounds.drain_sound_events();
+
+                // Update HUD from bridge modules
+                self.hud.health = self.survival.hud_health();
+                self.hud.hunger = self.survival.hud_hunger();
+                self.hud.armor = self.survival.hud_armor();
+                self.hud.xp_level = self.progression.hud_level();
+                self.hud.xp_progress = self.progression.hud_xp_progress();
                 self.hud.player_pos = (
                     self.player.position.x,
                     self.player.position.y,
@@ -493,9 +562,12 @@ impl App {
                 // Render
                 self.render_scene();
 
-                // Check for void death
+                // Check for void death or survival death
                 if self.player.position.y < VOID_DEATH_Y {
-                    log::info!("Player fell into the void!");
+                    self.survival.take_damage(1000.0);
+                }
+                if self.survival.is_dead() {
+                    log::info!("Player died!");
                     self.state = GameState::Dead {
                         respawn_timer: 0.0,
                     };
@@ -742,11 +814,11 @@ impl App {
 
             GameState::Dead { .. } => match key_code {
                 KeyCode::Space => {
-                    // Respawn
                     log::info!("Respawning...");
                     self.player.position = SPAWN_POSITION;
                     self.player.velocity = Vec3::ZERO;
                     self.player.on_ground = false;
+                    self.survival.respawn();
                     self.state = GameState::Playing;
                     self.grab_cursor();
                 }
