@@ -12,6 +12,7 @@ pub mod entity;
 pub mod equipment;
 pub mod experience;
 pub mod fishing;
+pub mod golem;
 pub mod loot;
 pub mod pathfinding;
 pub mod projectile;
@@ -108,4 +109,8 @@ pub use decoration::{
 };
 pub use wither::{
     DamageResult, Wither, WitherPhase, WitherSkull, XP_REWARD, wither_damage, wither_tick,
+};
+pub use golem::{
+    GolemAction, GolemEffect, IronGolem, SnowGolem, check_iron_golem_pattern,
+    check_snow_golem_pattern, iron_golem_tick, snow_golem_tick,
 };
