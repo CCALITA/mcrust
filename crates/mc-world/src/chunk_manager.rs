@@ -185,6 +185,16 @@ impl ChunkManager {
     }
 }
 
+impl mc_core::BlockAccess for ChunkManager {
+    fn get_block(&self, x: i32, y: i32, z: i32) -> BlockId {
+        self.get_block(BlockPos::new(x, y, z))
+    }
+
+    fn is_solid(&self, x: i32, y: i32, z: i32) -> bool {
+        self.is_block_solid(x, y, z)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
