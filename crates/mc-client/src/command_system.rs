@@ -1,4 +1,5 @@
-use mc_network::commands::{self, Command, CommandError};
+use mc_network::command_help::command_help;
+use mc_network::commands::{Command, CommandError, parse_command};
 
 // ---------------------------------------------------------------------------
 // CommandAction — client-side representation of parsed commands
@@ -109,7 +110,7 @@ pub fn process_command(input: &str) -> CommandAction {
         return CommandAction::ChatMessage(input.to_string());
     }
 
-    match commands::parse_command(input) {
+    match parse_command(input) {
         Ok(cmd) => map_command(cmd),
         Err(err) => CommandAction::ParseError(format_error(err)),
     }
@@ -134,7 +135,7 @@ fn map_command(cmd: Command) -> CommandAction {
         Command::Say { message } => CommandAction::ChatMessage(message),
         Command::Seed => CommandAction::ShowSeed,
         Command::Help { command } => {
-            let text = commands::command_help(command.as_deref());
+            let text = command_help(command.as_deref());
             CommandAction::ShowHelp(text)
         }
         Command::SetSpawn { x, y, z } => {
