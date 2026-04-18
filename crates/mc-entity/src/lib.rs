@@ -1,5 +1,6 @@
 pub mod advancement;
 pub mod ai;
+pub mod armor;
 pub mod behavior;
 pub mod combat;
 pub mod component;
@@ -7,6 +8,7 @@ pub mod drops;
 pub mod entity;
 pub mod experience;
 pub mod fishing;
+pub mod loot;
 pub mod pathfinding;
 pub mod spawning;
 pub mod special_mobs;
@@ -20,6 +22,10 @@ pub use advancement::{
     AdvancementTrigger,
 };
 pub use ai::{AiComponent, AiGoal, AiSystem};
+pub use armor::{
+    ArmorMaterial, ArmorPiece, ArmorSet, ArmorSlot, apply_armor_damage,
+    calculate_damage_reduction,
+};
 pub use behavior::{MobAction, MobBehavior, behavior_tick, behavior_tick_with_state};
 pub use combat::{
     DamageEvent, DamageType, apply_damage, attack_cooldown, calculate_fall_damage,
@@ -37,6 +43,9 @@ pub use experience::{
 };
 pub use fishing::{
     FishType, FishingAction, FishingLoot, FishingState, FishingSystem, JunkType, TreasureType,
+};
+pub use loot::{
+    LootCondition, LootContext, LootEntry, LootPool, LootTable, block_loot_table, mob_loot_table,
 };
 pub use pathfinding::{AStarResult, find_path};
 pub use spawning::{
