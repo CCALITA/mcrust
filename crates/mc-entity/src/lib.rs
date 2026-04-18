@@ -3,11 +3,14 @@ pub mod ai;
 pub mod behavior;
 pub mod combat;
 pub mod component;
+pub mod drops;
 pub mod entity;
 pub mod experience;
 pub mod fishing;
 pub mod pathfinding;
 pub mod spawning;
+pub mod special_mobs;
+pub mod statistics;
 pub mod survival;
 pub mod tool_use;
 pub mod villager;
@@ -27,6 +30,7 @@ pub use component::{
     World,
 };
 pub use entity::{EntityId, EntityManager};
+pub use drops::{DropSystem, ItemDrop, XpOrb, spawn_block_drops, spawn_mob_drops};
 pub use experience::{
     ExperienceComponent, add_xp, remove_xp_for_enchanting, total_xp_for_level, xp_for_next_level,
     xp_from_block, xp_from_mob, xp_from_smelting,
@@ -38,6 +42,7 @@ pub use pathfinding::{AStarResult, find_path};
 pub use spawning::{
     DEFAULT_HOSTILE_CAP, DEFAULT_PASSIVE_CAP, MobSpawnConfig, SpawnSystem, default_spawn_configs,
 };
+pub use statistics::{StatisticId, StatisticsTracker};
 pub use survival::{
     EXHAUSTION_JUMP, EXHAUSTION_SPRINT_PER_METER, EXHAUSTION_WALK_PER_METER, HungerComponent,
     HungerSystem, food_values,
@@ -48,4 +53,9 @@ pub use tool_use::{
 pub use villager::{
     TradeOffer, TradeResult, VillagerData, VillagerProfession, default_trades, execute_trade,
     xp_for_level,
+};
+
+pub use special_mobs::{
+    EndermanState, PotionType, WitchAction, choose_witch_action, is_player_looking_at,
+    slime_damage, slime_health, split_on_death, teleport_away,
 };
