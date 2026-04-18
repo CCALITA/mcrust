@@ -12,6 +12,7 @@ pub mod experience;
 pub mod fishing;
 pub mod loot;
 pub mod pathfinding;
+pub mod raid;
 pub mod spawning;
 pub mod special_mobs;
 pub mod statistics;
@@ -53,6 +54,7 @@ pub use loot::{
     LootCondition, LootContext, LootEntry, LootPool, LootTable, block_loot_table, mob_loot_table,
 };
 pub use pathfinding::{AStarResult, find_path};
+pub use raid::{Raid, RaidEvent, RaidWave, default_raid_waves};
 pub use spawning::{
     DEFAULT_HOSTILE_CAP, DEFAULT_PASSIVE_CAP, MobSpawnConfig, SpawnSystem, default_spawn_configs,
 };
