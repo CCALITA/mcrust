@@ -20,6 +20,7 @@ pub mod map_data;
 pub mod nether;
 pub mod noise_terrain;
 pub mod ores;
+pub mod portal_link;
 pub mod rails;
 pub mod redstone;
 pub mod redstone_components;
@@ -78,6 +79,10 @@ pub use map_data::{
 pub use nether::{DimensionId, NetherTerrainGen};
 pub use noise_terrain::NoiseTerrainGen;
 pub use ores::OreGenerator;
+pub use portal_link::{
+    PortalLink, create_portal_frame, find_nearest_portal, nether_coordinate_scale,
+    overworld_coordinate_scale, search_radius,
+};
 pub use rails::{
     RailNetwork, RailShape, RailType, detector_rail_signal, determine_rail_shape, is_rail,
     powered_rail_effect, rail_type_from_id,
