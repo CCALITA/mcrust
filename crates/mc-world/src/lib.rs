@@ -9,6 +9,7 @@ pub mod container;
 pub mod end;
 pub mod explosion;
 pub mod fluid;
+pub mod lectern;
 pub mod lighting;
 pub mod map_data;
 pub mod nether;
@@ -21,6 +22,7 @@ pub mod save;
 pub mod spawn;
 pub mod structures;
 pub mod terrain;
+pub mod tick_scheduler;
 pub mod trees;
 pub mod weather;
 pub mod world_border;
@@ -47,6 +49,7 @@ pub use explosion::{
     block_resistance, calculate_entity_damage, calculate_explosion,
 };
 pub use fluid::{FluidWorld, process_water_update};
+pub use lectern::{BookData, LecternState, lectern_redstone};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
 pub use map_data::{
     MAP_SIZE, MapData, block_to_map_color, generate_map, map_color, map_color_to_rgb,
@@ -69,6 +72,7 @@ pub use save::{
 pub use spawn::{BedResult, SpawnManager, SpawnPoint};
 pub use structures::StructureGenerator;
 pub use terrain::FlatWorldGen;
+pub use tick_scheduler::{ScheduledEvent, TickScheduler};
 pub use trees::{birch_tree, oak_tree, place_trees, place_vegetation, spruce_tree};
 pub use weather::{WeatherState, WeatherSystem};
 pub use world_border::WorldBorder;
