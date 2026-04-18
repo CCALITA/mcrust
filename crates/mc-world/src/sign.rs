@@ -21,9 +21,7 @@ pub enum SignColor {
 
 /// Strip control characters (ASCII 0x00..0x1F and 0x7F) from text.
 fn strip_control_chars(text: &str) -> String {
-    text.chars()
-        .filter(|c| !c.is_ascii_control())
-        .collect()
+    text.chars().filter(|c| !c.is_ascii_control()).collect()
 }
 
 /// Format sign text: trim whitespace, truncate to 15 characters, and strip

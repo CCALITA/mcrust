@@ -1,3 +1,8 @@
+//! HUD data model and widget rendering system.
+//!
+//! Provides [`HudState`] for health/hunger/XP bar data and [`HudRenderer`] for display,
+//! plus a lightweight [`UiContext`] with [`DrawCommand`]-based widget primitives.
+
 pub mod hud;
 pub mod widget;
 

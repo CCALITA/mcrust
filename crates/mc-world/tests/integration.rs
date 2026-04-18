@@ -101,7 +101,10 @@ fn terrain_gen_produces_non_uniform_terrain_with_ores() {
         BlockId::DiamondOre,
     ];
     let has_ore = ore_blocks.iter().any(|ore| distinct_blocks.contains(ore));
-    assert!(has_ore, "expected at least one ore type in the generated chunk");
+    assert!(
+        has_ore,
+        "expected at least one ore type in the generated chunk"
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -286,7 +289,10 @@ fn hydrated_crop_grows_and_can_be_harvested() {
     // Grow the crop to maturity using a guaranteed-grow random value.
     while !crop.is_mature() {
         let grew = tick_crop(&mut crop, true, 15, 0.0);
-        assert!(grew, "crop should grow with random_val=0.0 and sufficient light");
+        assert!(
+            grew,
+            "crop should grow with random_val=0.0 and sufficient light"
+        );
     }
     assert_eq!(crop.growth_stage, 7);
 
@@ -311,7 +317,11 @@ fn fire_on_flammable_block_spreads_or_destroys() {
     let action = tick_fire(&mut fire, false, 0.4);
     match action {
         FireAction::SpreadTo(targets) => {
-            assert_eq!(targets.len(), 6, "fire should attempt to spread to 6 neighbors");
+            assert_eq!(
+                targets.len(),
+                6,
+                "fire should attempt to spread to 6 neighbors"
+            );
         }
         other => panic!("expected SpreadTo, got {:?}", other),
     }
@@ -386,8 +396,7 @@ fn map_from_terrain_has_non_uniform_colors() {
     let map = generate_map(0, 0, 1, 0, &get_surface_block);
 
     // Collect distinct colors.
-    let distinct_colors: std::collections::HashSet<u8> =
-        map.pixels().iter().copied().collect();
+    let distinct_colors: std::collections::HashSet<u8> = map.pixels().iter().copied().collect();
 
     assert!(
         distinct_colors.len() >= 2,
@@ -685,8 +694,14 @@ fn explosion_entity_damage_decreases_with_distance() {
     let damage_at_3 = calculate_entity_damage((3.0, 64.0, 0.0), center, power);
     let damage_beyond = calculate_entity_damage((5.0, 64.0, 0.0), center, power);
 
-    assert!(damage_at_center > damage_at_1, "center should take most damage");
-    assert!(damage_at_1 > damage_at_3, "closer entities take more damage");
+    assert!(
+        damage_at_center > damage_at_1,
+        "center should take most damage"
+    );
+    assert!(
+        damage_at_1 > damage_at_3,
+        "closer entities take more damage"
+    );
     assert!(
         damage_beyond.abs() < f32::EPSILON,
         "entities beyond power range should take zero damage"
@@ -722,7 +737,9 @@ fn save_and_load_chunk_from_disk() {
     let pos = ChunkPos::new(5, -3);
     save_chunk(&dir, &chunk, pos).unwrap();
 
-    let loaded = load_chunk(&dir, pos).unwrap().expect("chunk file should exist");
+    let loaded = load_chunk(&dir, pos)
+        .unwrap()
+        .expect("chunk file should exist");
 
     // Spot-check specific positions.
     assert_eq!(loaded.get_block(0, -64, 0), BlockId::Bedrock);
@@ -767,7 +784,10 @@ fn weather_rain_extinguishes_entity_fire() {
     // (Rain doesn't directly extinguish entities; water does.)
     let (still, damage) = on_fire_tick(&mut burning, true, false, 1.0);
     assert!(!still, "water should extinguish entity fire");
-    assert!(damage.abs() < f32::EPSILON, "no damage when extinguished by water");
+    assert!(
+        damage.abs() < f32::EPSILON,
+        "no damage when extinguished by water"
+    );
     assert_eq!(burning.burn_ticks, 0);
 
     // Without water, fire damages the entity.

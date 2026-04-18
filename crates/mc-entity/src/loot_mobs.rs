@@ -33,18 +33,16 @@ const MOB_CHICKEN: u8 = 7;
 pub fn mob_loot_table(kind: u8) -> LootTable {
     match kind {
         MOB_ZOMBIE => LootTable {
-            pools: vec![
-                LootPool {
-                    entries: vec![LootEntry {
-                        item_id: ROTTEN_FLESH,
-                        min_count: 0,
-                        max_count: 2,
-                        weight: 1,
-                        conditions: vec![LootCondition::Always],
-                    }],
-                    rolls: 1,
-                },
-            ],
+            pools: vec![LootPool {
+                entries: vec![LootEntry {
+                    item_id: ROTTEN_FLESH,
+                    min_count: 0,
+                    max_count: 2,
+                    weight: 1,
+                    conditions: vec![LootCondition::Always],
+                }],
+                rolls: 1,
+            }],
         },
         MOB_SKELETON => LootTable {
             pools: vec![

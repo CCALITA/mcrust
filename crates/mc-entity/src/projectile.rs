@@ -38,12 +38,7 @@ impl Projectile {
     /// Create a new projectile with physics properties set per type.
     ///
     /// `shooter` is the entity id of whoever launched this projectile.
-    pub fn new(
-        ptype: ProjectileType,
-        pos: Vec3,
-        vel: Vec3,
-        shooter: Option<u64>,
-    ) -> Self {
+    pub fn new(ptype: ProjectileType, pos: Vec3, vel: Vec3, shooter: Option<u64>) -> Self {
         let (gravity, damage, max_lifetime) = match ptype {
             ProjectileType::Arrow | ProjectileType::SpectralArrow | ProjectileType::TippedArrow => {
                 (0.05, 2.0, 60.0)
@@ -304,10 +299,8 @@ mod tests {
     #[test]
     fn arrow_types_share_properties() {
         let arrow = Projectile::new(ProjectileType::Arrow, Vec3::ZERO, Vec3::ZERO, None);
-        let spectral =
-            Projectile::new(ProjectileType::SpectralArrow, Vec3::ZERO, Vec3::ZERO, None);
-        let tipped =
-            Projectile::new(ProjectileType::TippedArrow, Vec3::ZERO, Vec3::ZERO, None);
+        let spectral = Projectile::new(ProjectileType::SpectralArrow, Vec3::ZERO, Vec3::ZERO, None);
+        let tipped = Projectile::new(ProjectileType::TippedArrow, Vec3::ZERO, Vec3::ZERO, None);
 
         assert!((arrow.gravity - spectral.gravity).abs() < f32::EPSILON);
         assert!((arrow.gravity - tipped.gravity).abs() < f32::EPSILON);

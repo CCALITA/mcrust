@@ -1,3 +1,8 @@
+//! Client-server networking: packet protocol, chat commands, and TCP server.
+//!
+//! Defines [`ClientPacket`]/[`ServerPacket`] with length-framed encoding,
+//! a slash-command parser ([`parse_command`]), and [`GameServer`] for multiplayer hosting.
+
 pub mod client_conn;
 pub mod command_help;
 pub mod commands;

@@ -54,12 +54,12 @@ pub fn workstation_profession(ws: WorkstationType) -> u8 {
         WorkstationType::Grindstone => 4,       // Weaponsmith
         WorkstationType::SmithingTable => 5,    // Toolsmith
         WorkstationType::Smoker => 6,           // Butcher
-        WorkstationType::Barrel => 0,           // Fisherman — mapped to Farmer (no Fisherman variant)
-        WorkstationType::FletchingTable => 8,   // Fletcher
+        WorkstationType::Barrel => 0, // Fisherman — mapped to Farmer (no Fisherman variant)
+        WorkstationType::FletchingTable => 8, // Fletcher
         WorkstationType::CartographyTable => 9, // Cartographer
-        WorkstationType::MasonTable => 10,      // Mason
-        WorkstationType::Loom => 11,            // Shepherd
-        WorkstationType::Stonecutter => 10,     // Mason
+        WorkstationType::MasonTable => 10, // Mason
+        WorkstationType::Loom => 11,  // Shepherd
+        WorkstationType::Stonecutter => 10, // Mason
     }
 }
 

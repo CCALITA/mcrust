@@ -409,10 +409,7 @@ mod tests {
 
         assert!(result, "push of exactly 12 blocks should succeed");
         // The first position should now be air.
-        assert_eq!(
-            *w.get(&pos(1, 0, 0)).unwrap_or(&BlockId::Air),
-            BlockId::Air,
-        );
+        assert_eq!(*w.get(&pos(1, 0, 0)).unwrap_or(&BlockId::Air), BlockId::Air,);
         // The last block should have moved to position 13.
         assert_eq!(
             *w.get(&pos(13, 0, 0)).unwrap_or(&BlockId::Air),

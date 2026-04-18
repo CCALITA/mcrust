@@ -139,8 +139,9 @@ pub fn calculate_explosion(
 
 /// Deterministic pseudo-random in [0, 1) seeded from ray direction.
 fn rand_simple(dx: &f32, dy: &f32, dz: &f32) -> f32 {
-    let bits = (dx.to_bits() ^ dy.to_bits().wrapping_mul(2654435761) ^ dz.to_bits().wrapping_mul(40503))
-        .wrapping_mul(2246822519);
+    let bits =
+        (dx.to_bits() ^ dy.to_bits().wrapping_mul(2654435761) ^ dz.to_bits().wrapping_mul(40503))
+            .wrapping_mul(2246822519);
     (bits & 0x00FF_FFFF) as f32 / 16_777_216.0
 }
 
@@ -151,7 +152,11 @@ fn rand_simple(dx: &f32, dy: &f32, dz: &f32) -> f32 {
 /// Calculate damage dealt to an entity from an explosion.
 ///
 /// Damage falls off linearly with distance and is zero beyond `power` blocks.
-pub fn calculate_entity_damage(entity_pos: (f32, f32, f32), center: (f32, f32, f32), power: f32) -> f32 {
+pub fn calculate_entity_damage(
+    entity_pos: (f32, f32, f32),
+    center: (f32, f32, f32),
+    power: f32,
+) -> f32 {
     let dx = entity_pos.0 - center.0;
     let dy = entity_pos.1 - center.1;
     let dz = entity_pos.2 - center.2;
@@ -172,7 +177,10 @@ pub fn calculate_entity_damage(entity_pos: (f32, f32, f32), center: (f32, f32, f
 // ---------------------------------------------------------------------------
 
 /// Replace all destroyed blocks with [`BlockId::Air`].
-pub fn apply_explosion(result: &ExplosionResult, set_block: &mut dyn FnMut(i32, i32, i32, BlockId)) {
+pub fn apply_explosion(
+    result: &ExplosionResult,
+    set_block: &mut dyn FnMut(i32, i32, i32, BlockId),
+) {
     for &(x, y, z) in &result.destroyed_blocks {
         set_block(x, y, z, BlockId::Air);
     }
@@ -214,12 +222,11 @@ mod tests {
 
     #[test]
     fn tnt_destroys_blocks_within_radius() {
-        let result = calculate_explosion(
-            (0.0, 0.0, 0.0),
-            TNT_POWER,
-            &uniform_world(BlockId::Dirt),
+        let result = calculate_explosion((0.0, 0.0, 0.0), TNT_POWER, &uniform_world(BlockId::Dirt));
+        assert!(
+            !result.destroyed_blocks.is_empty(),
+            "TNT should destroy dirt blocks"
         );
-        assert!(!result.destroyed_blocks.is_empty(), "TNT should destroy dirt blocks");
 
         // All destroyed blocks should be within a reasonable radius.
         let max_radius_sq = (TNT_POWER * 2.0) * (TNT_POWER * 2.0);
@@ -234,11 +241,8 @@ mod tests {
 
     #[test]
     fn bedrock_survives_explosion() {
-        let result = calculate_explosion(
-            (0.0, 0.0, 0.0),
-            TNT_POWER,
-            &uniform_world(BlockId::Bedrock),
-        );
+        let result =
+            calculate_explosion((0.0, 0.0, 0.0), TNT_POWER, &uniform_world(BlockId::Bedrock));
         assert!(
             result.destroyed_blocks.is_empty(),
             "bedrock must not be destroyed"
@@ -328,11 +332,7 @@ mod tests {
 
     #[test]
     fn no_duplicate_destroyed_blocks() {
-        let result = calculate_explosion(
-            (0.0, 0.0, 0.0),
-            TNT_POWER,
-            &uniform_world(BlockId::Dirt),
-        );
+        let result = calculate_explosion((0.0, 0.0, 0.0), TNT_POWER, &uniform_world(BlockId::Dirt));
         let mut seen = std::collections::HashSet::new();
         for pos in &result.destroyed_blocks {
             assert!(seen.insert(pos), "duplicate destroyed block at {pos:?}");
@@ -341,11 +341,7 @@ mod tests {
 
     #[test]
     fn explosion_in_air_destroys_nothing() {
-        let result = calculate_explosion(
-            (0.0, 0.0, 0.0),
-            TNT_POWER,
-            &uniform_world(BlockId::Air),
-        );
+        let result = calculate_explosion((0.0, 0.0, 0.0), TNT_POWER, &uniform_world(BlockId::Air));
         assert!(
             result.destroyed_blocks.is_empty(),
             "explosion in air should destroy no blocks"

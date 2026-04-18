@@ -7,11 +7,11 @@ use mc_core::block::BlockId;
 use mc_core::pos::{BlockPos, ChunkPos};
 use mc_physics::collision;
 use mc_physics::raycast;
+use mc_render::Camera;
+use mc_render::Renderer;
 use mc_render::frustum::{self, Frustum};
 use mc_render::mesh::{ChunkMesh, NeighborChunks};
 use mc_render::sky::DayNightCycle;
-use mc_render::Camera;
-use mc_render::Renderer;
 use mc_world::ChunkManager;
 
 use crate::player::{
@@ -100,10 +100,8 @@ pub fn render_scene(
     visible_indices.truncate(128);
 
     // Build a temporary Vec of references for rendering
-    let visible_meshes: Vec<&ChunkMesh> = visible_indices
-        .iter()
-        .map(|&i| &chunk_meshes[i])
-        .collect();
+    let visible_meshes: Vec<&ChunkMesh> =
+        visible_indices.iter().map(|&i| &chunk_meshes[i]).collect();
 
     if let Some(renderer) = renderer {
         match renderer.render_frame_refs(camera, sky, &visible_meshes) {
@@ -172,8 +170,7 @@ pub fn playing_frame(app: &mut App, frame_time: Duration) -> Option<GameState> {
     // Rebuild dirty chunk meshes
     let dirty = app.world.take_dirty();
     if !dirty.is_empty() {
-        app.chunk_meshes
-            .retain(|m| !dirty.contains(&m.chunk_pos));
+        app.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
         app.mesh_queue.extend(dirty);
     }
     process_mesh_queue(
@@ -203,9 +200,7 @@ pub fn playing_frame(app: &mut App, frame_time: Duration) -> Option<GameState> {
     if app.survival.is_dead() {
         log::info!("Player died!");
         app.release_cursor();
-        return Some(GameState::Dead {
-            respawn_timer: 0.0,
-        });
+        return Some(GameState::Dead { respawn_timer: 0.0 });
     }
 
     None

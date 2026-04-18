@@ -426,10 +426,8 @@ mod tests {
     #[test]
     fn efficiency_speeds_up_breaking() {
         let hardness = BlockId::Stone.properties().hardness;
-        let no_eff =
-            calculate_break_time(hardness, ToolType::Pickaxe, ToolTier::Iron, true, 0, 0);
-        let eff_3 =
-            calculate_break_time(hardness, ToolType::Pickaxe, ToolTier::Iron, true, 3, 0);
+        let no_eff = calculate_break_time(hardness, ToolType::Pickaxe, ToolTier::Iron, true, 0, 0);
+        let eff_3 = calculate_break_time(hardness, ToolType::Pickaxe, ToolTier::Iron, true, 3, 0);
         assert!(
             eff_3 < no_eff,
             "efficiency 3 ({eff_3}) should be faster than none ({no_eff})"
@@ -441,8 +439,7 @@ mod tests {
         let hardness = BlockId::Stone.properties().hardness;
         let no_haste =
             calculate_break_time(hardness, ToolType::Pickaxe, ToolTier::Iron, true, 0, 0);
-        let haste_2 =
-            calculate_break_time(hardness, ToolType::Pickaxe, ToolTier::Iron, true, 0, 2);
+        let haste_2 = calculate_break_time(hardness, ToolType::Pickaxe, ToolTier::Iron, true, 0, 2);
         assert!(
             haste_2 < no_haste,
             "haste 2 ({haste_2}) should be faster than none ({no_haste})"

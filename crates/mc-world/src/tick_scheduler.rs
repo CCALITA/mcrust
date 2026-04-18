@@ -52,7 +52,10 @@ impl TickScheduler {
     /// Advances the scheduler by one tick, returning all events scheduled for
     /// the current tick.
     pub fn advance(&mut self) -> Vec<ScheduledEvent> {
-        let events = self.scheduled.remove(&self.current_tick).unwrap_or_default();
+        let events = self
+            .scheduled
+            .remove(&self.current_tick)
+            .unwrap_or_default();
         self.current_tick += 1;
         events
     }

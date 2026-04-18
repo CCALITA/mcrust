@@ -69,13 +69,20 @@ pub fn tick_falling(
 
     if new_velocity.y < 0.0 && (destination_solid || below_solid) {
         // Land on top of the highest solid block.
-        let landed_y = if destination_solid { grid_y + 1 } else { grid_y };
+        let landed_y = if destination_solid {
+            grid_y + 1
+        } else {
+            grid_y
+        };
         let landed = FallingBlock {
             block_id: fb.block_id,
             position: Vec3::new(grid_x as f32 + 0.5, landed_y as f32, grid_z as f32 + 0.5),
             velocity: Vec3::ZERO,
         };
-        (landed, FallingBlockAction::Landed((grid_x, landed_y, grid_z)))
+        (
+            landed,
+            FallingBlockAction::Landed((grid_x, landed_y, grid_z)),
+        )
     } else {
         let updated = FallingBlock {
             block_id: fb.block_id,
@@ -88,7 +95,11 @@ pub fn tick_falling(
 
 /// Called when a block update occurs. If the block at `pos` is a gravity block
 /// and air is below it, returns a new `FallingBlock` entity to begin simulation.
-pub fn on_block_update(pos: (i32, i32, i32), block: u16, is_air_below: bool) -> Option<FallingBlock> {
+pub fn on_block_update(
+    pos: (i32, i32, i32),
+    block: u16,
+    is_air_below: bool,
+) -> Option<FallingBlock> {
     let block_id = BlockId::from_raw(block)?;
     if !is_gravity_block(block_id) || !is_air_below {
         return None;
@@ -146,7 +157,10 @@ mod tests {
         let is_solid = |_x: i32, _y: i32, _z: i32| false;
         let (updated, action) = tick_falling(&fb, 0.05, &is_solid);
         assert_eq!(action, FallingBlockAction::Falling);
-        assert!(updated.position.y < fb.position.y, "block should move downward");
+        assert!(
+            updated.position.y < fb.position.y,
+            "block should move downward"
+        );
         assert!(updated.velocity.y < 0.0, "velocity should be negative");
     }
 

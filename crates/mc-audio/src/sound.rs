@@ -265,25 +265,22 @@ pub struct SoundQueue {
 impl SoundQueue {
     /// Creates an empty sound queue.
     pub fn new() -> Self {
-        Self {
-            events: Vec::new(),
-        }
+        Self { events: Vec::new() }
     }
 
     /// Queues a sound with its default volume and pitch.
     pub fn play(&mut self, sound_id: SoundId, position: Vec3) {
         let props = sound_id.properties();
-        self.play_with(sound_id, position, props.default_volume, props.default_pitch);
+        self.play_with(
+            sound_id,
+            position,
+            props.default_volume,
+            props.default_pitch,
+        );
     }
 
     /// Queues a sound with explicit volume and pitch.
-    pub fn play_with(
-        &mut self,
-        sound_id: SoundId,
-        position: Vec3,
-        volume: f32,
-        pitch: f32,
-    ) {
+    pub fn play_with(&mut self, sound_id: SoundId, position: Vec3, volume: f32, pitch: f32) {
         let category = sound_id.properties().category;
         self.events.push(SoundEvent {
             sound_id,

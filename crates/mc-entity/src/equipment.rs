@@ -51,11 +51,7 @@ impl ShieldState {
     /// Calculate post-shield damage. Returns 0 when the shield is blocking,
     /// otherwise returns `incoming` unchanged.
     pub fn block_damage(&self, incoming: f32) -> f32 {
-        if self.blocking {
-            0.0
-        } else {
-            incoming
-        }
+        if self.blocking { 0.0 } else { incoming }
     }
 
     /// Disable the shield for `duration` seconds. This stops any active block
@@ -192,7 +188,10 @@ mod tests {
         shield.start_block();
         assert!(shield.is_blocking());
         let taken = shield.block_damage(10.0);
-        assert!((taken).abs() < f32::EPSILON, "expected 0 damage while blocking");
+        assert!(
+            (taken).abs() < f32::EPSILON,
+            "expected 0 damage while blocking"
+        );
     }
 
     #[test]
@@ -312,7 +311,10 @@ mod tests {
         elytra.start_glide(true);
         elytra.tick(0.05);
         assert_eq!(elytra.durability, 0);
-        assert!(!elytra.gliding, "should stop gliding when durability runs out");
+        assert!(
+            !elytra.gliding,
+            "should stop gliding when durability runs out"
+        );
     }
 
     #[test]

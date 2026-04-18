@@ -213,11 +213,7 @@ pub fn check_snow_golem_pattern(
 /// 2. Patrol toward the village center (if known).
 /// 3. Offer a flower if a villager is within 6 blocks.
 /// 4. Idle.
-pub fn iron_golem_tick(
-    golem: &IronGolem,
-    hostiles: &[Vec3],
-    villagers: &[Vec3],
-) -> GolemAction {
+pub fn iron_golem_tick(golem: &IronGolem, hostiles: &[Vec3], villagers: &[Vec3]) -> GolemAction {
     // Priority 1 — attack nearest hostile within range.
     if let Some(target) = closest_within(hostiles, golem.position, IRON_GOLEM_AGGRO_RANGE) {
         return GolemAction::AttackHostile(target);
@@ -302,9 +298,7 @@ mod tests {
 
     // -- Iron Golem pattern detection ---------------------------------------
 
-    fn make_block_getter(
-        blocks: &[(i32, i32, i32, u16)],
-    ) -> impl Fn(i32, i32, i32) -> u16 + '_ {
+    fn make_block_getter(blocks: &[(i32, i32, i32, u16)]) -> impl Fn(i32, i32, i32) -> u16 + '_ {
         move |x, y, z| {
             blocks
                 .iter()
@@ -317,10 +311,10 @@ mod tests {
     #[test]
     fn detects_iron_golem_pattern_along_x_axis() {
         let blocks = vec![
-            (0, 0, 0, IRON_BLOCK_ID),   // body center
-            (-1, 1, 0, IRON_BLOCK_ID),  // arm left
-            (0, 1, 0, IRON_BLOCK_ID),   // arm center
-            (1, 1, 0, IRON_BLOCK_ID),   // arm right
+            (0, 0, 0, IRON_BLOCK_ID),    // body center
+            (-1, 1, 0, IRON_BLOCK_ID),   // arm left
+            (0, 1, 0, IRON_BLOCK_ID),    // arm center
+            (1, 1, 0, IRON_BLOCK_ID),    // arm right
             (0, 2, 0, PUMPKIN_BLOCK_ID), // head
         ];
         let getter = make_block_getter(&blocks);
@@ -333,10 +327,10 @@ mod tests {
     #[test]
     fn detects_iron_golem_pattern_along_z_axis() {
         let blocks = vec![
-            (0, 0, 0, IRON_BLOCK_ID),   // body center
-            (0, 1, -1, IRON_BLOCK_ID),  // arm back
-            (0, 1, 0, IRON_BLOCK_ID),   // arm center
-            (0, 1, 1, IRON_BLOCK_ID),   // arm front
+            (0, 0, 0, IRON_BLOCK_ID),    // body center
+            (0, 1, -1, IRON_BLOCK_ID),   // arm back
+            (0, 1, 0, IRON_BLOCK_ID),    // arm center
+            (0, 1, 1, IRON_BLOCK_ID),    // arm front
             (0, 2, 0, PUMPKIN_BLOCK_ID), // head
         ];
         let getter = make_block_getter(&blocks);
@@ -409,10 +403,7 @@ mod tests {
     #[test]
     fn iron_golem_attacks_nearest_hostile() {
         let golem = IronGolem::new(Vec3::ZERO);
-        let hostiles = vec![
-            Vec3::new(15.0, 0.0, 0.0),
-            Vec3::new(5.0, 0.0, 0.0),
-        ];
+        let hostiles = vec![Vec3::new(15.0, 0.0, 0.0), Vec3::new(5.0, 0.0, 0.0)];
         let villagers = vec![Vec3::new(3.0, 0.0, 0.0)];
 
         let action = iron_golem_tick(&golem, &hostiles, &villagers);
@@ -426,7 +417,10 @@ mod tests {
         let hostiles = vec![Vec3::new(10.0, 0.0, 0.0)];
 
         let action = iron_golem_tick(&golem, &hostiles, &[]);
-        assert_eq!(action, GolemAction::AttackHostile(Vec3::new(10.0, 0.0, 0.0)));
+        assert_eq!(
+            action,
+            GolemAction::AttackHostile(Vec3::new(10.0, 0.0, 0.0))
+        );
     }
 
     #[test]

@@ -1,3 +1,8 @@
+//! Entity component system, mob AI, combat, and survival mechanics.
+//!
+//! Provides [`EntityManager`] with ECS components, mob [`AiSystem`] and pathfinding,
+//! [`DamageEvent`]-based combat, hunger/armor/effects, projectiles, vehicles, and villager trading.
+
 pub mod advancement;
 pub mod ai;
 pub mod armor;
@@ -28,8 +33,8 @@ pub mod tool_use;
 pub mod trident;
 pub mod vehicle;
 pub mod villager;
-pub mod villager_trades;
 pub mod villager_job;
+pub mod villager_trades;
 pub mod wither;
 
 pub use advancement::{
@@ -38,8 +43,7 @@ pub use advancement::{
 };
 pub use ai::{AiComponent, AiGoal, AiSystem};
 pub use armor::{
-    ArmorMaterial, ArmorPiece, ArmorSet, ArmorSlot, apply_armor_damage,
-    calculate_damage_reduction,
+    ArmorMaterial, ArmorPiece, ArmorSet, ArmorSlot, apply_armor_damage, calculate_damage_reduction,
 };
 pub use behavior::{MobAction, MobBehavior, behavior_tick, behavior_tick_with_state};
 pub use combat::{
@@ -50,14 +54,14 @@ pub use component::{
     Collider, ComponentStore, Gravity, Health, MobComponent, MobKind, Position, Rotation, Velocity,
     World,
 };
-pub use entity::{EntityId, EntityManager};
-pub use equipment::{ElytraState, ShieldState, elytra_physics, firework_boost};
 pub use difficulty::{Difficulty, regional_difficulty};
 pub use drops::{DropSystem, ItemDrop, XpOrb, spawn_block_drops, spawn_mob_drops};
 pub use effects::{
     ActiveEffect, EffectManager, StatusEffect, apply_jump_modifier, apply_slowness_modifier,
     apply_speed_modifier, apply_strength_modifier,
 };
+pub use entity::{EntityId, EntityManager};
+pub use equipment::{ElytraState, ShieldState, elytra_physics, firework_boost};
 pub use experience::{
     ExperienceComponent, add_xp, remove_xp_for_enchanting, total_xp_for_level, xp_for_next_level,
     xp_from_block, xp_from_mob, xp_from_smelting,
@@ -93,14 +97,13 @@ pub use trident::{
     riptide_can_use, riptide_launch, throw_trident,
 };
 pub use villager::{
-    TradeOffer, TradeResult, VillagerData, VillagerProfession, execute_trade,
-    xp_for_level,
+    TradeOffer, TradeResult, VillagerData, VillagerProfession, execute_trade, xp_for_level,
 };
-pub use villager_trades::default_trades;
 pub use villager_job::{
     VillagerJobBinding, WorkstationType, bind_villager, find_workstation, try_restock, unbind,
     workstation_profession,
 };
+pub use villager_trades::default_trades;
 
 pub use special_mobs::{
     EndermanState, PotionType, WitchAction, choose_witch_action, is_player_looking_at,
@@ -108,13 +111,11 @@ pub use special_mobs::{
 };
 pub use vehicle::{Vehicle, VehicleType, apply_input, boat_tick, minecart_tick};
 
-pub use decoration::{
-    Banner, BannerPattern, PaintingVariant, choose_painting,
-};
-pub use wither::{
-    DamageResult, Wither, WitherPhase, WitherSkull, XP_REWARD, wither_damage, wither_tick,
-};
+pub use decoration::{Banner, BannerPattern, PaintingVariant, choose_painting};
 pub use golem::{
     GolemAction, GolemEffect, IronGolem, SnowGolem, check_iron_golem_pattern,
     check_snow_golem_pattern, iron_golem_tick, snow_golem_tick,
+};
+pub use wither::{
+    DamageResult, Wither, WitherPhase, WitherSkull, XP_REWARD, wither_damage, wither_tick,
 };

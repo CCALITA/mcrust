@@ -33,17 +33,9 @@ pub const DIMENSION_END: u8 = 2;
 /// State machine for the background music player.
 #[derive(Debug, Clone)]
 pub enum MusicState {
-    Idle {
-        wait_timer: f32,
-    },
-    Playing {
-        track: MusicTrack,
-        elapsed: f32,
-    },
-    FadeOut {
-        track: MusicTrack,
-        fade_timer: f32,
-    },
+    Idle { wait_timer: f32 },
+    Playing { track: MusicTrack, elapsed: f32 },
+    FadeOut { track: MusicTrack, fade_timer: f32 },
 }
 
 /// Actions emitted by the music player to be handled by an audio backend.

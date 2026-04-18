@@ -39,10 +39,8 @@ impl WorldTickState {
 
         // Scheduler — drain events, capping to avoid runaway processing.
         let events = self.scheduler.advance();
-        let _processed: Vec<ScheduledEvent> = events
-            .into_iter()
-            .take(MAX_EVENTS_PER_TICK)
-            .collect();
+        let _processed: Vec<ScheduledEvent> =
+            events.into_iter().take(MAX_EVENTS_PER_TICK).collect();
 
         // TODO: dispatch `_processed` events to the appropriate subsystems
         // (block updates, redstone, fluid, crops, fire, entities).

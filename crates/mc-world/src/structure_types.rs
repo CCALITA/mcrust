@@ -251,7 +251,11 @@ mod tests {
 
         assert_eq!(chunk.get_block(4, 20, 4), BlockId::Cobblestone);
         let interior = chunk.get_block(6, 21, 6);
-        assert_eq!(interior, BlockId::Air, "Interior should be air, got {interior:?}");
+        assert_eq!(
+            interior,
+            BlockId::Air,
+            "Interior should be air, got {interior:?}"
+        );
     }
 
     #[test]
@@ -299,7 +303,10 @@ mod tests {
                 }
             }
         }
-        assert!(found_mossy, "Expected at least one MossyCobblestone on dungeon walls");
+        assert!(
+            found_mossy,
+            "Expected at least one MossyCobblestone on dungeon walls"
+        );
     }
 
     #[test]
@@ -310,10 +317,18 @@ mod tests {
 
         for dx in 0..5usize {
             let block = chunk.get_block(4 + dx, base_y + 1, 4);
-            assert_eq!(block, BlockId::OakPlanks, "North wall at dx={dx}: {block:?}");
+            assert_eq!(
+                block,
+                BlockId::OakPlanks,
+                "North wall at dx={dx}: {block:?}"
+            );
         }
         let interior = chunk.get_block(6, base_y + 1, 6);
-        assert_eq!(interior, BlockId::Air, "Interior should be air, got {interior:?}");
+        assert_eq!(
+            interior,
+            BlockId::Air,
+            "Interior should be air, got {interior:?}"
+        );
     }
 
     #[test]
@@ -348,8 +363,11 @@ mod tests {
             for dz in 0..5usize {
                 let block = chunk.get_block(4 + dx, base_y, 4 + dz);
                 assert_eq!(
-                    block, BlockId::OakPlanks,
-                    "Floor at ({}, {}) should be OakPlanks, got {block:?}", 4 + dx, 4 + dz
+                    block,
+                    BlockId::OakPlanks,
+                    "Floor at ({}, {}) should be OakPlanks, got {block:?}",
+                    4 + dx,
+                    4 + dz
                 );
             }
         }
@@ -376,7 +394,12 @@ mod tests {
         for i in 0..8 {
             for dy in 1..=2 {
                 let block = chunk.get_block(5 + i, y + dy, 5);
-                assert_eq!(block, BlockId::Air, "Interior at x={}, dy={dy}: {block:?}", 5 + i);
+                assert_eq!(
+                    block,
+                    BlockId::Air,
+                    "Interior at x={}, dy={dy}: {block:?}",
+                    5 + i
+                );
             }
         }
     }
@@ -393,7 +416,8 @@ mod tests {
                 for dy in 1..=2 {
                     let block = chunk.get_block(sx, y + dy, sz);
                     assert_eq!(
-                        block, BlockId::OakLog,
+                        block,
+                        BlockId::OakLog,
                         "Support at ({sx}, y+{dy}, {sz}): {block:?}"
                     );
                 }
@@ -411,7 +435,11 @@ mod tests {
             let sx = 4 + support_i;
             for sz in [4usize, 6] {
                 let block = chunk.get_block(sx, y + 3, sz);
-                assert_eq!(block, BlockId::Torch, "Torch at ({sx}, y+3, {sz}): {block:?}");
+                assert_eq!(
+                    block,
+                    BlockId::Torch,
+                    "Torch at ({sx}, y+3, {sz}): {block:?}"
+                );
             }
         }
     }

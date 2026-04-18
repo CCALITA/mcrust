@@ -137,8 +137,7 @@ pub fn wither_tick(wither: &mut Wither, player_pos: Vec3, dt: f32) -> Vec<Wither
             }
 
             // Pick the closest target (or fall back to player_pos).
-            let target = closest_target(&wither.targets, wither.position)
-                .unwrap_or(player_pos);
+            let target = closest_target(&wither.targets, wither.position).unwrap_or(player_pos);
 
             let skull = fire_skull(wither.position, target);
 

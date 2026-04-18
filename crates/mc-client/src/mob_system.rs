@@ -1,7 +1,7 @@
 use glam::Vec3;
 use mc_entity::component::World as EntityWorld;
 use mc_entity::entity::EntityId;
-use mc_entity::spawning::{SpawnSystem, DEFAULT_HOSTILE_CAP};
+use mc_entity::spawning::{DEFAULT_HOSTILE_CAP, SpawnSystem};
 
 /// Despawn distance — entities further than this from the player are removed.
 const DESPAWN_DISTANCE: f32 = 128.0;

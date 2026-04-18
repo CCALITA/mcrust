@@ -438,9 +438,11 @@ mod tests {
 
     #[test]
     fn root_advancement_has_no_parent() {
-        assert!(ADVANCEMENT_REGISTRY[AdvancementId::OpenInventory as usize]
-            .parent
-            .is_none());
+        assert!(
+            ADVANCEMENT_REGISTRY[AdvancementId::OpenInventory as usize]
+                .parent
+                .is_none()
+        );
     }
 
     #[test]
@@ -507,7 +509,10 @@ mod tests {
 
         // MineWood should appear only once.
         assert_eq!(
-            unlocked.iter().filter(|&&id| id == AdvancementId::MineWood).count(),
+            unlocked
+                .iter()
+                .filter(|&&id| id == AdvancementId::MineWood)
+                .count(),
             1
         );
     }

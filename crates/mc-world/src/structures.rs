@@ -313,8 +313,17 @@ mod tests {
             }
         }
 
-        assert!(total_cobble > 0, "Expected some cobblestone from dungeon generation");
-        assert!(total_planks > 0, "Expected some oak planks from house/corridor generation");
-        assert!(total_chest > 0, "Expected at least one chest from structure generation");
+        assert!(
+            total_cobble > 0,
+            "Expected some cobblestone from dungeon generation"
+        );
+        assert!(
+            total_planks > 0,
+            "Expected some oak planks from house/corridor generation"
+        );
+        assert!(
+            total_chest > 0,
+            "Expected at least one chest from structure generation"
+        );
     }
 }

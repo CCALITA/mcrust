@@ -53,7 +53,8 @@ pub fn is_player_looking_at(
 
 /// Simple hash-based pseudo-random number derived from `seed` and `attempt`.
 fn pseudo_random(seed: u64, attempt: u32) -> u64 {
-    let mut h = seed.wrapping_mul(6_364_136_223_846_793_005)
+    let mut h = seed
+        .wrapping_mul(6_364_136_223_846_793_005)
         .wrapping_add(attempt as u64);
     h ^= h >> 33;
     h = h.wrapping_mul(0xff51_afd7_ed55_8ccd);
@@ -374,10 +375,7 @@ mod tests {
         let parent_pos = Vec3::new(50.0, 64.0, 50.0);
         let children = split_on_death(parent_pos, 4, 12345);
         for (child_pos, _) in &children {
-            assert_ne!(
-                *child_pos, parent_pos,
-                "child should be offset from parent"
-            );
+            assert_ne!(*child_pos, parent_pos, "child should be offset from parent");
             // Y should remain the same
             assert!((child_pos.y - parent_pos.y).abs() < f32::EPSILON);
         }

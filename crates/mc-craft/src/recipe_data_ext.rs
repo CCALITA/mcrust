@@ -3,10 +3,10 @@
 //! Utility, weapon, redstone, and miscellaneous recipe definitions.
 //! Called from `recipe_data::default_recipes()`.
 
-use crate::item_ids::*;
-use crate::recipe::{Recipe, RecipePattern, RecipeRegistry};
 use crate::ItemStack;
 use crate::SlotItem;
+use crate::item_ids::*;
+use crate::recipe::{Recipe, RecipePattern, RecipeRegistry};
 
 fn s(item: SlotItem) -> Option<SlotItem> {
     Some(item)

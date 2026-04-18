@@ -275,7 +275,10 @@ mod tests {
 
     #[test]
     fn gold_produces_bell_block() {
-        assert_eq!(instrument_from_block(BlockId::GoldOre), Instrument::BellBlock);
+        assert_eq!(
+            instrument_from_block(BlockId::GoldOre),
+            Instrument::BellBlock
+        );
     }
 
     #[test]
@@ -284,11 +287,23 @@ mod tests {
         assert_eq!(instrument_from_block(BlockId::PackedIce), Instrument::Chime);
         assert_eq!(instrument_from_block(BlockId::Glowstone), Instrument::Pling);
         assert_eq!(instrument_from_block(BlockId::EndStone), Instrument::Banjo);
-        assert_eq!(instrument_from_block(BlockId::SoulSand), Instrument::CowBell);
-        assert_eq!(instrument_from_block(BlockId::IronOre), Instrument::IronXylophone);
+        assert_eq!(
+            instrument_from_block(BlockId::SoulSand),
+            Instrument::CowBell
+        );
+        assert_eq!(
+            instrument_from_block(BlockId::IronOre),
+            Instrument::IronXylophone
+        );
         assert_eq!(instrument_from_block(BlockId::EmeraldOre), Instrument::Bit);
-        assert_eq!(instrument_from_block(BlockId::Pumpkin), Instrument::Didgeridoo);
-        assert_eq!(instrument_from_block(BlockId::DiamondOre), Instrument::Xylophone);
+        assert_eq!(
+            instrument_from_block(BlockId::Pumpkin),
+            Instrument::Didgeridoo
+        );
+        assert_eq!(
+            instrument_from_block(BlockId::DiamondOre),
+            Instrument::Xylophone
+        );
     }
 
     #[test]

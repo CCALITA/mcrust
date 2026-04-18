@@ -5,7 +5,7 @@
 // Unifies XP, advancements, and statistics tracking into a single facade
 // that the client can call from gameplay event handlers.
 
-use mc_entity::advancement::{AdvancementTracker, AdvancementTrigger, ADVANCEMENT_REGISTRY};
+use mc_entity::advancement::{ADVANCEMENT_REGISTRY, AdvancementTracker, AdvancementTrigger};
 use mc_entity::experience::{self, ExperienceComponent};
 use mc_entity::statistics::{StatisticId, StatisticsTracker};
 

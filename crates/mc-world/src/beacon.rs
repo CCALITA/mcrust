@@ -99,11 +99,7 @@ pub fn beacon_range(level: u8) -> f32 {
 /// Returns `true` if `entity_pos` is within the beacon's effect range.
 ///
 /// Uses Euclidean distance from the beacon centre to the entity position.
-pub fn is_in_range(
-    beacon_pos: (i32, i32, i32),
-    entity_pos: (f64, f64, f64),
-    level: u8,
-) -> bool {
+pub fn is_in_range(beacon_pos: (i32, i32, i32), entity_pos: (f64, f64, f64), level: u8) -> bool {
     let range = beacon_range(level) as f64;
     if range <= 0.0 {
         return false;

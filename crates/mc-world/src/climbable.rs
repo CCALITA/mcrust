@@ -143,7 +143,7 @@ mod tests {
     fn distance_zero_when_directly_supported() {
         let dist = scaffolding_distance(
             (0, 1, 0),
-            &|_, _, _| true,  // everything is scaffolding
+            &|_, _, _| true,                       // everything is scaffolding
             &|x, y, z| x == 0 && y == 1 && z == 0, // only origin supported
         );
         assert_eq!(dist, 0);
@@ -152,12 +152,8 @@ mod tests {
     #[test]
     fn distance_one_when_adjacent_to_support() {
         // Supported scaffolding at (0,1,0); query at (1,1,0).
-        let is_scaffolding = |x: i32, y: i32, z: i32| {
-            (x == 0 || x == 1) && y == 1 && z == 0
-        };
-        let is_supported = |x: i32, y: i32, z: i32| {
-            x == 0 && y == 1 && z == 0
-        };
+        let is_scaffolding = |x: i32, y: i32, z: i32| (x == 0 || x == 1) && y == 1 && z == 0;
+        let is_supported = |x: i32, y: i32, z: i32| x == 0 && y == 1 && z == 0;
 
         let dist = scaffolding_distance((1, 1, 0), &is_scaffolding, &is_supported);
         assert_eq!(dist, 1);
@@ -166,22 +162,19 @@ mod tests {
     #[test]
     fn distance_through_chain() {
         // Chain: (0,1,0) supported -> (1,1,0) -> (2,1,0) -> (3,1,0)
-        let is_scaffolding = |x: i32, y: i32, z: i32| {
-            y == 1 && z == 0 && (0..=3).contains(&x)
-        };
-        let is_supported = |x: i32, y: i32, z: i32| {
-            x == 0 && y == 1 && z == 0
-        };
+        let is_scaffolding = |x: i32, y: i32, z: i32| y == 1 && z == 0 && (0..=3).contains(&x);
+        let is_supported = |x: i32, y: i32, z: i32| x == 0 && y == 1 && z == 0;
 
-        assert_eq!(scaffolding_distance((3, 1, 0), &is_scaffolding, &is_supported), 3);
+        assert_eq!(
+            scaffolding_distance((3, 1, 0), &is_scaffolding, &is_supported),
+            3
+        );
     }
 
     #[test]
     fn distance_max_when_no_support_reachable() {
         // Isolated scaffolding with no support.
-        let is_scaffolding = |x: i32, y: i32, z: i32| {
-            x == 5 && y == 1 && z == 5
-        };
+        let is_scaffolding = |x: i32, y: i32, z: i32| x == 5 && y == 1 && z == 5;
         let is_supported = |_: i32, _: i32, _: i32| false;
 
         let dist = scaffolding_distance((5, 1, 5), &is_scaffolding, &is_supported);
@@ -190,11 +183,7 @@ mod tests {
 
     #[test]
     fn distance_max_when_not_scaffolding() {
-        let dist = scaffolding_distance(
-            (0, 0, 0),
-            &|_, _, _| false,
-            &|_, _, _| true,
-        );
+        let dist = scaffolding_distance((0, 0, 0), &|_, _, _| false, &|_, _, _| true);
         assert_eq!(dist, u8::MAX);
     }
 
@@ -203,12 +192,8 @@ mod tests {
     #[test]
     fn support_chain_within_max_distance() {
         // Chain of 6 scaffolding blocks from the supported column.
-        let is_scaffolding = |x: i32, y: i32, z: i32| {
-            y == 1 && z == 0 && (0..=6).contains(&x)
-        };
-        let is_supported = |x: i32, y: i32, z: i32| {
-            x == 0 && y == 1 && z == 0
-        };
+        let is_scaffolding = |x: i32, y: i32, z: i32| y == 1 && z == 0 && (0..=6).contains(&x);
+        let is_supported = |x: i32, y: i32, z: i32| x == 0 && y == 1 && z == 0;
 
         let dist = scaffolding_distance((6, 1, 0), &is_scaffolding, &is_supported);
         assert_eq!(dist, 6);
@@ -218,12 +203,8 @@ mod tests {
     #[test]
     fn support_chain_beyond_max_distance_falls() {
         // Chain of 7 scaffolding blocks — the 7th should fall.
-        let is_scaffolding = |x: i32, y: i32, z: i32| {
-            y == 1 && z == 0 && (0..=7).contains(&x)
-        };
-        let is_supported = |x: i32, y: i32, z: i32| {
-            x == 0 && y == 1 && z == 0
-        };
+        let is_scaffolding = |x: i32, y: i32, z: i32| y == 1 && z == 0 && (0..=7).contains(&x);
+        let is_supported = |x: i32, y: i32, z: i32| x == 0 && y == 1 && z == 0;
 
         let dist = scaffolding_distance((7, 1, 0), &is_scaffolding, &is_supported);
         assert_eq!(dist, 7);
@@ -288,18 +269,14 @@ mod tests {
     #[test]
     fn can_place_near_supported_scaffolding() {
         // Solid block below position (3, 5, 0) — within range of (0, 5, 0).
-        let get_block = |x: i32, y: i32, z: i32| {
-            x == 3 && y == 4 && z == 0
-        };
+        let get_block = |x: i32, y: i32, z: i32| x == 3 && y == 4 && z == 0;
         assert!(can_place_scaffolding((0, 5, 0), &get_block));
     }
 
     #[test]
     fn cannot_place_when_support_too_far() {
         // Solid block at distance 7 (beyond max 6).
-        let get_block = |x: i32, y: i32, z: i32| {
-            x == 7 && y == 4 && z == 0
-        };
+        let get_block = |x: i32, y: i32, z: i32| x == 7 && y == 4 && z == 0;
         assert!(!can_place_scaffolding((0, 5, 0), &get_block));
     }
 }

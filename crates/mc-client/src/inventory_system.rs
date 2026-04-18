@@ -39,7 +39,10 @@ impl PlayerInventory {
     /// or `None` if the slot is empty.
     #[must_use]
     pub fn selected_item(&self) -> Option<(u16, u8)> {
-        self.inner.get_slot(self.selected_slot).as_ref().map(|s| (s.item, s.count))
+        self.inner
+            .get_slot(self.selected_slot)
+            .as_ref()
+            .map(|s| (s.item, s.count))
     }
 
     /// Consume up to `count` items from the currently selected hotbar slot.

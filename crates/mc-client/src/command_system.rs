@@ -249,13 +249,19 @@ mod tests {
     #[test]
     fn plain_text_becomes_chat_message() {
         let action = process_command("hello world");
-        assert_eq!(action, CommandAction::ChatMessage("hello world".to_string()));
+        assert_eq!(
+            action,
+            CommandAction::ChatMessage("hello world".to_string())
+        );
     }
 
     #[test]
     fn give_command_maps_correctly() {
         let action = process_command("/give Steve diamond 64");
-        assert_eq!(action, CommandAction::GiveItem("diamond".to_string(), 64, 64));
+        assert_eq!(
+            action,
+            CommandAction::GiveItem("diamond".to_string(), 64, 64)
+        );
     }
 
     #[test]
@@ -333,9 +339,6 @@ mod tests {
     #[test]
     fn say_maps_to_chat_message() {
         let action = process_command("/say Hello!");
-        assert_eq!(
-            action,
-            CommandAction::ChatMessage("Hello!".to_string())
-        );
+        assert_eq!(action, CommandAction::ChatMessage("Hello!".to_string()));
     }
 }

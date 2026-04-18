@@ -76,11 +76,7 @@ pub fn daylight_signal(time: f32, inverted: bool) -> u8 {
     let raw = (time * std::f32::consts::PI).sin().max(0.0);
     let normal = (raw * 15.0).round() as u8;
 
-    if inverted {
-        15 - normal
-    } else {
-        normal
-    }
+    if inverted { 15 - normal } else { normal }
 }
 
 #[cfg(test)]

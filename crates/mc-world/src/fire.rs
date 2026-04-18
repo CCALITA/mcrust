@@ -275,11 +275,7 @@ mod tests {
             BlockId::DarkOakPlanks,
         ];
         for block in wood_blocks {
-            assert!(
-                is_flammable(block),
-                "{:?} should be flammable",
-                block
-            );
+            assert!(is_flammable(block), "{:?} should be flammable", block);
             assert!(
                 flammability(block) > 0,
                 "{:?} flammability should be > 0",

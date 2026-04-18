@@ -54,11 +54,7 @@ impl EffectManager {
     /// Adds an effect. If the entity already has the same effect type, the new
     /// effect replaces the old one only when its amplifier is strictly higher.
     pub fn add_effect(&mut self, effect: ActiveEffect) {
-        if let Some(existing) = self
-            .effects
-            .iter_mut()
-            .find(|e| e.effect == effect.effect)
-        {
+        if let Some(existing) = self.effects.iter_mut().find(|e| e.effect == effect.effect) {
             if effect.amplifier > existing.amplifier {
                 *existing = effect;
             }

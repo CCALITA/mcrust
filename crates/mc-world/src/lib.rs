@@ -1,3 +1,8 @@
+//! Voxel world: chunk storage, terrain generation, lighting, and world simulation.
+//!
+//! Handles [`Chunk`] management, cave/ore/structure generation, redstone circuits,
+//! weather, farming, fluids, fire, explosions, pistons, and save/load persistence.
+
 pub mod async_chunks;
 pub mod beacon;
 pub mod biome_terrain;
@@ -8,9 +13,9 @@ pub mod campfire;
 pub mod caves;
 pub mod chest_logic;
 pub mod chunk;
-pub mod composter;
 pub mod chunk_manager;
 pub mod climbable;
+pub mod composter;
 pub mod container;
 pub mod end;
 pub mod explosion;
@@ -52,26 +57,29 @@ pub use beacon::{
     scan_pyramid,
 };
 pub use biome_terrain::BiomeTerrainGen;
-pub use bucket::{BucketContents, BucketResult, milk_effects, use_bucket_on_block, use_bucket_on_entity};
-pub use campfire::{CampfireState, campfire_damage, cooked_item, smoke_height};
 pub use block_entity::{
     BlockEntity, BlockEntityManager, BlockEntityType, BrewingStandData, ChestData, FurnaceData,
     HopperData,
 };
-pub use sign::{SignColor, SignData, format_sign_text};
 pub use block_update::BlockUpdateQueue;
+pub use bucket::{
+    BucketContents, BucketResult, milk_effects, use_bucket_on_block, use_bucket_on_entity,
+};
+pub use campfire::{CampfireState, campfire_damage, cooked_item, smoke_height};
 pub use caves::CaveCarver;
 pub use chest_logic::{
-    ChestOpenState, close_chest, detect_double_chest, is_chest_blocked, open_chest,
-    tick_animation, trapped_chest_signal,
+    ChestOpenState, close_chest, detect_double_chest, is_chest_blocked, open_chest, tick_animation,
+    trapped_chest_signal,
 };
+pub use chunk::{Chunk, Section};
+pub use chunk_manager::ChunkManager;
 pub use climbable::{
     CLIMBING_SPEED, SCAFFOLDING_MAX_DISTANCE, can_place_scaffolding, is_climbable,
     scaffolding_distance, should_scaffolding_fall,
 };
-pub use chunk::{Chunk, Section};
-pub use chunk_manager::ChunkManager;
-pub use composter::{BONE_MEAL_ID, CompostResult, compost_chance, harvest as composter_harvest, try_compost};
+pub use composter::{
+    BONE_MEAL_ID, CompostResult, compost_chance, harvest as composter_harvest, try_compost,
+};
 pub use container::{
     ChestContainer, Container, DispenserContainer, DoubleChestContainer, HopperContainer,
     SlotContent, add_to_container, find_slot_for_item, transfer_item,
@@ -129,6 +137,7 @@ pub use save::{
 pub use sensors::{
     DaylightDetector, ObserverState, daylight_signal, observer_check, observer_tick,
 };
+pub use sign::{SignColor, SignData, format_sign_text};
 pub use spawn::{BedResult, SpawnManager, SpawnPoint};
 pub use structures::StructureGenerator;
 pub use terrain::FlatWorldGen;

@@ -14,10 +14,7 @@ pub trait Container {
 
     /// Returns `true` if every slot in the container is empty.
     fn is_empty(&self) -> bool {
-        (0..self.slot_count()).all(|i| {
-            self.get_slot(i)
-                .map_or(true, |slot| slot.is_none())
-        })
+        (0..self.slot_count()).all(|i| self.get_slot(i).map_or(true, |slot| slot.is_none()))
     }
 }
 
@@ -240,11 +237,7 @@ pub fn transfer_item(
 /// `max_stack`), falling back to the first empty slot.
 ///
 /// Returns `None` if the container has no room for this item.
-pub fn find_slot_for_item(
-    container: &dyn Container,
-    item_id: u16,
-    max_stack: u8,
-) -> Option<usize> {
+pub fn find_slot_for_item(container: &dyn Container, item_id: u16, max_stack: u8) -> Option<usize> {
     let mut first_empty: Option<usize> = None;
 
     for i in 0..container.slot_count() {

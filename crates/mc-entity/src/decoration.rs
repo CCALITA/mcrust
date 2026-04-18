@@ -58,15 +58,26 @@ impl PaintingVariant {
     pub fn size(&self) -> (u8, u8) {
         match self {
             // 1x1
-            Self::Kebab | Self::Aztec | Self::Alban | Self::Aztec2 |
-            Self::Bomb | Self::Plant | Self::Wasteland => (1, 1),
+            Self::Kebab
+            | Self::Aztec
+            | Self::Alban
+            | Self::Aztec2
+            | Self::Bomb
+            | Self::Plant
+            | Self::Wasteland => (1, 1),
             // 1x2
             Self::Wanderer | Self::Graham => (1, 2),
             // 2x1
             Self::Pool | Self::Courbet => (2, 1),
             // 2x2
-            Self::Sunset | Self::Sea | Self::Creebet | Self::Match |
-            Self::Bust | Self::Stage | Self::Void | Self::SkullAndRoses => (2, 2),
+            Self::Sunset
+            | Self::Sea
+            | Self::Creebet
+            | Self::Match
+            | Self::Bust
+            | Self::Stage
+            | Self::Void
+            | Self::SkullAndRoses => (2, 2),
             // 4x2
             Self::Fighters => (4, 2),
         }
@@ -75,7 +86,9 @@ impl PaintingVariant {
 
 /// Simple hash-based pseudo-random number derived from `seed` and `index`.
 fn pseudo_random(seed: u64, index: u64) -> u64 {
-    let mut h = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(index);
+    let mut h = seed
+        .wrapping_mul(6_364_136_223_846_793_005)
+        .wrapping_add(index);
     h ^= h >> 33;
     h = h.wrapping_mul(0xff51_afd7_ed55_8ccd);
     h ^= h >> 33;
@@ -217,7 +230,10 @@ mod tests {
         for seed in 0..50 {
             let painting = choose_painting(1, 1, seed);
             let (w, h) = painting.size();
-            assert!(w <= 1 && h <= 1, "painting {painting:?} does not fit in 1x1");
+            assert!(
+                w <= 1 && h <= 1,
+                "painting {painting:?} does not fit in 1x1"
+            );
         }
     }
 

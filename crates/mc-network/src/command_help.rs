@@ -124,8 +124,17 @@ mod tests {
     fn overview_contains_all_commands() {
         let text = command_help(None);
         for cmd in &[
-            "/give", "/tp", "/time", "/weather", "/gamemode", "/kill", "/say", "/seed", "/help",
-            "/setspawn", "/difficulty",
+            "/give",
+            "/tp",
+            "/time",
+            "/weather",
+            "/gamemode",
+            "/kill",
+            "/say",
+            "/seed",
+            "/help",
+            "/setspawn",
+            "/difficulty",
         ] {
             assert!(text.contains(cmd), "overview missing {cmd}");
         }

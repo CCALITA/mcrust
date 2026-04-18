@@ -288,25 +288,46 @@ mod tests {
 
     #[test]
     fn leather_defense_values() {
-        assert_eq!(ArmorMaterial::Leather.defense_for_slot(ArmorSlot::Helmet), 1);
-        assert_eq!(ArmorMaterial::Leather.defense_for_slot(ArmorSlot::Chestplate), 3);
-        assert_eq!(ArmorMaterial::Leather.defense_for_slot(ArmorSlot::Leggings), 2);
+        assert_eq!(
+            ArmorMaterial::Leather.defense_for_slot(ArmorSlot::Helmet),
+            1
+        );
+        assert_eq!(
+            ArmorMaterial::Leather.defense_for_slot(ArmorSlot::Chestplate),
+            3
+        );
+        assert_eq!(
+            ArmorMaterial::Leather.defense_for_slot(ArmorSlot::Leggings),
+            2
+        );
         assert_eq!(ArmorMaterial::Leather.defense_for_slot(ArmorSlot::Boots), 1);
     }
 
     #[test]
     fn iron_defense_values() {
         assert_eq!(ArmorMaterial::Iron.defense_for_slot(ArmorSlot::Helmet), 2);
-        assert_eq!(ArmorMaterial::Iron.defense_for_slot(ArmorSlot::Chestplate), 6);
+        assert_eq!(
+            ArmorMaterial::Iron.defense_for_slot(ArmorSlot::Chestplate),
+            6
+        );
         assert_eq!(ArmorMaterial::Iron.defense_for_slot(ArmorSlot::Leggings), 5);
         assert_eq!(ArmorMaterial::Iron.defense_for_slot(ArmorSlot::Boots), 2);
     }
 
     #[test]
     fn diamond_defense_values() {
-        assert_eq!(ArmorMaterial::Diamond.defense_for_slot(ArmorSlot::Helmet), 3);
-        assert_eq!(ArmorMaterial::Diamond.defense_for_slot(ArmorSlot::Chestplate), 8);
-        assert_eq!(ArmorMaterial::Diamond.defense_for_slot(ArmorSlot::Leggings), 6);
+        assert_eq!(
+            ArmorMaterial::Diamond.defense_for_slot(ArmorSlot::Helmet),
+            3
+        );
+        assert_eq!(
+            ArmorMaterial::Diamond.defense_for_slot(ArmorSlot::Chestplate),
+            8
+        );
+        assert_eq!(
+            ArmorMaterial::Diamond.defense_for_slot(ArmorSlot::Leggings),
+            6
+        );
         assert_eq!(ArmorMaterial::Diamond.defense_for_slot(ArmorSlot::Boots), 3);
     }
 
@@ -329,7 +350,10 @@ mod tests {
     #[test]
     fn gold_defense_values() {
         assert_eq!(ArmorMaterial::Gold.defense_for_slot(ArmorSlot::Helmet), 2);
-        assert_eq!(ArmorMaterial::Gold.defense_for_slot(ArmorSlot::Chestplate), 5);
+        assert_eq!(
+            ArmorMaterial::Gold.defense_for_slot(ArmorSlot::Chestplate),
+            5
+        );
         assert_eq!(ArmorMaterial::Gold.defense_for_slot(ArmorSlot::Leggings), 3);
         assert_eq!(ArmorMaterial::Gold.defense_for_slot(ArmorSlot::Boots), 1);
     }
@@ -337,8 +361,14 @@ mod tests {
     #[test]
     fn chain_defense_values() {
         assert_eq!(ArmorMaterial::Chain.defense_for_slot(ArmorSlot::Helmet), 2);
-        assert_eq!(ArmorMaterial::Chain.defense_for_slot(ArmorSlot::Chestplate), 5);
-        assert_eq!(ArmorMaterial::Chain.defense_for_slot(ArmorSlot::Leggings), 4);
+        assert_eq!(
+            ArmorMaterial::Chain.defense_for_slot(ArmorSlot::Chestplate),
+            5
+        );
+        assert_eq!(
+            ArmorMaterial::Chain.defense_for_slot(ArmorSlot::Leggings),
+            4
+        );
         assert_eq!(ArmorMaterial::Chain.defense_for_slot(ArmorSlot::Boots), 1);
     }
 
@@ -359,15 +389,30 @@ mod tests {
     #[test]
     fn durability_scales_with_material_and_slot() {
         // Leather helmet: 11 * 5 = 55
-        assert_eq!(ArmorMaterial::Leather.durability_for_slot(ArmorSlot::Helmet), 55);
+        assert_eq!(
+            ArmorMaterial::Leather.durability_for_slot(ArmorSlot::Helmet),
+            55
+        );
         // Iron chestplate: 16 * 15 = 240
-        assert_eq!(ArmorMaterial::Iron.durability_for_slot(ArmorSlot::Chestplate), 240);
+        assert_eq!(
+            ArmorMaterial::Iron.durability_for_slot(ArmorSlot::Chestplate),
+            240
+        );
         // Diamond leggings: 15 * 33 = 495
-        assert_eq!(ArmorMaterial::Diamond.durability_for_slot(ArmorSlot::Leggings), 495);
+        assert_eq!(
+            ArmorMaterial::Diamond.durability_for_slot(ArmorSlot::Leggings),
+            495
+        );
         // Netherite boots: 13 * 37 = 481
-        assert_eq!(ArmorMaterial::Netherite.durability_for_slot(ArmorSlot::Boots), 481);
+        assert_eq!(
+            ArmorMaterial::Netherite.durability_for_slot(ArmorSlot::Boots),
+            481
+        );
         // Gold helmet: 11 * 7 = 77
-        assert_eq!(ArmorMaterial::Gold.durability_for_slot(ArmorSlot::Helmet), 77);
+        assert_eq!(
+            ArmorMaterial::Gold.durability_for_slot(ArmorSlot::Helmet),
+            77
+        );
     }
 
     // -- ArmorPiece --------------------------------------------------------
@@ -451,7 +496,10 @@ mod tests {
     fn total_defense_full_diamond_set() {
         let mut set = ArmorSet::new();
         set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Helmet));
-        set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Chestplate));
+        set.equip(ArmorPiece::new(
+            ArmorMaterial::Diamond,
+            ArmorSlot::Chestplate,
+        ));
         set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Leggings));
         set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Boots));
         // 3 + 8 + 6 + 3 = 20
@@ -461,7 +509,10 @@ mod tests {
     #[test]
     fn total_defense_partial_set() {
         let mut set = ArmorSet::new();
-        set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Chestplate));
+        set.equip(ArmorPiece::new(
+            ArmorMaterial::Diamond,
+            ArmorSlot::Chestplate,
+        ));
         set.equip(ArmorPiece::new(ArmorMaterial::Leather, ArmorSlot::Boots));
         // 8 + 1 = 9
         assert_eq!(set.total_defense(), 9);
@@ -482,7 +533,10 @@ mod tests {
     fn total_toughness_full_diamond_set() {
         let mut set = ArmorSet::new();
         set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Helmet));
-        set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Chestplate));
+        set.equip(ArmorPiece::new(
+            ArmorMaterial::Diamond,
+            ArmorSlot::Chestplate,
+        ));
         set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Leggings));
         set.equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Boots));
         // 4 pieces * 2.0 = 8.0

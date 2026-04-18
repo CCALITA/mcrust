@@ -406,7 +406,14 @@ static BLOCK_REGISTRY: [BlockProperties; BlockId::COUNT] = [
     // Piston (solid, opaque)
     props("piston", true, false, 0, 1.5, [92, 1, 93, 93, 93, 93]),
     // StickyPiston (solid, opaque)
-    props("sticky_piston", true, false, 0, 1.5, [94, 1, 93, 93, 93, 93]),
+    props(
+        "sticky_piston",
+        true,
+        false,
+        0,
+        1.5,
+        [94, 1, 93, 93, 93, 93],
+    ),
     // Observer (solid, opaque)
     uniform("observer", true, false, 0, 3.5, 95),
     // Hopper (solid, opaque)

@@ -1,6 +1,6 @@
-pub use crate::item_ids::*;
 use crate::ItemStack;
 use crate::SlotItem;
+pub use crate::item_ids::*;
 use std::collections::HashMap;
 
 pub use crate::recipe_data::default_recipes;

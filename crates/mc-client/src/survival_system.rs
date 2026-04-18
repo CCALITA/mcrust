@@ -155,8 +155,10 @@ mod tests {
     #[test]
     fn take_damage_with_armor_reduces_damage() {
         let mut s = SurvivalState::new();
-        s.armor
-            .equip(ArmorPiece::new(ArmorMaterial::Diamond, ArmorSlot::Chestplate));
+        s.armor.equip(ArmorPiece::new(
+            ArmorMaterial::Diamond,
+            ArmorSlot::Chestplate,
+        ));
         let actual = s.take_damage(10.0);
         assert!(actual < 10.0, "armor should reduce damage, got {actual}");
     }

@@ -128,8 +128,7 @@ impl LootTable {
 
                 if let Some(entry) = chosen {
                     // Looting extends max_count by looting_level.
-                    let effective_max =
-                        entry.max_count.saturating_add(ctx.looting_level);
+                    let effective_max = entry.max_count.saturating_add(ctx.looting_level);
                     let count = rand_range_u8(&mut rng_state, entry.min_count, effective_max);
                     if count > 0 {
                         results.push((entry.item_id, count));
@@ -143,11 +142,7 @@ impl LootTable {
 }
 
 /// Evaluate all conditions for an entry. All must pass.
-fn check_conditions(
-    conditions: &[LootCondition],
-    ctx: &LootContext,
-    rng_state: &mut u64,
-) -> bool {
+fn check_conditions(conditions: &[LootCondition], ctx: &LootContext, rng_state: &mut u64) -> bool {
     conditions.iter().all(|cond| match cond {
         LootCondition::Always => true,
         LootCondition::KilledByPlayer => ctx.killed_by_player,
@@ -237,7 +232,11 @@ fn prefer_silk_touch_entries<'a>(
         })
         .copied()
         .collect();
-    if silk.is_empty() { eligible.to_vec() } else { silk }
+    if silk.is_empty() {
+        eligible.to_vec()
+    } else {
+        silk
+    }
 }
 
 // ---------------------------------------------------------------------------

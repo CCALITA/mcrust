@@ -3,10 +3,10 @@
 //! Basic, tool, armor, and building recipe definitions. The remaining
 //! categories live in `recipe_data_ext.rs`.
 
-use crate::item_ids::*;
-use crate::recipe::{Recipe, RecipePattern, RecipeRegistry};
 use crate::ItemStack;
 use crate::SlotItem;
+use crate::item_ids::*;
+use crate::recipe::{Recipe, RecipePattern, RecipeRegistry};
 
 use crate::recipe_data_ext;
 

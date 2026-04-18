@@ -149,9 +149,7 @@ impl App {
                 );
             }
 
-            GameState::Loading {
-                chunks_needed, ..
-            } => {
+            GameState::Loading { chunks_needed, .. } => {
                 // Update chunk loading around the player
                 let player_chunk = ChunkPos::from_block(
                     self.player.position.x.floor() as i32,

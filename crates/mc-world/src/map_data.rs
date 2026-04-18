@@ -150,10 +150,9 @@ pub fn block_to_map_color(block: BlockId) -> u8 {
 
         // Redstone components → red / stone
         BlockId::RedstoneDust | BlockId::RedstoneTorch | BlockId::RedstoneLamp => map_color::RED,
-        BlockId::Lever
-        | BlockId::StoneButton
-        | BlockId::Repeater
-        | BlockId::Comparator => map_color::STONE,
+        BlockId::Lever | BlockId::StoneButton | BlockId::Repeater | BlockId::Comparator => {
+            map_color::STONE
+        }
 
         // Farming blocks
         BlockId::Farmland => map_color::DIRT,
@@ -420,7 +419,9 @@ mod tests {
         let map = generate_map(100, 200, 2, 0, &|x, z| {
             // SAFETY: single-threaded test, pointer is valid for the closure's
             // lifetime.
-            unsafe { (*visited_ptr).insert((x, z)); }
+            unsafe {
+                (*visited_ptr).insert((x, z));
+            }
             BlockId::Sand
         });
 

@@ -79,7 +79,11 @@ impl Raid {
     /// Each returned entry is `(mob_kind, position)`. Mob positions are spread
     /// in a circle around the raid centre.
     pub fn next_wave(&mut self) -> Vec<(u8, Vec3)> {
-        let wave = match self.waves.iter().find(|w| w.wave_number == self.current_wave) {
+        let wave = match self
+            .waves
+            .iter()
+            .find(|w| w.wave_number == self.current_wave)
+        {
             Some(w) => w,
             None => return Vec::new(),
         };
@@ -89,8 +93,7 @@ impl Raid {
 
         for &(mob_kind, count) in &wave.mobs {
             for _ in 0..count {
-                let angle =
-                    (index as f32 / 12.0) * std::f32::consts::TAU;
+                let angle = (index as f32 / 12.0) * std::f32::consts::TAU;
                 let radius = 32.0;
                 let pos = Vec3::new(
                     self.center.x + angle.cos() * radius,

@@ -15,20 +15,12 @@ pub fn cooked_item(raw: u16) -> Option<u16> {
 
 /// Damage dealt to entities standing on a campfire.
 pub fn campfire_damage(soul: bool) -> f32 {
-    if soul {
-        2.0
-    } else {
-        1.0
-    }
+    if soul { 2.0 } else { 1.0 }
 }
 
 /// Maximum smoke particle height (in blocks) above a campfire.
 pub fn smoke_height(hay_below: bool) -> u8 {
-    if hay_below {
-        24
-    } else {
-        10
-    }
+    if hay_below { 24 } else { 10 }
 }
 
 const COOK_TICKS: u32 = 600;
