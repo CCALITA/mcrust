@@ -16,6 +16,8 @@ pub mod explosion;
 pub mod farming;
 pub mod fire;
 pub mod fluid;
+pub mod gravity_block;
+pub mod hopper_logic;
 pub mod lectern;
 pub mod lighting;
 pub mod map_data;
@@ -75,6 +77,14 @@ pub use fire::{
     tick_fire,
 };
 pub use fluid::{FluidWorld, process_water_update};
+pub use gravity_block::{
+    FallingBlock, FallingBlockAction, check_should_fall, is_gravity_block, on_block_update,
+    tick_falling,
+};
+pub use hopper_logic::{
+    HOPPER_COOLDOWN, HopperDirection, HopperTransfer, hopper_pull, hopper_push,
+    hopper_should_transfer,
+};
 pub use lectern::{BookData, LecternState, lectern_redstone};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
 pub use map_data::{
