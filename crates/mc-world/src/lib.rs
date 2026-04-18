@@ -7,6 +7,7 @@ pub mod bucket;
 pub mod campfire;
 pub mod caves;
 pub mod chunk;
+pub mod composter;
 pub mod chunk_manager;
 pub mod climbable;
 pub mod container;
@@ -58,6 +59,7 @@ pub use climbable::{
 };
 pub use chunk::{Chunk, Section};
 pub use chunk_manager::ChunkManager;
+pub use composter::{BONE_MEAL_ID, CompostResult, compost_chance, harvest as composter_harvest, try_compost};
 pub use container::{
     ChestContainer, Container, DispenserContainer, DoubleChestContainer, HopperContainer,
     SlotContent, add_to_container, find_slot_for_item, transfer_item,
