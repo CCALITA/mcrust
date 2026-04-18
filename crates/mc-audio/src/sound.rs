@@ -303,6 +303,16 @@ impl SoundQueue {
     pub fn clear(&mut self) {
         self.events.clear();
     }
+
+    /// Returns the number of currently queued events.
+    pub fn len(&self) -> usize {
+        self.events.len()
+    }
+
+    /// Returns `true` if the queue contains no events.
+    pub fn is_empty(&self) -> bool {
+        self.events.is_empty()
+    }
 }
 
 /// Attenuates volume based on distance from the listener.

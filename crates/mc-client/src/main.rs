@@ -1,5 +1,11 @@
+mod block_interaction;
+mod command_system;
+mod inventory_system;
+mod mob_system;
 mod progression_system;
 mod save_system;
+mod sound_system;
+mod survival_system;
 mod world_tick;
 
 use std::collections::HashSet;

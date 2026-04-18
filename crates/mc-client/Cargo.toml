@@ -12,6 +12,7 @@ mc-craft = { path = "../mc-craft" }
 mc-audio = { path = "../mc-audio" }
 mc-ui = { path = "../mc-ui" }
 mc-physics = { path = "../mc-physics" }
+mc-network = { path = "../mc-network" }
 glam = { workspace = true }
 log = { workspace = true }
 env_logger = { workspace = true }
