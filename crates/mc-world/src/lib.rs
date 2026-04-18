@@ -17,6 +17,7 @@ pub mod ores;
 pub mod redstone;
 pub mod redstone_components;
 pub mod save;
+pub mod sign;
 pub mod spawn;
 pub mod structures;
 pub mod terrain;
@@ -29,8 +30,9 @@ pub use async_chunks::{
 pub use biome_terrain::BiomeTerrainGen;
 pub use block_entity::{
     BlockEntity, BlockEntityManager, BlockEntityType, BrewingStandData, ChestData, FurnaceData,
-    HopperData, SignData,
+    HopperData,
 };
+pub use sign::{SignColor, SignData, format_sign_text};
 pub use block_update::BlockUpdateQueue;
 pub use caves::CaveCarver;
 pub use chunk::{Chunk, Section};
