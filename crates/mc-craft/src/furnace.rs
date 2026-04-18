@@ -61,21 +61,81 @@ pub struct FuelValue {
 #[must_use]
 pub fn default_smelting_recipes() -> Vec<SmeltingRecipe> {
     vec![
-        SmeltingRecipe { input: ITEM_IRON_ORE,      output: recipe::ITEM_IRON_INGOT.0, xp_reward: 0.7 },
-        SmeltingRecipe { input: ITEM_GOLD_ORE,      output: recipe::ITEM_GOLD_INGOT.0, xp_reward: 1.0 },
-        SmeltingRecipe { input: ITEM_SAND,           output: ITEM_GLASS,                xp_reward: 0.1 },
-        SmeltingRecipe { input: recipe::ITEM_COBBLESTONE.0, output: ITEM_STONE,         xp_reward: 0.1 },
-        SmeltingRecipe { input: recipe::ITEM_OAK_LOG.0,     output: ITEM_CHARCOAL,      xp_reward: 0.15 },
-        SmeltingRecipe { input: ITEM_CLAY,           output: ITEM_BRICK,                xp_reward: 0.3 },
-        SmeltingRecipe { input: ITEM_RAW_BEEF,       output: ITEM_STEAK,                xp_reward: 0.35 },
-        SmeltingRecipe { input: ITEM_RAW_PORKCHOP,   output: ITEM_COOKED_PORKCHOP,      xp_reward: 0.35 },
-        SmeltingRecipe { input: ITEM_RAW_CHICKEN,    output: ITEM_COOKED_CHICKEN,        xp_reward: 0.35 },
-        SmeltingRecipe { input: ITEM_RAW_MUTTON,     output: ITEM_COOKED_MUTTON,         xp_reward: 0.35 },
-        SmeltingRecipe { input: ITEM_POTATO,         output: ITEM_BAKED_POTATO,          xp_reward: 0.35 },
-        SmeltingRecipe { input: ITEM_WET_SPONGE,     output: ITEM_SPONGE,               xp_reward: 0.15 },
-        SmeltingRecipe { input: ITEM_NETHERRACK,     output: ITEM_NETHER_BRICK,          xp_reward: 0.1 },
-        SmeltingRecipe { input: ITEM_CACTUS,         output: ITEM_GREEN_DYE,             xp_reward: 1.0 },
-        SmeltingRecipe { input: ITEM_STONE,          output: ITEM_SMOOTH_STONE,          xp_reward: 0.1 },
+        SmeltingRecipe {
+            input: ITEM_IRON_ORE,
+            output: recipe::ITEM_IRON_INGOT,
+            xp_reward: 0.7,
+        },
+        SmeltingRecipe {
+            input: ITEM_GOLD_ORE,
+            output: recipe::ITEM_GOLD_INGOT,
+            xp_reward: 1.0,
+        },
+        SmeltingRecipe {
+            input: ITEM_SAND,
+            output: ITEM_GLASS,
+            xp_reward: 0.1,
+        },
+        SmeltingRecipe {
+            input: recipe::ITEM_COBBLESTONE,
+            output: ITEM_STONE,
+            xp_reward: 0.1,
+        },
+        SmeltingRecipe {
+            input: recipe::ITEM_OAK_LOG,
+            output: ITEM_CHARCOAL,
+            xp_reward: 0.15,
+        },
+        SmeltingRecipe {
+            input: ITEM_CLAY,
+            output: ITEM_BRICK,
+            xp_reward: 0.3,
+        },
+        SmeltingRecipe {
+            input: ITEM_RAW_BEEF,
+            output: ITEM_STEAK,
+            xp_reward: 0.35,
+        },
+        SmeltingRecipe {
+            input: ITEM_RAW_PORKCHOP,
+            output: ITEM_COOKED_PORKCHOP,
+            xp_reward: 0.35,
+        },
+        SmeltingRecipe {
+            input: ITEM_RAW_CHICKEN,
+            output: ITEM_COOKED_CHICKEN,
+            xp_reward: 0.35,
+        },
+        SmeltingRecipe {
+            input: ITEM_RAW_MUTTON,
+            output: ITEM_COOKED_MUTTON,
+            xp_reward: 0.35,
+        },
+        SmeltingRecipe {
+            input: ITEM_POTATO,
+            output: ITEM_BAKED_POTATO,
+            xp_reward: 0.35,
+        },
+        SmeltingRecipe {
+            input: ITEM_WET_SPONGE,
+            output: ITEM_SPONGE,
+            xp_reward: 0.15,
+        },
+        SmeltingRecipe {
+            input: ITEM_NETHERRACK,
+            output: ITEM_NETHER_BRICK,
+            xp_reward: 0.1,
+        },
+        SmeltingRecipe {
+            input: ITEM_CACTUS,
+            output: ITEM_GREEN_DYE,
+            xp_reward: 1.0,
+        },
+        SmeltingRecipe {
+            input: ITEM_STONE,
+            output: ITEM_SMOOTH_STONE,
+            xp_reward: 0.1,
+        },
     ]
 }
 
@@ -83,12 +143,30 @@ pub fn default_smelting_recipes() -> Vec<SmeltingRecipe> {
 #[must_use]
 pub fn default_fuel_values() -> Vec<FuelValue> {
     vec![
-        FuelValue { item: recipe::ITEM_COAL.0,        burn_ticks: 1600 },
-        FuelValue { item: recipe::ITEM_OAK_PLANKS.0,  burn_ticks: 300 },
-        FuelValue { item: recipe::ITEM_STICK.0,        burn_ticks: 100 },
-        FuelValue { item: recipe::ITEM_OAK_LOG.0,      burn_ticks: 300 },
-        FuelValue { item: ITEM_WOODEN_TOOL,            burn_ticks: 200 },
-        FuelValue { item: ITEM_BLAZE_ROD,              burn_ticks: 2400 },
+        FuelValue {
+            item: recipe::ITEM_COAL,
+            burn_ticks: 1600,
+        },
+        FuelValue {
+            item: recipe::ITEM_OAK_PLANKS,
+            burn_ticks: 300,
+        },
+        FuelValue {
+            item: recipe::ITEM_STICK,
+            burn_ticks: 100,
+        },
+        FuelValue {
+            item: recipe::ITEM_OAK_LOG,
+            burn_ticks: 300,
+        },
+        FuelValue {
+            item: ITEM_WOODEN_TOOL,
+            burn_ticks: 200,
+        },
+        FuelValue {
+            item: ITEM_BLAZE_ROD,
+            burn_ticks: 2400,
+        },
     ]
 }
 
@@ -176,15 +254,11 @@ impl Furnace {
     ///
     /// Returns `Some(xp)` if an item finished smelting this tick,
     /// `None` otherwise.
-    pub fn tick(
-        &mut self,
-        recipes: &[SmeltingRecipe],
-        fuels: &[FuelValue],
-    ) -> Option<f32> {
+    pub fn tick(&mut self, recipes: &[SmeltingRecipe], fuels: &[FuelValue]) -> Option<f32> {
         // Determine whether the current input matches a recipe.
-        let recipe = self.input.and_then(|(input_id, _)| {
-            recipes.iter().find(|r| r.input == input_id)
-        });
+        let recipe = self
+            .input
+            .and_then(|(input_id, _)| recipes.iter().find(|r| r.input == input_id));
 
         // If there is no valid recipe for the current input, reset progress
         // and do nothing else.
@@ -299,7 +373,7 @@ mod tests {
         let r = recipes.iter().find(|r| r.input == ITEM_IRON_ORE);
         assert!(r.is_some());
         let r = r.expect("iron ore recipe");
-        assert_eq!(r.output, recipe::ITEM_IRON_INGOT.0);
+        assert_eq!(r.output, recipe::ITEM_IRON_INGOT);
         assert!((r.xp_reward - 0.7).abs() < f32::EPSILON);
     }
 
@@ -320,7 +394,7 @@ mod tests {
         let mut furnace = Furnace::new();
 
         furnace.insert_input(ITEM_IRON_ORE, 1);
-        furnace.insert_fuel(recipe::ITEM_COAL.0, 1);
+        furnace.insert_fuel(recipe::ITEM_COAL, 1);
 
         let mut total_xp: f32 = 0.0;
         for _ in 0..COOK_TOTAL_DEFAULT {
@@ -330,7 +404,7 @@ mod tests {
         }
 
         assert!((total_xp - 0.7).abs() < f32::EPSILON, "expected 0.7 xp");
-        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT.0, 1)));
+        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT, 1)));
         assert!(furnace.input.is_none(), "input should be consumed");
     }
 
@@ -342,12 +416,12 @@ mod tests {
         let mut furnace = Furnace::new();
 
         furnace.insert_input(ITEM_IRON_ORE, 2);
-        furnace.insert_fuel(recipe::ITEM_COAL.0, 2);
+        furnace.insert_fuel(recipe::ITEM_COAL, 2);
 
         // First tick consumes one fuel unit.
         furnace.tick(&recipes, &fuels);
 
-        assert_eq!(furnace.fuel, Some((recipe::ITEM_COAL.0, 1)));
+        assert_eq!(furnace.fuel, Some((recipe::ITEM_COAL, 1)));
         assert!(furnace.burn_time_remaining > 0);
     }
 
@@ -358,7 +432,7 @@ mod tests {
 
         // Use sticks (100 ticks burn time).
         furnace.insert_input(ITEM_IRON_ORE, 10);
-        furnace.insert_fuel(recipe::ITEM_STICK.0, 1);
+        furnace.insert_fuel(recipe::ITEM_STICK, 1);
 
         furnace.tick(&recipes, &fuels);
         // After first tick: burn_time_remaining = 100 - 1 = 99
@@ -399,7 +473,7 @@ mod tests {
         assert_eq!(furnace.cook_progress, 0);
 
         // Add fuel and finish smelting.
-        furnace.insert_fuel(recipe::ITEM_COAL.0, 1);
+        furnace.insert_fuel(recipe::ITEM_COAL, 1);
         let mut total_xp: f32 = 0.0;
         for _ in 0..COOK_TOTAL_DEFAULT {
             if let Some(xp) = furnace.tick(&recipes, &fuels) {
@@ -408,7 +482,7 @@ mod tests {
         }
 
         assert!((total_xp - 0.7).abs() < f32::EPSILON);
-        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT.0, 1)));
+        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT, 1)));
     }
 
     // ── Recipe matching ───────────────────────────────────────────────
@@ -419,8 +493,8 @@ mod tests {
         let mut furnace = Furnace::new();
 
         // Insert an item with no smelting recipe.
-        furnace.insert_input(recipe::ITEM_DIAMOND.0, 1);
-        furnace.insert_fuel(recipe::ITEM_COAL.0, 1);
+        furnace.insert_input(recipe::ITEM_DIAMOND, 1);
+        furnace.insert_fuel(recipe::ITEM_COAL, 1);
 
         for _ in 0..300 {
             let xp = furnace.tick(&recipes, &fuels);
@@ -439,7 +513,7 @@ mod tests {
         let mut furnace = Furnace::new();
 
         furnace.insert_input(ITEM_SAND, 1);
-        furnace.insert_fuel(recipe::ITEM_COAL.0, 1);
+        furnace.insert_fuel(recipe::ITEM_COAL, 1);
 
         let mut xp_ticks = 0u32;
         for _ in 0..COOK_TOTAL_DEFAULT {
@@ -472,17 +546,17 @@ mod tests {
     #[test]
     fn insert_fuel_merges_same_item() {
         let mut furnace = Furnace::new();
-        assert!(furnace.insert_fuel(recipe::ITEM_COAL.0, 3));
-        assert!(furnace.insert_fuel(recipe::ITEM_COAL.0, 2));
-        assert_eq!(furnace.fuel, Some((recipe::ITEM_COAL.0, 5)));
+        assert!(furnace.insert_fuel(recipe::ITEM_COAL, 3));
+        assert!(furnace.insert_fuel(recipe::ITEM_COAL, 2));
+        assert_eq!(furnace.fuel, Some((recipe::ITEM_COAL, 5)));
     }
 
     #[test]
     fn take_output_clears_slot() {
         let mut furnace = Furnace::new();
-        furnace.output = Some((recipe::ITEM_IRON_INGOT.0, 3));
+        furnace.output = Some((recipe::ITEM_IRON_INGOT, 3));
         let taken = furnace.take_output();
-        assert_eq!(taken, Some((recipe::ITEM_IRON_INGOT.0, 3)));
+        assert_eq!(taken, Some((recipe::ITEM_IRON_INGOT, 3)));
         assert!(furnace.output.is_none());
     }
 
@@ -500,7 +574,7 @@ mod tests {
         let mut furnace = Furnace::new();
 
         furnace.insert_input(ITEM_IRON_ORE, 3);
-        furnace.insert_fuel(recipe::ITEM_COAL.0, 3);
+        furnace.insert_fuel(recipe::ITEM_COAL, 3);
 
         let mut total_xp: f32 = 0.0;
         // 3 items * 200 ticks each = 600 ticks maximum.
@@ -511,7 +585,7 @@ mod tests {
         }
 
         assert!((total_xp - 2.1).abs() < 0.001, "expected 3 * 0.7 = 2.1 xp");
-        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT.0, 3)));
+        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT, 3)));
         assert!(furnace.input.is_none());
     }
 
@@ -523,7 +597,7 @@ mod tests {
         let mut furnace = Furnace::new();
 
         furnace.insert_input(ITEM_IRON_ORE, 1);
-        furnace.insert_fuel(recipe::ITEM_COAL.0, 1);
+        furnace.insert_fuel(recipe::ITEM_COAL, 1);
         // Pre-fill output with a different item.
         furnace.output = Some((ITEM_GLASS, 10));
 
@@ -546,7 +620,7 @@ mod tests {
         // Sticks burn for 100 ticks but cooking takes 200.
         // Need 2 sticks to smelt one item.
         furnace.insert_input(ITEM_IRON_ORE, 1);
-        furnace.insert_fuel(recipe::ITEM_STICK.0, 2);
+        furnace.insert_fuel(recipe::ITEM_STICK, 2);
 
         let mut total_xp: f32 = 0.0;
         for _ in 0..COOK_TOTAL_DEFAULT {
@@ -556,7 +630,7 @@ mod tests {
         }
 
         assert!((total_xp - 0.7).abs() < f32::EPSILON);
-        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT.0, 1)));
+        assert_eq!(furnace.output, Some((recipe::ITEM_IRON_INGOT, 1)));
         assert!(furnace.fuel.is_none(), "both sticks should be consumed");
     }
 }

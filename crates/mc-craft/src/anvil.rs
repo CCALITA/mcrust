@@ -117,8 +117,10 @@ mod tests {
         let right_enchants = [(1, 2), (2, 1)];
 
         let result = anvil_combine(
-            100, 1, // left: iron sword
-            100, 1, // right: iron sword
+            100,
+            1, // left: iron sword
+            100,
+            1, // right: iron sword
             &left_enchants,
             &right_enchants,
         );
@@ -137,8 +139,10 @@ mod tests {
         let right_enchants = [(2, 3)];
 
         let result = anvil_combine(
-            100, 1,   // left: iron sword
-            387, 1,   // right: enchanted book
+            100,
+            1, // left: iron sword
+            387,
+            1, // right: enchanted book
             &left_enchants,
             &right_enchants,
         );
@@ -171,9 +175,9 @@ mod tests {
     #[test]
     fn repair_cost_doubles_each_use() {
         assert_eq!(repair_cost(0), 0);
-        assert_eq!(repair_cost(1), 1);  // 2^1 - 1
-        assert_eq!(repair_cost(2), 3);  // 2^2 - 1
-        assert_eq!(repair_cost(3), 7);  // 2^3 - 1
+        assert_eq!(repair_cost(1), 1); // 2^1 - 1
+        assert_eq!(repair_cost(2), 3); // 2^2 - 1
+        assert_eq!(repair_cost(3), 7); // 2^3 - 1
         assert_eq!(repair_cost(4), 15); // 2^4 - 1
     }
 

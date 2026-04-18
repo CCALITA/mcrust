@@ -119,7 +119,10 @@ mod tests {
             locked: false,
             data: vec![10, 20],
         };
-        assert!(extend_map(&map).is_none(), "extend beyond MAX_SCALE must return None");
+        assert!(
+            extend_map(&map).is_none(),
+            "extend beyond MAX_SCALE must return None"
+        );
     }
 
     #[test]
@@ -127,7 +130,10 @@ mod tests {
         let mut map = sample_map();
         lock_map(&mut map);
         assert!(map.locked);
-        assert!(extend_map(&map).is_none(), "locked map must not be extendable");
+        assert!(
+            extend_map(&map).is_none(),
+            "locked map must not be extendable"
+        );
     }
 
     #[test]
