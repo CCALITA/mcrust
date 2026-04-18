@@ -22,6 +22,12 @@ impl fmt::Display for ProtocolError {
 
 impl std::error::Error for ProtocolError {}
 
+impl From<ProtocolError> for std::io::Error {
+    fn from(err: ProtocolError) -> Self {
+        std::io::Error::new(std::io::ErrorKind::InvalidData, err.to_string())
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Encode / Decode
 // ---------------------------------------------------------------------------

@@ -74,9 +74,7 @@ impl ClientConnection {
 
     /// Encode and send a server packet to this client.
     pub fn send(&mut self, packet: &ServerPacket) -> io::Result<()> {
-        let encoded = encode_server(packet).map_err(|e| {
-            io::Error::new(io::ErrorKind::InvalidData, e.to_string())
-        })?;
+        let encoded = encode_server(packet)?;
         let framed = frame(encoded);
         self.stream.write_all(&framed)
     }
