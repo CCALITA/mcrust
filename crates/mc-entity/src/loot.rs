@@ -7,7 +7,9 @@ use mc_core::BlockId;
 const COBBLESTONE: u16 = BlockId::Cobblestone as u16;
 const DIRT: u16 = BlockId::Dirt as u16;
 const COAL_ORE: u16 = BlockId::CoalOre as u16;
+#[allow(dead_code)]
 const IRON_ORE: u16 = BlockId::IronOre as u16;
+#[allow(dead_code)]
 const GOLD_ORE: u16 = BlockId::GoldOre as u16;
 const GRAVEL: u16 = BlockId::Gravel as u16;
 
@@ -642,7 +644,11 @@ impl LootTable {
                     continue;
                 }
 
-                let total_weight: u32 = eligible.iter().map(|e| e.weight).sum();
+                // When silk touch is active, prefer entries whose conditions
+                // include SilkTouch over generic Always entries.
+                let final_entries = prefer_silk_touch_entries(&eligible, ctx.silk_touch);
+
+                let total_weight: u32 = final_entries.iter().map(|e| e.weight).sum();
                 if total_weight == 0 {
                     continue;
                 }
@@ -650,7 +656,7 @@ impl LootTable {
                 let pick = (splitmix(&mut rng_state) % total_weight as u64) as u32;
                 let mut cumulative = 0u32;
                 let mut chosen: Option<&LootEntry> = None;
-                for entry in &eligible {
+                for entry in &final_entries {
                     cumulative += entry.weight;
                     if pick < cumulative {
                         chosen = Some(entry);
@@ -660,8 +666,7 @@ impl LootTable {
 
                 if let Some(entry) = chosen {
                     // Fortune extends max_count for block drops.
-                    let effective_max =
-                        entry.max_count.saturating_add(ctx.fortune_level);
+                    let effective_max = entry.max_count.saturating_add(ctx.fortune_level);
                     let count = rand_range_u8(&mut rng_state, entry.min_count, effective_max);
                     if count > 0 {
                         results.push((entry.item_id, count));
@@ -672,6 +677,28 @@ impl LootTable {
 
         results
     }
+}
+
+/// When silk touch is active, filter to only silk-touch-conditioned entries
+/// (if any exist). This prevents `Always` entries from competing with
+/// silk-touch-specific drops.
+fn prefer_silk_touch_entries<'a>(
+    eligible: &[&'a LootEntry],
+    silk_touch: bool,
+) -> Vec<&'a LootEntry> {
+    if !silk_touch {
+        return eligible.to_vec();
+    }
+    let silk: Vec<&LootEntry> = eligible
+        .iter()
+        .filter(|e| {
+            e.conditions
+                .iter()
+                .any(|c| matches!(c, LootCondition::SilkTouch))
+        })
+        .copied()
+        .collect();
+    if silk.is_empty() { eligible.to_vec() } else { silk }
 }
 
 // ---------------------------------------------------------------------------
