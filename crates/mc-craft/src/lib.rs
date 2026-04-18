@@ -5,7 +5,10 @@ pub mod enchant_table;
 pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
+pub mod item_ids;
 pub mod recipe;
+pub mod recipe_data;
+pub mod recipe_data_ext;
 pub mod smithing;
 pub mod workstations;
 
