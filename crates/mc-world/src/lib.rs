@@ -122,8 +122,8 @@ pub use redstone_components::{
     PistonAction, hopper_tick_rate, lamp_state, noteblock_pitch, piston_can_push, piston_push_limit,
 };
 pub use save::{
-    ChunkSave, SectionSave, WorldSave, chunk_to_save, load_chunk, load_world, save_chunk,
-    save_to_chunk, save_world,
+    ChunkSave, SaveError, SectionSave, WorldSave, chunk_to_save, load_chunk, load_world,
+    save_chunk, save_to_chunk, save_world,
 };
 pub use sensors::{
     DaylightDetector, ObserverState, daylight_signal, observer_check, observer_tick,
