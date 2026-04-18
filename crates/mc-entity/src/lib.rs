@@ -3,6 +3,7 @@ pub mod ai;
 pub mod behavior;
 pub mod combat;
 pub mod component;
+pub mod drops;
 pub mod entity;
 pub mod experience;
 pub mod fishing;
@@ -25,6 +26,9 @@ pub use combat::{
 pub use component::{
     Collider, ComponentStore, Gravity, Health, MobComponent, MobKind, Position, Rotation, Velocity,
     World,
+};
+pub use drops::{
+    ItemDrop, XpOrb, merge_nearby_drops, spawn_block_drops, spawn_mob_drops, tick_drops, tick_xp,
 };
 pub use entity::{EntityId, EntityManager};
 pub use experience::{
