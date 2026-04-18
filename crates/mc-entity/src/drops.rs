@@ -381,10 +381,13 @@ mod tests {
         assert_eq!(drops.len(), 1);
 
         // Tick with enough dt to clear delay (0.9 remaining after first tick)
-        // But gravity will move the drop, so place player at same spot
-        // Reset position for clarity
+        // Reset position and velocity — gravity will move it during tick,
+        // so place player at the post-gravity position
         drops[0].position = Vec3::ZERO;
         drops[0].velocity = Vec3::ZERO;
+        // After tick with dt=1.0: velocity.y = GRAVITY*1.0, pos.y = GRAVITY*1.0
+        let expected_y = GRAVITY * 1.0;
+        let player_pos = Vec3::new(0.0, expected_y, 0.0);
         let picked = DropSystem::tick_drops(&mut drops, player_pos, 1.0);
         assert_eq!(picked.len(), 1);
         assert_eq!(picked[0], (1, 1));
