@@ -7,6 +7,7 @@ pub mod component;
 pub mod decoration;
 pub mod difficulty;
 pub mod drops;
+pub mod effects;
 pub mod entity;
 pub mod experience;
 pub mod fishing;
@@ -42,6 +43,10 @@ pub use component::{
 pub use entity::{EntityId, EntityManager};
 pub use difficulty::{Difficulty, regional_difficulty};
 pub use drops::{DropSystem, ItemDrop, XpOrb, spawn_block_drops, spawn_mob_drops};
+pub use effects::{
+    ActiveEffect, EffectManager, StatusEffect, apply_jump_modifier, apply_slowness_modifier,
+    apply_speed_modifier, apply_strength_modifier,
+};
 pub use experience::{
     ExperienceComponent, add_xp, remove_xp_for_enchanting, total_xp_for_level, xp_for_next_level,
     xp_from_block, xp_from_mob, xp_from_smelting,
