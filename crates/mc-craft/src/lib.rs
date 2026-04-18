@@ -1,3 +1,4 @@
+pub mod anvil;
 pub mod brewing;
 pub mod enchanting;
 pub mod furnace;
@@ -16,6 +17,9 @@ pub struct ItemStack {
     pub count: u8,
 }
 
+pub use anvil::{
+    anvil_combine, anvil_degrades, anvil_rename, merge_enchantments, repair_cost, AnvilResult,
+};
 pub use brewing::{
     BrewingIngredient, BrewingRecipe, BrewingStand, PotionEffect, PotionType, StatusEffectManager,
 };
