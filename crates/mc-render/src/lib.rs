@@ -1,8 +1,14 @@
+//! wgpu-based rendering: chunk meshing, sky, entities, particles, and water.
+//!
+//! Provides the [`Renderer`] pipeline, [`Camera`] with frustum culling,
+//! [`ChunkMesh`] construction, [`ParticleSystem`], [`DayNightCycle`] sky, and translucent water.
+
 pub mod block_break;
 pub mod camera;
 pub mod entity_render;
 pub mod frustum;
 pub mod mesh;
+pub mod mob_models;
 pub mod particle;
 pub mod renderer;
 pub mod shader;
