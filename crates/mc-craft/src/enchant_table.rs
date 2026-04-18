@@ -107,8 +107,7 @@ pub fn refresh_options(state: &mut EnchantTableState) {
                     selected.push((fallback_id, level));
                 }
             } else {
-                let level_hash =
-                    deterministic_hash(state.seed, (slot as u64 + 1) * 200 + i as u64);
+                let level_hash = deterministic_hash(state.seed, (slot as u64 + 1) * 200 + i as u64);
                 let level = ((level_hash % 5) + 1) as u8;
                 selected.push((ench_id, level));
             }

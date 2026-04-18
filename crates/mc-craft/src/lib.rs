@@ -11,18 +11,17 @@ pub mod workstations;
 
 /// Minimal item representation for crafting.
 /// Will be replaced by `mc_core::item::ItemId` later.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct SlotItem(pub u16);
+pub type SlotItem = u16;
 
 /// A stack of items with a count.
 #[derive(Debug, Clone)]
 pub struct ItemStack {
-    pub item: SlotItem,
+    pub item: u16,
     pub count: u8,
 }
 
 pub use anvil::{
-    anvil_combine, anvil_degrades, anvil_rename, merge_enchantments, repair_cost, AnvilResult,
+    AnvilResult, anvil_combine, anvil_degrades, anvil_rename, merge_enchantments, repair_cost,
 };
 pub use brewing::{
     BrewingIngredient, BrewingRecipe, BrewingStand, PotionEffect, PotionType, StatusEffectManager,
@@ -34,12 +33,12 @@ pub use enchant_table::{
     EnchantTableState, apply_enchant, bookshelf_power, can_enchant, refresh_options,
 };
 pub use enchanting::{
-    apply_enchantment_effect, calculate_enchantment_cost, generate_enchantment_options,
     EnchantOption, EnchantedItem, Enchantment, EnchantmentCategory, EnchantmentId,
-    EnchantmentProperties,
+    EnchantmentProperties, apply_enchantment_effect, calculate_enchantment_cost,
+    generate_enchantment_options,
 };
 pub use furnace::{
-    default_fuel_values, default_smelting_recipes, FuelValue, Furnace, SmeltingRecipe,
+    FuelValue, Furnace, SmeltingRecipe, default_fuel_values, default_smelting_recipes,
 };
 pub use inventory::Inventory;
 pub use recipe::{CraftingGrid, Recipe, RecipePattern, RecipeRegistry};

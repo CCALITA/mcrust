@@ -209,11 +209,11 @@ mod tests {
     use crate::SlotItem;
 
     fn stone() -> SlotItem {
-        SlotItem(1)
+        1
     }
 
     fn dirt() -> SlotItem {
-        SlotItem(2)
+        2
     }
 
     #[test]
