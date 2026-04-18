@@ -7,6 +7,7 @@ pub mod inventory;
 pub mod recipe;
 pub mod smithing;
 pub mod workstations;
+pub mod cartography;
 
 /// Minimal item representation for crafting.
 /// Will be replaced by `mc_core::item::ItemId` later.
@@ -40,6 +41,7 @@ pub use smithing::{
     SmithingRecipe, SmithingTable, default_smithing_recipes, preserve_enchantments, try_smith,
 };
 pub use workstations::{
+pub use cartography::{CartographyAction, SimpleMapData, cartography_table, clone_map, extend_map, lock_map};
     GrindstoneResult, StonecutterRecipe, default_stonecutter_recipes, grindstone_disenchant,
     grindstone_repair, loom_apply,
 };
