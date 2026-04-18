@@ -2,11 +2,14 @@ mod block_interaction;
 mod command_system;
 mod inventory_system;
 mod mob_system;
+mod player;
 mod progression_system;
 mod save_system;
 mod sound_system;
 mod survival_system;
 mod world_tick;
+
+use player::*;
 
 use std::collections::HashSet;
 use std::sync::Arc;
@@ -32,19 +35,8 @@ use mc_ui::hud::HudState;
 use mc_world::ChunkManager;
 use mc_world::nether::DimensionId;
 
-// ---------------------------------------------------------------------------
-// Physics constants
-// ---------------------------------------------------------------------------
-
-const GRAVITY: f32 = -32.0;
-const JUMP_VELOCITY: f32 = 8.5;
-const WALK_SPEED: f32 = 4.3;
-const SPRINT_SPEED: f32 = 5.6;
-const SNEAK_SPEED: f32 = 1.3;
-const MOUSE_SENSITIVITY: f32 = 0.003;
 const TICK_DURATION: Duration = Duration::from_millis(50); // 20 tps
 const RENDER_DISTANCE: i32 = 8;
-const REACH_DISTANCE: f32 = 5.0;
 
 // ---------------------------------------------------------------------------
 // Game state machine
@@ -72,56 +64,6 @@ const CHUNKS_NEEDED_FOR_PLAY: usize =
 
 /// Void death threshold — player falls below this Y coordinate.
 const VOID_DEATH_Y: f32 = -100.0;
-
-/// Spawn position.
-const SPAWN_POSITION: Vec3 = Vec3::new(0.0, 100.0, 0.0);
-
-// ---------------------------------------------------------------------------
-// PlayerState
-// ---------------------------------------------------------------------------
-
-struct PlayerState {
-    position: Vec3,
-    velocity: Vec3,
-    on_ground: bool,
-    yaw: f32,
-    pitch: f32,
-}
-
-impl PlayerState {
-    fn new(spawn: Vec3) -> Self {
-        Self {
-            position: spawn,
-            velocity: Vec3::ZERO,
-            on_ground: false,
-            yaw: 0.0,
-            pitch: 0.0,
-        }
-    }
-
-    fn eye_position(&self) -> Vec3 {
-        self.position + Vec3::new(0.0, collision::PLAYER_EYE_HEIGHT, 0.0)
-    }
-
-    fn forward_xz(&self) -> Vec3 {
-        Vec3::new(-self.yaw.sin(), 0.0, self.yaw.cos()).normalize_or_zero()
-    }
-
-    fn right_xz(&self) -> Vec3 {
-        let fwd = self.forward_xz();
-        Vec3::new(fwd.z, 0.0, -fwd.x)
-    }
-
-    /// Full 3D look direction (includes pitch).
-    fn look_direction(&self) -> Vec3 {
-        Vec3::new(
-            -self.yaw.sin() * self.pitch.cos(),
-            self.pitch.sin(),
-            self.yaw.cos() * self.pitch.cos(),
-        )
-        .normalize_or_zero()
-    }
-}
 
 // ---------------------------------------------------------------------------
 // Application state
