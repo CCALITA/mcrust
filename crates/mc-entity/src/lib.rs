@@ -28,6 +28,7 @@ pub mod tool_use;
 pub mod trident;
 pub mod vehicle;
 pub mod villager;
+pub mod villager_trades;
 pub mod villager_job;
 pub mod wither;
 
@@ -92,9 +93,10 @@ pub use trident::{
     riptide_can_use, riptide_launch, throw_trident,
 };
 pub use villager::{
-    TradeOffer, TradeResult, VillagerData, VillagerProfession, default_trades, execute_trade,
+    TradeOffer, TradeResult, VillagerData, VillagerProfession, execute_trade,
     xp_for_level,
 };
+pub use villager_trades::default_trades;
 pub use villager_job::{
     VillagerJobBinding, WorkstationType, bind_villager, find_workstation, try_restock, unbind,
     workstation_profession,
