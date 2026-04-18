@@ -6,6 +6,7 @@ pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
 pub mod item_ids;
+pub mod potion_data;
 pub mod recipe_data;
 pub mod recipe_data_ext;
 pub mod recipe;
@@ -26,9 +27,8 @@ pub struct ItemStack {
 pub use anvil::{
     AnvilResult, anvil_combine, anvil_degrades, anvil_rename, merge_enchantments, repair_cost,
 };
-pub use brewing::{
-    BrewingIngredient, BrewingRecipe, BrewingStand, PotionEffect, PotionType, StatusEffectManager,
-};
+pub use brewing::{BrewingIngredient, BrewingRecipe, BrewingStand};
+pub use potion_data::{PotionEffect, PotionType, StatusEffectManager};
 pub use cartography::{
     CartographyAction, SimpleMapData, cartography_table, clone_map, extend_map, lock_map,
 };
