@@ -1,4 +1,5 @@
 pub mod async_chunks;
+pub mod beacon;
 pub mod biome_terrain;
 pub mod block_entity;
 pub mod block_update;
@@ -26,6 +27,10 @@ pub mod world_border;
 
 pub use async_chunks::{
     AsyncChunkLoader, ChunkGenConfig, ChunkLoadRequest, generate_chunk_standalone,
+};
+pub use beacon::{
+    BeaconEffect, BeaconState, available_effects, beacon_range, is_beacon_base_block, is_in_range,
+    scan_pyramid,
 };
 pub use biome_terrain::BiomeTerrainGen;
 pub use block_entity::{
