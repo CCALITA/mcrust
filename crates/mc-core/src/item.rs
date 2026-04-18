@@ -137,10 +137,18 @@ pub enum ItemId {
     Bucket,
     WaterBucket,
     LavaBucket,
+
+    // Farming items -----------------------------------------------------------
+    WheatItem,
+    WheatSeeds,
+    Beetroot,
+    BeetrootSeeds,
+    MelonSeeds,
+    PumpkinSeeds,
 }
 
 impl ItemId {
-    pub const COUNT: usize = 72;
+    pub const COUNT: usize = 78;
 
     pub fn properties(self) -> &'static ItemProperties {
         &ITEM_REGISTRY[self as usize]
@@ -324,6 +332,13 @@ static ITEM_REGISTRY: [ItemProperties; ItemId::COUNT] = [
     material_stack16("bucket"),
     material_stack16("water_bucket"),
     material_stack16("lava_bucket"),
+    // Farming items (6) -------------------------------------------------------
+    material("wheat"),
+    material("wheat_seeds"),
+    food("beetroot", 1),
+    material("beetroot_seeds"),
+    material("melon_seeds"),
+    material("pumpkin_seeds"),
 ];
 
 // ---------------------------------------------------------------------------
