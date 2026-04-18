@@ -22,6 +22,7 @@ pub mod statistics;
 pub mod survival;
 pub mod taming;
 pub mod tool_use;
+pub mod trident;
 pub mod vehicle;
 pub mod villager;
 pub mod wither;
@@ -81,6 +82,10 @@ pub use taming::{
 };
 pub use tool_use::{
     BreakProgress, DurabilityComponent, calculate_break_time, preferred_tool, use_tool,
+};
+pub use trident::{
+    TRIDENT_MELEE_DAMAGE, TRIDENT_THROW_DAMAGE, TridentMode, channeling_strike, loyalty_return,
+    riptide_can_use, riptide_launch, throw_trident,
 };
 pub use villager::{
     TradeOffer, TradeResult, VillagerData, VillagerProfession, default_trades, execute_trade,
