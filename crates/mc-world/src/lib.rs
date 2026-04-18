@@ -7,6 +7,7 @@ pub mod bucket;
 pub mod caves;
 pub mod chunk;
 pub mod chunk_manager;
+pub mod climbable;
 pub mod container;
 pub mod end;
 pub mod explosion;
@@ -44,6 +45,10 @@ pub use block_entity::{
 pub use sign::{SignColor, SignData, format_sign_text};
 pub use block_update::BlockUpdateQueue;
 pub use caves::CaveCarver;
+pub use climbable::{
+    CLIMBING_SPEED, SCAFFOLDING_MAX_DISTANCE, can_place_scaffolding, is_climbable,
+    scaffolding_distance, should_scaffolding_fall,
+};
 pub use chunk::{Chunk, Section};
 pub use chunk_manager::ChunkManager;
 pub use container::{
