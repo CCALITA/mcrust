@@ -4,6 +4,8 @@ pub mod armor;
 pub mod behavior;
 pub mod combat;
 pub mod component;
+pub mod decoration;
+pub mod difficulty;
 pub mod drops;
 pub mod entity;
 pub mod experience;
@@ -15,7 +17,9 @@ pub mod special_mobs;
 pub mod statistics;
 pub mod survival;
 pub mod tool_use;
+pub mod vehicle;
 pub mod villager;
+pub mod wither;
 
 pub use advancement::{
     ADVANCEMENT_REGISTRY, AdvancementId, AdvancementProperties, AdvancementTracker,
@@ -36,6 +40,7 @@ pub use component::{
     World,
 };
 pub use entity::{EntityId, EntityManager};
+pub use difficulty::{Difficulty, regional_difficulty};
 pub use drops::{DropSystem, ItemDrop, XpOrb, spawn_block_drops, spawn_mob_drops};
 pub use experience::{
     ExperienceComponent, add_xp, remove_xp_for_enchanting, total_xp_for_level, xp_for_next_level,
@@ -67,4 +72,12 @@ pub use villager::{
 pub use special_mobs::{
     EndermanState, PotionType, WitchAction, choose_witch_action, is_player_looking_at,
     slime_damage, slime_health, split_on_death, teleport_away,
+};
+pub use vehicle::{Vehicle, VehicleType, apply_input, boat_tick, minecart_tick};
+
+pub use decoration::{
+    Banner, BannerPattern, PaintingVariant, choose_painting,
+};
+pub use wither::{
+    DamageResult, Wither, WitherPhase, WitherSkull, XP_REWARD, wither_damage, wither_tick,
 };
