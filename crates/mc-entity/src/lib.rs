@@ -14,6 +14,8 @@ pub mod experience;
 pub mod fishing;
 pub mod golem;
 pub mod loot;
+pub mod loot_blocks;
+pub mod loot_mobs;
 pub mod pathfinding;
 pub mod projectile;
 pub mod raid;
@@ -62,9 +64,9 @@ pub use experience::{
 pub use fishing::{
     FishType, FishingAction, FishingLoot, FishingState, FishingSystem, JunkType, TreasureType,
 };
-pub use loot::{
-    LootCondition, LootContext, LootEntry, LootPool, LootTable, block_loot_table, mob_loot_table,
-};
+pub use loot::{LootCondition, LootContext, LootEntry, LootPool, LootTable};
+pub use loot_blocks::block_loot_table;
+pub use loot_mobs::mob_loot_table;
 pub use pathfinding::{AStarResult, find_path};
 pub use projectile::{
     Projectile, ProjectileEvent, ProjectileType, arrow_damage, ender_pearl_teleport_damage,
