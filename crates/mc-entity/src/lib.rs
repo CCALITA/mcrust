@@ -18,6 +18,7 @@ pub mod spawning;
 pub mod special_mobs;
 pub mod statistics;
 pub mod survival;
+pub mod taming;
 pub mod tool_use;
 pub mod vehicle;
 pub mod villager;
@@ -67,6 +68,9 @@ pub use statistics::{StatisticId, StatisticsTracker};
 pub use survival::{
     EXHAUSTION_JUMP, EXHAUSTION_SPRINT_PER_METER, EXHAUSTION_WALK_PER_METER, HungerComponent,
     HungerSystem, food_values,
+};
+pub use taming::{
+    BabyMob, BreedingComponent, FeedResult, TameableComponent, feed_animal, try_breed, try_tame,
 };
 pub use tool_use::{
     BreakProgress, DurabilityComponent, calculate_break_time, preferred_tool, use_tool,
