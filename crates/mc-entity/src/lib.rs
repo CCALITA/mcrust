@@ -9,6 +9,7 @@ pub mod difficulty;
 pub mod drops;
 pub mod effects;
 pub mod entity;
+pub mod equipment;
 pub mod experience;
 pub mod fishing;
 pub mod loot;
@@ -44,6 +45,7 @@ pub use component::{
     World,
 };
 pub use entity::{EntityId, EntityManager};
+pub use equipment::{ElytraState, ShieldState, elytra_physics, firework_boost};
 pub use difficulty::{Difficulty, regional_difficulty};
 pub use drops::{DropSystem, ItemDrop, XpOrb, spawn_block_drops, spawn_mob_drops};
 pub use effects::{
