@@ -18,6 +18,7 @@ pub mod map_data;
 pub mod nether;
 pub mod noise_terrain;
 pub mod ores;
+pub mod rails;
 pub mod redstone;
 pub mod redstone_components;
 pub mod save;
@@ -64,11 +65,15 @@ pub use farming::{CropState, CropType, can_plant_on, harvest, is_hydrated, tick_
 pub use fluid::{FluidWorld, process_water_update};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
 pub use map_data::{
-    MapData, MAP_SIZE, block_to_map_color, generate_map, map_color, map_color_to_rgb,
+    MAP_SIZE, MapData, block_to_map_color, generate_map, map_color, map_color_to_rgb,
 };
 pub use nether::{DimensionId, NetherTerrainGen};
 pub use noise_terrain::NoiseTerrainGen;
 pub use ores::OreGenerator;
+pub use rails::{
+    RailNetwork, RailShape, RailType, detector_rail_signal, determine_rail_shape, is_rail,
+    powered_rail_effect, rail_type_from_id,
+};
 pub use redstone::{RedstoneCircuit, RedstoneWorld, is_power_source, propagate_redstone};
 pub use redstone_components::{
     PistonAction, hopper_tick_rate, lamp_state, noteblock_pitch, piston_can_push, piston_push_limit,
