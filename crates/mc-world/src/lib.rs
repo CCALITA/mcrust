@@ -5,10 +5,12 @@ pub mod block_update;
 pub mod caves;
 pub mod chunk;
 pub mod chunk_manager;
+pub mod container;
 pub mod end;
 pub mod explosion;
 pub mod fluid;
 pub mod lighting;
+pub mod map_data;
 pub mod nether;
 pub mod noise_terrain;
 pub mod ores;
@@ -33,6 +35,10 @@ pub use block_update::BlockUpdateQueue;
 pub use caves::CaveCarver;
 pub use chunk::{Chunk, Section};
 pub use chunk_manager::ChunkManager;
+pub use container::{
+    ChestContainer, Container, DispenserContainer, DoubleChestContainer, HopperContainer,
+    SlotContent, add_to_container, find_slot_for_item, transfer_item,
+};
 pub use end::EndTerrainGen;
 pub use explosion::{
     CHARGED_CREEPER_POWER, CREEPER_POWER, ExplosionResult, TNT_POWER, apply_explosion,
@@ -40,6 +46,9 @@ pub use explosion::{
 };
 pub use fluid::{FluidWorld, process_water_update};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
+pub use map_data::{
+    MapData, MAP_SIZE, block_to_map_color, generate_map, map_color, map_color_to_rgb,
+};
 pub use nether::{DimensionId, NetherTerrainGen};
 pub use noise_terrain::NoiseTerrainGen;
 pub use ores::OreGenerator;
