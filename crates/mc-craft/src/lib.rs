@@ -1,5 +1,6 @@
 pub mod anvil;
 pub mod brewing;
+pub mod cartography;
 pub mod enchant_table;
 pub mod enchanting;
 pub mod furnace;
@@ -7,7 +8,6 @@ pub mod inventory;
 pub mod recipe;
 pub mod smithing;
 pub mod workstations;
-pub mod cartography;
 
 /// Minimal item representation for crafting.
 /// Will be replaced by `mc_core::item::ItemId` later.
@@ -27,6 +27,12 @@ pub use anvil::{
 pub use brewing::{
     BrewingIngredient, BrewingRecipe, BrewingStand, PotionEffect, PotionType, StatusEffectManager,
 };
+pub use cartography::{
+    CartographyAction, SimpleMapData, cartography_table, clone_map, extend_map, lock_map,
+};
+pub use enchant_table::{
+    EnchantTableState, apply_enchant, bookshelf_power, can_enchant, refresh_options,
+};
 pub use enchanting::{
     apply_enchantment_effect, calculate_enchantment_cost, generate_enchantment_options,
     EnchantOption, EnchantedItem, Enchantment, EnchantmentCategory, EnchantmentId,
@@ -41,10 +47,6 @@ pub use smithing::{
     SmithingRecipe, SmithingTable, default_smithing_recipes, preserve_enchantments, try_smith,
 };
 pub use workstations::{
-pub use cartography::{CartographyAction, SimpleMapData, cartography_table, clone_map, extend_map, lock_map};
     GrindstoneResult, StonecutterRecipe, default_stonecutter_recipes, grindstone_disenchant,
     grindstone_repair, loom_apply,
-};
-pub use enchant_table::{
-    EnchantTableState, apply_enchant, bookshelf_power, can_enchant, refresh_options,
 };
