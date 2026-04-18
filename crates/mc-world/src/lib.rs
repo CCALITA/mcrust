@@ -35,6 +35,7 @@ pub mod save;
 pub mod sensors;
 pub mod sign;
 pub mod spawn;
+pub mod structure_types;
 pub mod structures;
 pub mod terrain;
 pub mod tick_scheduler;
