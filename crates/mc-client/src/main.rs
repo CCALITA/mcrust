@@ -1,5 +1,6 @@
 mod block_interaction;
 mod command_system;
+mod game_loop;
 mod inventory_system;
 mod mob_system;
 mod player;
@@ -23,12 +24,8 @@ use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::keyboard::{KeyCode, PhysicalKey};
 use winit::window::{CursorGrabMode, Window, WindowAttributes, WindowId};
 
-use mc_core::block::BlockId;
-use mc_core::pos::{BlockPos, ChunkPos};
-use mc_physics::collision;
-use mc_physics::raycast;
-use mc_render::frustum::{self, Frustum};
-use mc_render::mesh::{ChunkMesh, NeighborChunks};
+use mc_core::pos::ChunkPos;
+use mc_render::mesh::ChunkMesh;
 use mc_render::sky::DayNightCycle;
 use mc_render::{Camera, Renderer};
 use mc_ui::hud::HudState;
@@ -37,10 +34,6 @@ use mc_world::nether::DimensionId;
 
 const TICK_DURATION: Duration = Duration::from_millis(50); // 20 tps
 const RENDER_DISTANCE: i32 = 8;
-
-// ---------------------------------------------------------------------------
-// Game state machine
-// ---------------------------------------------------------------------------
 
 #[allow(dead_code)]
 enum GameState {
@@ -65,34 +58,30 @@ const CHUNKS_NEEDED_FOR_PLAY: usize =
 /// Void death threshold — player falls below this Y coordinate.
 const VOID_DEATH_Y: f32 = -100.0;
 
-// ---------------------------------------------------------------------------
-// Application state
-// ---------------------------------------------------------------------------
-
 struct App {
-    window: Option<Arc<Window>>,
-    renderer: Option<Renderer>,
-    camera: Camera,
-    sky: DayNightCycle,
-    player: PlayerState,
-    world: ChunkManager,
-    chunk_meshes: Vec<ChunkMesh>,
-    mesh_queue: Vec<ChunkPos>,
-    keys_held: HashSet<KeyCode>,
-    cursor_grabbed: bool,
-    last_tick: Instant,
-    tick_accumulator: Duration,
-    state: GameState,
-    hud: HudState,
+    pub(crate) window: Option<Arc<Window>>,
+    pub(crate) renderer: Option<Renderer>,
+    pub(crate) camera: Camera,
+    pub(crate) sky: DayNightCycle,
+    pub(crate) player: PlayerState,
+    pub(crate) world: ChunkManager,
+    pub(crate) chunk_meshes: Vec<ChunkMesh>,
+    pub(crate) mesh_queue: Vec<ChunkPos>,
+    pub(crate) keys_held: HashSet<KeyCode>,
+    pub(crate) cursor_grabbed: bool,
+    pub(crate) last_tick: Instant,
+    pub(crate) tick_accumulator: Duration,
+    pub(crate) state: GameState,
+    pub(crate) hud: HudState,
     // Bridge modules connecting library systems to the game loop
-    mob_world: mob_system::MobWorld,
-    inventory: inventory_system::PlayerInventory,
-    survival: survival_system::SurvivalState,
-    world_state: world_tick::WorldTickState,
-    progression: progression_system::ProgressionState,
-    sounds: sound_system::GameSoundSystem,
-    save: save_system::SaveSystem,
-    chat: command_system::ChatState,
+    pub(crate) mob_world: mob_system::MobWorld,
+    pub(crate) inventory: inventory_system::PlayerInventory,
+    pub(crate) survival: survival_system::SurvivalState,
+    pub(crate) world_state: world_tick::WorldTickState,
+    pub(crate) progression: progression_system::ProgressionState,
+    pub(crate) sounds: sound_system::GameSoundSystem,
+    pub(crate) save: save_system::SaveSystem,
+    pub(crate) chat: command_system::ChatState,
 }
 
 impl App {
@@ -126,7 +115,7 @@ impl App {
         }
     }
 
-    fn grab_cursor(&mut self) {
+    pub(crate) fn grab_cursor(&mut self) {
         if let Some(window) = self.window.as_ref() {
             let _ = window
                 .set_cursor_grab(CursorGrabMode::Locked)
@@ -136,211 +125,13 @@ impl App {
         }
     }
 
-    fn release_cursor(&mut self) {
+    pub(crate) fn release_cursor(&mut self) {
         if let Some(window) = self.window.as_ref() {
             let _ = window.set_cursor_grab(CursorGrabMode::None);
             window.set_cursor_visible(true);
             self.cursor_grabbed = false;
         }
     }
-
-    // -- Block interaction --------------------------------------------------
-
-    fn break_block(&mut self) {
-        let hit = raycast::raycast(
-            self.player.eye_position(),
-            self.player.look_direction(),
-            REACH_DISTANCE,
-            &|bx, by, bz| self.world.is_block_solid(bx, by, bz),
-        );
-        if let Some(hit) = hit {
-            let block = self.world.get_block(hit.block_pos);
-            self.world.set_block(hit.block_pos, BlockId::Air);
-            let cp = hit.block_pos.chunk_pos();
-            self.chunk_meshes.retain(|m| m.chunk_pos != cp);
-            self.mesh_queue.push(cp);
-
-            // Bridge: collect drops, add XP, play sound, track stats
-            self.inventory.on_block_broken(block as u16);
-            self.progression.on_block_mined(block as u16);
-            self.sounds.on_block_break(hit.point);
-        }
-    }
-
-    fn place_block(&mut self) {
-        let hit = raycast::raycast(
-            self.player.eye_position(),
-            self.player.look_direction(),
-            REACH_DISTANCE,
-            &|bx, by, bz| self.world.is_block_solid(bx, by, bz),
-        );
-        if let Some(hit) = hit {
-            let normal = hit.face.normal();
-            let place_pos = BlockPos::new(
-                hit.block_pos.x + normal.x,
-                hit.block_pos.y + normal.y,
-                hit.block_pos.z + normal.z,
-            );
-            // Don't place inside the player
-            let player_block = BlockPos::new(
-                self.player.position.x.floor() as i32,
-                self.player.position.y.floor() as i32,
-                self.player.position.z.floor() as i32,
-            );
-            let player_head = BlockPos::new(player_block.x, player_block.y + 1, player_block.z);
-            if place_pos != player_block && place_pos != player_head {
-                // Use block from inventory if available, otherwise cobblestone
-                let block_to_place = self
-                    .inventory
-                    .on_block_place()
-                    .and_then(|id| mc_core::block::BlockId::from_raw(id))
-                    .unwrap_or(BlockId::Cobblestone);
-                self.world.set_block(place_pos, block_to_place);
-                let cp = place_pos.chunk_pos();
-                self.chunk_meshes.retain(|m| m.chunk_pos != cp);
-                self.mesh_queue.push(cp);
-                self.sounds.on_block_place(hit.point);
-            }
-        }
-    }
-
-    // -- Physics tick -------------------------------------------------------
-
-    fn tick(&mut self, dt: f32) {
-        let mut wish_dir = Vec3::ZERO;
-        if self.keys_held.contains(&KeyCode::KeyW) {
-            wish_dir += self.player.forward_xz();
-        }
-        if self.keys_held.contains(&KeyCode::KeyS) {
-            wish_dir -= self.player.forward_xz();
-        }
-        if self.keys_held.contains(&KeyCode::KeyD) {
-            wish_dir += self.player.right_xz();
-        }
-        if self.keys_held.contains(&KeyCode::KeyA) {
-            wish_dir -= self.player.right_xz();
-        }
-        wish_dir = wish_dir.normalize_or_zero();
-
-        let speed = if self.keys_held.contains(&KeyCode::ShiftLeft)
-            || self.keys_held.contains(&KeyCode::ShiftRight)
-        {
-            SNEAK_SPEED
-        } else if self.keys_held.contains(&KeyCode::ControlLeft) {
-            SPRINT_SPEED
-        } else {
-            WALK_SPEED
-        };
-
-        self.player.velocity.x = wish_dir.x * speed;
-        self.player.velocity.z = wish_dir.z * speed;
-        self.player.velocity.y += GRAVITY * dt;
-
-        if self.player.on_ground && self.keys_held.contains(&KeyCode::Space) {
-            self.player.velocity.y = JUMP_VELOCITY;
-            self.player.on_ground = false;
-        }
-
-        let frame_vel = self.player.velocity * dt;
-        let resolved =
-            collision::move_and_slide(self.player.position, frame_vel, &|bx, by, bz| {
-                self.world.is_block_solid(bx, by, bz)
-            });
-
-        self.player.on_ground = frame_vel.y < 0.0 && resolved.y.abs() < 1e-6;
-        self.player.position += resolved;
-
-        if self.player.on_ground {
-            self.player.velocity.y = 0.0;
-        }
-    }
-
-    // -- Mesh processing (extracted for reuse across states) ----------------
-
-    fn process_mesh_queue(&mut self) {
-        const MAX_MESHES_PER_FRAME: usize = 16;
-        if self.mesh_queue.is_empty() {
-            return;
-        }
-        if let Some(renderer) = &self.renderer {
-            let batch_size = self.mesh_queue.len().min(MAX_MESHES_PER_FRAME);
-            let batch: Vec<ChunkPos> = self.mesh_queue.drain(..batch_size).collect();
-
-            for pos in &batch {
-                if let Some(chunk) = self.world.get_chunk(*pos) {
-                    let neighbors = NeighborChunks {
-                        east: self.world.get_chunk(ChunkPos::new(pos.x + 1, pos.z)),
-                        west: self.world.get_chunk(ChunkPos::new(pos.x - 1, pos.z)),
-                        south: self.world.get_chunk(ChunkPos::new(pos.x, pos.z + 1)),
-                        north: self.world.get_chunk(ChunkPos::new(pos.x, pos.z - 1)),
-                    };
-                    if let Some(mesh) =
-                        ChunkMesh::build(renderer.device(), chunk, *pos, &neighbors)
-                    {
-                        self.chunk_meshes.push(mesh);
-                    }
-                }
-            }
-        }
-    }
-
-    // -- Render scene (extracted for reuse across states) -------------------
-
-    fn render_scene(&mut self) {
-        let vp = self.camera.view_projection_matrix();
-        let frustum = Frustum::from_view_projection(vp);
-
-        // Sort meshes by distance to camera for better rendering and
-        // keep only frustum-visible chunks. Cap at 128 draw calls to
-        // prevent Metal driver overload on first frame.
-        let cam_cx = (self.camera.position.x / 16.0).floor() as i32;
-        let cam_cz = (self.camera.position.z / 16.0).floor() as i32;
-
-        let mut visible_indices: Vec<usize> = self
-            .chunk_meshes
-            .iter()
-            .enumerate()
-            .filter(|(_, m)| {
-                let (min, max) = frustum::chunk_aabb(m.chunk_pos.x, m.chunk_pos.z);
-                frustum.contains_aabb(min, max)
-            })
-            .map(|(i, _)| i)
-            .collect();
-
-        // Sort by distance (nearest first)
-        visible_indices.sort_by_key(|&i| {
-            let m = &self.chunk_meshes[i];
-            let dx = m.chunk_pos.x - cam_cx;
-            let dz = m.chunk_pos.z - cam_cz;
-            dx * dx + dz * dz
-        });
-
-        // Cap draw calls
-        visible_indices.truncate(128);
-
-        // Build a temporary Vec of references for rendering
-        let visible_meshes: Vec<&ChunkMesh> = visible_indices
-            .iter()
-            .map(|&i| &self.chunk_meshes[i])
-            .collect();
-
-        if let Some(renderer) = &self.renderer {
-            match renderer.render_frame_refs(&self.camera, &self.sky, &visible_meshes) {
-                Ok(()) => {}
-                Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
-                    log::warn!("Surface lost/outdated — will reconfigure on next resize");
-                }
-                Err(wgpu::SurfaceError::OutOfMemory) => {
-                    log::error!("Out of GPU memory!");
-                }
-                Err(e) => {
-                    log::warn!("Render error: {e:?}");
-                }
-            }
-        }
-    }
-
-    // -- Frame update (state-dispatched) ------------------------------------
 
     fn update(&mut self) {
         let now = Instant::now();
@@ -350,7 +141,12 @@ impl App {
         match self.state {
             GameState::MainMenu => {
                 log::info!("Press any key to start");
-                self.render_scene();
+                game_loop::render_scene(
+                    &self.renderer,
+                    &self.camera,
+                    &self.sky,
+                    &self.chunk_meshes,
+                );
             }
 
             GameState::Loading {
@@ -369,7 +165,12 @@ impl App {
                     self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
                     self.mesh_queue.extend(dirty);
                 }
-                self.process_mesh_queue();
+                game_loop::process_mesh_queue(
+                    &self.renderer,
+                    &self.world,
+                    &mut self.mesh_queue,
+                    &mut self.chunk_meshes,
+                );
 
                 // Count loaded chunks
                 let loaded = self.world.loaded_chunks().count();
@@ -390,7 +191,12 @@ impl App {
                 self.camera.yaw = self.player.yaw;
                 self.camera.pitch = self.player.pitch;
 
-                self.render_scene();
+                game_loop::render_scene(
+                    &self.renderer,
+                    &self.camera,
+                    &self.sky,
+                    &self.chunk_meshes,
+                );
 
                 // Transition to Playing once enough chunks are loaded
                 if loaded >= chunks_needed {
@@ -402,118 +208,8 @@ impl App {
             }
 
             GameState::Playing => {
-                // Grab cursor on first Playing frame (deferred from state transition
-                // to avoid invalidating Metal surface on the transition frame).
-                if !self.cursor_grabbed {
-                    self.grab_cursor();
-                    // Skip rendering this frame to let the surface stabilize
-                    // after cursor grab triggers macOS resize events.
-                    if let Some(window) = self.window.as_ref() {
-                        window.request_redraw();
-                    }
-                    return;
-                }
-
-                // Physics ticks
-                self.tick_accumulator += frame_time;
-                let tick_dt = TICK_DURATION.as_secs_f32();
-                let max_ticks = 4;
-                let mut tick_count = 0;
-                while self.tick_accumulator >= TICK_DURATION && tick_count < max_ticks {
-                    self.tick_accumulator -= TICK_DURATION;
-                    self.tick(tick_dt);
-                    tick_count += 1;
-                }
-                if self.tick_accumulator > TICK_DURATION {
-                    self.tick_accumulator = Duration::ZERO;
-                }
-
-                // Sync camera with player
-                self.camera.position = self.player.eye_position();
-                self.camera.yaw = self.player.yaw;
-                self.camera.pitch = self.player.pitch;
-
-                // Update chunk loading
-                let player_chunk = ChunkPos::from_block(
-                    self.player.position.x.floor() as i32,
-                    self.player.position.z.floor() as i32,
-                );
-                self.world.update(player_chunk);
-
-                // Rebuild dirty chunk meshes
-                let dirty = self.world.take_dirty();
-                if !dirty.is_empty() {
-                    self.chunk_meshes.retain(|m| !dirty.contains(&m.chunk_pos));
-                    self.mesh_queue.extend(dirty);
-                }
-                self.process_mesh_queue();
-
-                // Advance day/night cycle
-                let frame_dt = frame_time.as_secs_f32();
-                self.sky.advance(frame_dt);
-
-                // --- Bridge module ticks ---
-                // Mob spawning + AI
-                self.mob_world.tick(
-                    self.player.position,
-                    self.sky.time_of_day,
-                    frame_dt,
-                );
-
-                // Weather + world tick scheduler
-                self.world_state.tick(frame_dt);
-
-                // Survival (hunger/health) tick
-                let is_sprinting = self.keys_held.contains(&KeyCode::ControlLeft);
-                self.survival.tick(frame_dt, is_sprinting, 0.0);
-
-                // Progression (distance tracking)
-                self.progression.on_distance_walked(0.0);
-
-                // Sound system music tick
-                let _music_action = self.sounds.tick_music(frame_dt, 0);
-
-                // Auto-save check
-                if self.save.tick(frame_dt) {
-                    let p = self.player.position;
-                    self.save.save_game(
-                        (p.x, p.y, p.z),
-                        self.player.yaw,
-                        self.player.pitch,
-                        self.sky.time_of_day,
-                        42,
-                    );
-                    log::info!("Auto-saved");
-                }
-
-                // Drain sound events (placeholder for audio playback)
-                let _events = self.sounds.drain_sound_events();
-
-                // Update HUD from bridge modules
-                self.hud.health = self.survival.hud_health();
-                self.hud.hunger = self.survival.hud_hunger();
-                self.hud.armor = self.survival.hud_armor();
-                self.hud.xp_level = self.progression.hud_level();
-                self.hud.xp_progress = self.progression.hud_xp_progress();
-                self.hud.player_pos = (
-                    self.player.position.x,
-                    self.player.position.y,
-                    self.player.position.z,
-                );
-
-                // Render
-                self.render_scene();
-
-                // Check for void death or survival death
-                if self.player.position.y < VOID_DEATH_Y {
-                    self.survival.take_damage(1000.0);
-                }
-                if self.survival.is_dead() {
-                    log::info!("Player died!");
-                    self.state = GameState::Dead {
-                        respawn_timer: 0.0,
-                    };
-                    self.release_cursor();
+                if let Some(new_state) = game_loop::playing_frame(self, frame_time) {
+                    self.state = new_state;
                 }
             }
 
@@ -523,7 +219,12 @@ impl App {
                 self.camera.yaw = self.player.yaw;
                 self.camera.pitch = self.player.pitch;
 
-                self.render_scene();
+                game_loop::render_scene(
+                    &self.renderer,
+                    &self.camera,
+                    &self.sky,
+                    &self.chunk_meshes,
+                );
             }
 
             GameState::Dead { respawn_timer } => {
@@ -542,15 +243,16 @@ impl App {
                 self.camera.yaw = self.player.yaw;
                 self.camera.pitch = self.player.pitch;
 
-                self.render_scene();
+                game_loop::render_scene(
+                    &self.renderer,
+                    &self.camera,
+                    &self.sky,
+                    &self.chunk_meshes,
+                );
             }
         }
     }
 }
-
-// ---------------------------------------------------------------------------
-// winit 0.30 ApplicationHandler
-// ---------------------------------------------------------------------------
 
 impl ApplicationHandler for App {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
@@ -627,7 +329,7 @@ impl ApplicationHandler for App {
                 ..
             } => {
                 if matches!(self.state, GameState::Playing) && self.cursor_grabbed {
-                    self.break_block();
+                    game_loop::break_block(self);
                 } else if matches!(self.state, GameState::Playing) {
                     self.grab_cursor();
                 }
@@ -639,7 +341,7 @@ impl ApplicationHandler for App {
                 ..
             } => {
                 if matches!(self.state, GameState::Playing) && self.cursor_grabbed {
-                    self.place_block();
+                    game_loop::place_block(self);
                 }
             }
 
@@ -670,10 +372,6 @@ impl ApplicationHandler for App {
         }
     }
 }
-
-// ---------------------------------------------------------------------------
-// Input handling (state-aware)
-// ---------------------------------------------------------------------------
 
 impl App {
     fn handle_key_press(&mut self, key_code: KeyCode, event_loop: &ActiveEventLoop) {
@@ -772,10 +470,6 @@ impl App {
         }
     }
 }
-
-// ---------------------------------------------------------------------------
-// Entry point
-// ---------------------------------------------------------------------------
 
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
