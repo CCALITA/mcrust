@@ -26,7 +26,7 @@ impl PlayerInventory {
     /// Returns the number of items that could **not** be stored (leftover).
     pub fn add_item(&mut self, item_id: u16, count: u8) -> u8 {
         let stack = ItemStack {
-            item: SlotItem(item_id),
+            item: item_id,
             count,
         };
         match self.inner.add_item(stack) {
@@ -39,7 +39,7 @@ impl PlayerInventory {
     /// or `None` if the slot is empty.
     #[must_use]
     pub fn selected_item(&self) -> Option<(u16, u8)> {
-        self.inner.get_slot(self.selected_slot).as_ref().map(|s| (s.item.0, s.count))
+        self.inner.get_slot(self.selected_slot).as_ref().map(|s| (s.item, s.count))
     }
 
     /// Consume up to `count` items from the currently selected hotbar slot.
@@ -83,7 +83,7 @@ impl PlayerInventory {
     /// Count the total number of `item_id` across all inventory slots.
     #[must_use]
     pub fn item_count(&self, item_id: u16) -> u8 {
-        let target = SlotItem(item_id);
+        let target = item_id;
         let mut total: u16 = 0;
         for i in 0..36 {
             if let Some(stack) = self.inner.get_slot(i)
