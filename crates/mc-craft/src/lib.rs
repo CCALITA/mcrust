@@ -3,6 +3,7 @@ pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
 pub mod recipe;
+pub mod workstations;
 
 /// Minimal item representation for crafting.
 /// Will be replaced by `mc_core::item::ItemId` later.
@@ -29,3 +30,7 @@ pub use furnace::{
 };
 pub use inventory::Inventory;
 pub use recipe::{CraftingGrid, Recipe, RecipePattern, RecipeRegistry};
+pub use workstations::{
+    default_stonecutter_recipes, grindstone_disenchant, grindstone_repair, loom_apply,
+    GrindstoneResult, StonecutterRecipe,
+};
