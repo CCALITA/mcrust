@@ -1,5 +1,4 @@
 use std::fs;
-use std::io;
 use std::path::Path;
 
 use mc_core::block::BlockId;
@@ -7,6 +6,58 @@ use mc_core::pos::ChunkPos;
 use serde::{Deserialize, Serialize};
 
 use crate::chunk::{Chunk, SECTION_VOLUME, Section};
+
+// ---------------------------------------------------------------------------
+// Error type
+// ---------------------------------------------------------------------------
+
+#[derive(Debug)]
+pub enum SaveError {
+    Io(std::io::Error),
+    Serialize(String),
+    Deserialize(String),
+}
+
+impl From<std::io::Error> for SaveError {
+    fn from(err: std::io::Error) -> Self {
+        SaveError::Io(err)
+    }
+}
+
+impl From<Box<bincode::ErrorKind>> for SaveError {
+    fn from(err: Box<bincode::ErrorKind>) -> Self {
+        // Bincode uses the same error type for both serialization and
+        // deserialization, so we inspect the kind to pick the right variant.
+        match *err {
+            bincode::ErrorKind::Io(io_err) => SaveError::Io(io_err),
+            _ => {
+                // Default to Serialize; call-sites that deserialize should map
+                // explicitly if the distinction matters. In practice, the `?`
+                // operator at each call-site already makes intent clear.
+                SaveError::Serialize(err.to_string())
+            }
+        }
+    }
+}
+
+impl std::fmt::Display for SaveError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SaveError::Io(err) => write!(f, "I/O error: {err}"),
+            SaveError::Serialize(msg) => write!(f, "serialization error: {msg}"),
+            SaveError::Deserialize(msg) => write!(f, "deserialization error: {msg}"),
+        }
+    }
+}
+
+impl std::error::Error for SaveError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            SaveError::Io(err) => Some(err),
+            _ => None,
+        }
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Save data structures
@@ -37,38 +88,41 @@ pub struct SectionSave {
 // World-level save / load
 // ---------------------------------------------------------------------------
 
-pub fn save_world(path: &Path, save: &WorldSave) -> io::Result<()> {
-    let bytes = bincode::serialize(save).map_err(io::Error::other)?;
+pub fn save_world(path: &Path, save: &WorldSave) -> Result<(), SaveError> {
+    let bytes = bincode::serialize(save)?;
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
     }
-    fs::write(path, bytes)
+    fs::write(path, bytes)?;
+    Ok(())
 }
 
-pub fn load_world(path: &Path) -> io::Result<WorldSave> {
+pub fn load_world(path: &Path) -> Result<WorldSave, SaveError> {
     let bytes = fs::read(path)?;
-    bincode::deserialize(&bytes).map_err(io::Error::other)
+    bincode::deserialize(&bytes).map_err(|e| SaveError::Deserialize(e.to_string()))
 }
 
 // ---------------------------------------------------------------------------
 // Chunk-level save / load
 // ---------------------------------------------------------------------------
 
-pub fn save_chunk(dir: &Path, chunk: &Chunk, pos: ChunkPos) -> io::Result<()> {
+pub fn save_chunk(dir: &Path, chunk: &Chunk, pos: ChunkPos) -> Result<(), SaveError> {
     let save_data = chunk_to_save(chunk, pos);
-    let bytes = bincode::serialize(&save_data).map_err(io::Error::other)?;
+    let bytes = bincode::serialize(&save_data)?;
     fs::create_dir_all(dir)?;
     let file_path = dir.join(format!("r.{}.{}.bin", pos.x, pos.z));
-    fs::write(file_path, bytes)
+    fs::write(file_path, bytes)?;
+    Ok(())
 }
 
-pub fn load_chunk(dir: &Path, pos: ChunkPos) -> io::Result<Option<Chunk>> {
+pub fn load_chunk(dir: &Path, pos: ChunkPos) -> Result<Option<Chunk>, SaveError> {
     let file_path = dir.join(format!("r.{}.{}.bin", pos.x, pos.z));
     if !file_path.exists() {
         return Ok(None);
     }
     let bytes = fs::read(&file_path)?;
-    let save_data: ChunkSave = bincode::deserialize(&bytes).map_err(io::Error::other)?;
+    let save_data: ChunkSave =
+        bincode::deserialize(&bytes).map_err(|e| SaveError::Deserialize(e.to_string()))?;
     Ok(Some(save_to_chunk(&save_data)))
 }
 
