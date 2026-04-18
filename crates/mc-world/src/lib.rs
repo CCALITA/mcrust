@@ -29,6 +29,7 @@ pub mod rails;
 pub mod redstone;
 pub mod redstone_components;
 pub mod save;
+pub mod sensors;
 pub mod sign;
 pub mod spawn;
 pub mod structures;
@@ -108,6 +109,9 @@ pub use redstone_components::{
 pub use save::{
     ChunkSave, SectionSave, WorldSave, chunk_to_save, load_chunk, load_world, save_chunk,
     save_to_chunk, save_world,
+};
+pub use sensors::{
+    DaylightDetector, ObserverState, daylight_signal, observer_check, observer_tick,
 };
 pub use spawn::{BedResult, SpawnManager, SpawnPoint};
 pub use structures::StructureGenerator;
