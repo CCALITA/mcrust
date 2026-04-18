@@ -2,6 +2,7 @@ pub mod anvil;
 pub mod brewing;
 pub mod cartography;
 pub mod enchant_table;
+pub mod enchantment_data;
 pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
