@@ -12,6 +12,7 @@ pub mod container;
 pub mod end;
 pub mod explosion;
 pub mod farming;
+pub mod fire;
 pub mod fluid;
 pub mod lighting;
 pub mod map_data;
@@ -62,6 +63,10 @@ pub use explosion::{
     block_resistance, calculate_entity_damage, calculate_explosion,
 };
 pub use farming::{CropState, CropType, can_plant_on, harvest, is_hydrated, tick_crop};
+pub use fire::{
+    BurningEntity, FireAction, FireState, burn_chance, flammability, is_flammable, on_fire_tick,
+    tick_fire,
+};
 pub use fluid::{FluidWorld, process_water_update};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
 pub use map_data::{
