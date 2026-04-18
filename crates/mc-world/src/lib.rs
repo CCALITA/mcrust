@@ -21,6 +21,7 @@ pub mod lighting;
 pub mod map_data;
 pub mod nether;
 pub mod noise_terrain;
+pub mod noteblock;
 pub mod ores;
 pub mod portal_link;
 pub mod rails;
@@ -82,6 +83,10 @@ pub use map_data::{
 };
 pub use nether::{DimensionId, NetherTerrainGen};
 pub use noise_terrain::NoiseTerrainGen;
+pub use noteblock::{
+    Instrument, JukeboxState, NoteBlockState, eject_disc, insert_disc, instrument_from_block,
+    is_playing, play_note, tune,
+};
 pub use ores::OreGenerator;
 pub use portal_link::{
     PortalLink, create_portal_frame, find_nearest_portal, nether_coordinate_scale,
