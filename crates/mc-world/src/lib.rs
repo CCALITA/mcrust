@@ -4,6 +4,7 @@ pub mod biome_terrain;
 pub mod block_entity;
 pub mod block_update;
 pub mod bucket;
+pub mod campfire;
 pub mod caves;
 pub mod chunk;
 pub mod chunk_manager;
@@ -43,6 +44,7 @@ pub use beacon::{
 };
 pub use biome_terrain::BiomeTerrainGen;
 pub use bucket::{BucketContents, BucketResult, milk_effects, use_bucket_on_block, use_bucket_on_entity};
+pub use campfire::{CampfireState, campfire_damage, cooked_item, smoke_height};
 pub use block_entity::{
     BlockEntity, BlockEntityManager, BlockEntityType, BrewingStandData, ChestData, FurnaceData,
     HopperData,
