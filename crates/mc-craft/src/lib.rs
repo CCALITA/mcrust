@@ -1,5 +1,6 @@
 pub mod anvil;
 pub mod brewing;
+pub mod enchant_table;
 pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
@@ -41,4 +42,7 @@ pub use smithing::{
 pub use workstations::{
     GrindstoneResult, StonecutterRecipe, default_stonecutter_recipes, grindstone_disenchant,
     grindstone_repair, loom_apply,
+};
+pub use enchant_table::{
+    EnchantTableState, apply_enchant, bookshelf_power, can_enchant, refresh_options,
 };
