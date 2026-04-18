@@ -432,19 +432,16 @@ impl Renderer {
         sky: &DayNightCycle,
         chunk_meshes: &[&ChunkMesh],
     ) -> Result<(), wgpu::SurfaceError> {
-        log::debug!("render: writing uniforms");
         let uniform = camera.uniform();
         self.queue
             .write_buffer(&self.camera_buffer, 0, bytemuck::cast_slice(&[uniform]));
         self.update_sky(sky);
 
-        log::debug!("render: acquiring surface texture");
         let output = self.surface.get_current_texture()?;
         let view = output
             .texture
             .create_view(&wgpu::TextureViewDescriptor::default());
 
-        log::debug!("render: creating encoder");
         let mut encoder = self
             .device
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -480,13 +477,11 @@ impl Renderer {
             });
 
             // 1. Sky
-            log::debug!("render: drawing sky");
             render_pass.set_pipeline(&self.sky_pipeline);
             render_pass.set_bind_group(0, &self.sky_bind_group, &[]);
             render_pass.draw(0..3, 0..1);
 
             // 2. Terrain chunks
-            log::debug!("render: drawing {} terrain chunks", chunk_meshes.len());
             render_pass.set_pipeline(&self.render_pipeline);
             render_pass.set_bind_group(0, &self.camera_bind_group, &[]);
             render_pass.set_bind_group(1, &self.texture_atlas.bind_group, &[]);
@@ -503,11 +498,8 @@ impl Renderer {
             }
         }
 
-        log::debug!("render: submitting commands");
         self.queue.submit(std::iter::once(encoder.finish()));
-        log::debug!("render: presenting");
         output.present();
-        log::debug!("render: frame complete");
 
         Ok(())
     }

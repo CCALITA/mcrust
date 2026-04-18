@@ -415,11 +415,24 @@ impl App {
                 if loaded >= chunks_needed {
                     log::info!("World loaded! Entering Playing state.");
                     self.state = GameState::Playing;
-                    self.grab_cursor();
+                    // NOTE: Don't grab cursor here — it can invalidate the Metal
+                    // surface on macOS, causing a bus error. Grab on next frame.
                 }
             }
 
             GameState::Playing => {
+                // Grab cursor on first Playing frame (deferred from state transition
+                // to avoid invalidating Metal surface on the transition frame).
+                if !self.cursor_grabbed {
+                    self.grab_cursor();
+                    // Skip rendering this frame to let the surface stabilize
+                    // after cursor grab triggers macOS resize events.
+                    if let Some(window) = self.window.as_ref() {
+                        window.request_redraw();
+                    }
+                    return;
+                }
+
                 // Physics ticks
                 self.tick_accumulator += frame_time;
                 let tick_dt = TICK_DURATION.as_secs_f32();
