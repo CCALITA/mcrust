@@ -6,6 +6,7 @@ pub mod block_update;
 pub mod bucket;
 pub mod campfire;
 pub mod caves;
+pub mod chest_logic;
 pub mod chunk;
 pub mod composter;
 pub mod chunk_manager;
@@ -57,6 +58,10 @@ pub use block_entity::{
 pub use sign::{SignColor, SignData, format_sign_text};
 pub use block_update::BlockUpdateQueue;
 pub use caves::CaveCarver;
+pub use chest_logic::{
+    ChestOpenState, close_chest, detect_double_chest, is_chest_blocked, open_chest,
+    tick_animation, trapped_chest_signal,
+};
 pub use climbable::{
     CLIMBING_SPEED, SCAFFOLDING_MAX_DISTANCE, can_place_scaffolding, is_climbable,
     scaffolding_distance, should_scaffolding_fall,
