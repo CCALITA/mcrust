@@ -1,3 +1,5 @@
+mod command_system;
+
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::{Duration, Instant};

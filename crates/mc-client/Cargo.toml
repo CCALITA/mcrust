@@ -10,6 +10,7 @@ mc-render = { path = "../mc-render" }
 mc-entity = { path = "../mc-entity" }
 mc-craft = { path = "../mc-craft" }
 mc-audio = { path = "../mc-audio" }
+mc-network = { path = "../mc-network" }
 mc-ui = { path = "../mc-ui" }
 mc-physics = { path = "../mc-physics" }
 glam = { workspace = true }
