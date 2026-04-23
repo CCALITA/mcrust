@@ -5,6 +5,7 @@
 
 pub mod block_break;
 pub mod camera;
+pub mod crosshair;
 pub mod entity_render;
 pub mod frustum;
 pub mod mesh;
