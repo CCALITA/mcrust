@@ -7,6 +7,7 @@ pub mod biome;
 pub mod block;
 pub mod block_access;
 pub mod direction;
+pub mod fences;
 pub mod item;
 pub mod portal;
 pub mod pos;
