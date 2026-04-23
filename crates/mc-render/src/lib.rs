@@ -13,7 +13,6 @@ pub mod entity_render;
 pub mod fog;
 pub mod frustum;
 pub mod mesh;
-pub mod mob_models;
 pub mod particle;
 pub mod renderer;
 pub mod shader;
