@@ -36,6 +36,7 @@ pub mod special_mobs;
 pub mod statistics;
 pub mod survival;
 pub mod taming;
+pub mod totem;
 pub mod tool_speed;
 pub mod tool_use;
 pub mod trident;
@@ -97,6 +98,10 @@ pub use survival::{
 };
 pub use taming::{
     BabyMob, BreedingComponent, FeedResult, TameableComponent, feed_animal, try_breed, try_tame,
+};
+pub use totem::{
+    ABSORPTION_EFFECT, FIRE_RESIST_EFFECT, REGEN_EFFECT, TotemEffect, TotemSaveResult,
+    check_totem_save, totem_animation_duration, totem_item_id,
 };
 pub use tool_use::{
     BreakProgress, DurabilityComponent, calculate_break_time, preferred_tool, use_tool,
