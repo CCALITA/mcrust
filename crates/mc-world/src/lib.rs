@@ -5,6 +5,7 @@
 
 pub mod async_chunks;
 pub mod beacon;
+pub mod biome_blend;
 pub mod biome_terrain;
 pub mod block_entity;
 pub mod block_update;
