@@ -6,6 +6,7 @@
 pub mod anvil;
 pub mod book;
 pub mod brewing;
+pub mod bundle;
 pub mod campfire;
 pub mod cartography;
 pub mod compass;
