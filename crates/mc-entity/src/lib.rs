@@ -9,6 +9,7 @@ pub mod armor;
 pub mod behavior;
 pub mod combat;
 pub mod component;
+pub mod crossbow;
 pub mod decoration;
 pub mod difficulty;
 pub mod drowning;
@@ -57,6 +58,9 @@ pub use behavior::{MobAction, MobBehavior, behavior_tick, behavior_tick_with_sta
 pub use combat::{
     DamageEvent, DamageType, apply_damage, attack_cooldown, calculate_fall_damage,
     calculate_knockback, calculate_melee_damage,
+};
+pub use crossbow::{
+    CrossbowState, LoadedProjectile, charge_duration, piercing_remaining_targets,
 };
 pub use component::{
     Collider, ComponentStore, Gravity, Health, MobComponent, MobKind, Position, Rotation, Velocity,
