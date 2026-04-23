@@ -5,6 +5,7 @@
 
 pub mod anvil;
 pub mod brewing;
+pub mod campfire;
 pub mod cartography;
 pub mod enchant_table;
 pub mod enchanting;
@@ -33,6 +34,7 @@ pub use anvil::{
     AnvilResult, anvil_combine, anvil_degrades, anvil_rename, merge_enchantments, repair_cost,
 };
 pub use brewing::{BrewingIngredient, BrewingRecipe, BrewingStand};
+pub use campfire::{CampfireRecipe, CampfireState, CookingSlot, campfire_recipes};
 pub use cartography::{
     CartographyAction, SimpleMapData, cartography_table, clone_map, extend_map, lock_map,
 };
