@@ -11,6 +11,7 @@ pub mod combat;
 pub mod component;
 pub mod decoration;
 pub mod difficulty;
+pub mod drowning;
 pub mod drops;
 pub mod effects;
 pub mod entity;
