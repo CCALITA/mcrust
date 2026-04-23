@@ -22,6 +22,7 @@ pub mod recipe;
 pub mod recipe_data;
 pub mod recipe_data_ext;
 pub mod smithing;
+pub mod spyglass;
 pub mod workstations;
 
 /// Minimal item representation for crafting.
