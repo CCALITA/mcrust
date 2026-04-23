@@ -5,6 +5,7 @@
 
 pub mod async_chunks;
 pub mod beacon;
+pub mod bed;
 pub mod biome_blend;
 pub mod biome_terrain;
 pub mod block_entity;
@@ -59,6 +60,7 @@ pub use beacon::{
     BeaconEffect, BeaconState, available_effects, beacon_range, is_beacon_base_block, is_in_range,
     scan_pyramid,
 };
+pub use bed::{BedColor, BedPart, BedState, SleepError, can_sleep, set_spawn_point, skip_night};
 pub use biome_terrain::BiomeTerrainGen;
 pub use block_entity::{
     BlockEntity, BlockEntityManager, BlockEntityType, BrewingStandData, ChestData, FurnaceData,
