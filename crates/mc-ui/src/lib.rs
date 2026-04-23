@@ -7,6 +7,7 @@ pub mod debug_screen;
 pub mod hotbar;
 pub mod hud;
 pub mod inventory_screen;
+pub mod toast;
 pub mod widget;
 
 pub use debug_screen::DebugInfo;
