@@ -140,8 +140,10 @@ impl App {
         let frame_time = now - self.last_tick;
         self.last_tick = now;
 
-        // Skip rendering after resize to let Metal surface stabilize
-        if self.skip_frames > 0 && !matches!(self.state, GameState::Playing) {
+        // Skip rendering after resize/cursor-grab to let Metal surface stabilize.
+        // Without this, get_current_texture() can hit a SIGBUS on macOS when the
+        // surface backing memory is being remapped by the GPU driver.
+        if self.skip_frames > 0 {
             self.skip_frames -= 1;
             if let Some(window) = self.window.as_ref() {
                 window.request_redraw();
