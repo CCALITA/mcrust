@@ -25,6 +25,7 @@ pub mod fluid;
 pub mod gravity_block;
 pub mod hopper_logic;
 pub mod lectern;
+pub mod light_level;
 pub mod lighting;
 pub mod map_data;
 pub mod nether;
@@ -104,6 +105,10 @@ pub use hopper_logic::{
     hopper_should_transfer,
 };
 pub use lectern::{BookData, LecternState, lectern_redstone};
+pub use light_level::{
+    BlockLight, can_mob_spawn, combined_light, display_light_info, light_to_brightness,
+    sun_brightness,
+};
 pub use lighting::{LightMap, max_light, propagate_block_light, propagate_sky_light};
 pub use map_data::{
     MAP_SIZE, MapData, block_to_map_color, generate_map, map_color, map_color_to_rgb,
