@@ -6,6 +6,7 @@
 pub mod anvil;
 pub mod brewing;
 pub mod cartography;
+pub mod compass;
 pub mod enchant_table;
 pub mod enchanting;
 pub mod furnace;
@@ -35,6 +36,10 @@ pub use anvil::{
 pub use brewing::{BrewingIngredient, BrewingRecipe, BrewingStand};
 pub use cartography::{
     CartographyAction, SimpleMapData, cartography_table, clone_map, extend_map, lock_map,
+};
+pub use compass::{
+    clock_frame, clock_time_name, compass_angle, compass_frame, compass_spins_in_dimension,
+    lodestone_compass_angle,
 };
 pub use enchant_table::{
     EnchantTableState, apply_enchant, bookshelf_power, can_enchant, refresh_options,
