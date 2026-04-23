@@ -3,6 +3,7 @@
 //! Provides the [`Renderer`] pipeline, [`Camera`] with frustum culling,
 //! [`ChunkMesh`] construction, [`ParticleSystem`], [`DayNightCycle`] sky, and translucent water.
 
+pub mod ambient_occlusion;
 pub mod block_break;
 pub mod block_highlight;
 pub mod camera;
