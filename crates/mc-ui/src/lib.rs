@@ -1,5 +1,6 @@
 //! HUD data model and widget rendering system.
 
+pub mod damage_indicator;
 pub mod debug_screen;
 pub mod hotbar;
 pub mod hud;
