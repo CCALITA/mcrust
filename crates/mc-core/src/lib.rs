@@ -10,6 +10,7 @@ pub mod direction;
 pub mod item;
 pub mod portal;
 pub mod pos;
+pub mod stairs;
 
 pub use biome::{BiomeId, BiomeProperties};
 pub use block::{BlockId, BlockProperties, BlockRegistry};
