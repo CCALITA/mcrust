@@ -1,5 +1,6 @@
 //! HUD data model and widget rendering system.
 
+pub mod credits;
 pub mod debug_screen;
 pub mod hotbar;
 pub mod hud;
