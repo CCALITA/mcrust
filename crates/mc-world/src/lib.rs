@@ -150,7 +150,10 @@ pub use save::{
 pub use sensors::{
     DaylightDetector, ObserverState, daylight_signal, observer_check, observer_tick,
 };
-pub use sign::{SignColor, SignData, format_sign_text};
+pub use sign::{
+    SignColor, SignData, color_rgb, dye_color_index, format_sign_text, max_line_length,
+    sign_render_lines,
+};
 pub use spawn::{BedResult, SpawnManager, SpawnPoint};
 pub use structures::StructureGenerator;
 pub use terrain::FlatWorldGen;
