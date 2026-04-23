@@ -141,7 +141,7 @@ pub use sign::{SignColor, SignData, format_sign_text};
 pub use spawn::{BedResult, SpawnManager, SpawnPoint};
 pub use structures::StructureGenerator;
 pub use terrain::FlatWorldGen;
-pub use tick_scheduler::{ScheduledEvent, TickScheduler};
+pub use tick_scheduler::{ScheduledEvent, ScheduledTick, TickScheduler, TickType};
 pub use tnt::{TntAction, TntEntity, activate_tnt, chain_activation, tick_tnt};
 pub use trees::{birch_tree, oak_tree, place_trees, place_vegetation, spruce_tree};
 pub use weather::{WeatherState, WeatherSystem};
