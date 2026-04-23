@@ -4,6 +4,7 @@
 //! [`ChunkMesh`] construction, [`ParticleSystem`], [`DayNightCycle`] sky, and translucent water.
 
 pub mod ambient_occlusion;
+pub mod beam_effects;
 pub mod block_break;
 pub mod block_highlight;
 pub mod camera;
@@ -20,12 +21,12 @@ pub mod texture;
 pub mod water;
 
 pub use camera::{Camera, CameraUniform};
+pub use entity_render::{
+    EntityRenderData, MobModel, MobModelPart, animate_idle, animate_walk, model_for_mob,
+};
 pub use fog::{
     FogSettings, FogShape, calculate_fog, default_fog, end_fog, fog_for_dimension, nether_fog,
     underwater_fog,
-};
-pub use entity_render::{
-    EntityRenderData, MobModel, MobModelPart, animate_idle, animate_walk, model_for_mob,
 };
 pub use frustum::Frustum;
 pub use mesh::{ChunkMesh, NeighborChunks, Vertex};
