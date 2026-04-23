@@ -34,6 +34,7 @@ pub mod ores;
 pub mod piston;
 pub mod portal_link;
 pub mod rails;
+pub mod random_tick;
 pub mod redstone;
 pub mod redstone_components;
 pub mod save;
@@ -125,6 +126,10 @@ pub use portal_link::{
 pub use rails::{
     RailNetwork, RailShape, RailType, detector_rail_signal, determine_rail_shape, is_rail,
     powered_rail_effect, rail_type_from_id,
+};
+pub use random_tick::{
+    CROP_MAX_STAGES, RANDOM_TICK_SPEED, next_growth_stage, select_random_tick_positions,
+    should_crop_grow,
 };
 pub use redstone::{RedstoneCircuit, RedstoneWorld, is_power_source, propagate_redstone};
 pub use redstone_components::{
