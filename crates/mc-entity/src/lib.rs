@@ -32,6 +32,7 @@ pub mod special_mobs;
 pub mod statistics;
 pub mod survival;
 pub mod taming;
+pub mod tool_speed;
 pub mod tool_use;
 pub mod trident;
 pub mod vehicle;
