@@ -4,6 +4,7 @@
 //! [`Enchantment`] and brewing, anvil/smithing upgrades, and workstation processing.
 
 pub mod anvil;
+pub mod book;
 pub mod brewing;
 pub mod cartography;
 pub mod enchant_table;
@@ -30,6 +31,10 @@ pub struct ItemStack {
     pub count: u8,
 }
 
+pub use book::{
+    BookAndQuill, WrittenBook, copy_book, sign_book, MAX_CHARS_PER_PAGE, MAX_PAGES,
+    MAX_TITLE_LENGTH,
+};
 pub use anvil::{
     AnvilResult, anvil_combine, anvil_degrades, anvil_rename, merge_enchantments, repair_cost,
 };
