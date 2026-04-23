@@ -16,6 +16,7 @@ pub mod effects;
 pub mod entity;
 pub mod equipment;
 pub mod experience;
+pub mod fall_damage;
 pub mod fishing;
 pub mod golem;
 pub mod loot;
