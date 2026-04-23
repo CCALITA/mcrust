@@ -133,8 +133,18 @@ pub fn playing_frame(app: &mut App, frame_time: Duration) -> Option<GameState> {
     // to avoid invalidating Metal surface on the transition frame).
     if !app.cursor_grabbed {
         app.grab_cursor();
-        // Skip rendering this frame to let the surface stabilize
+        // Skip rendering for a few frames to let the surface stabilize
         // after cursor grab triggers macOS resize events.
+        app.skip_frames = 3;
+        if let Some(window) = app.window.as_ref() {
+            window.request_redraw();
+        }
+        return None;
+    }
+
+    // Let Metal surface stabilize after resize before rendering
+    if app.skip_frames > 0 {
+        app.skip_frames -= 1;
         if let Some(window) = app.window.as_ref() {
             window.request_redraw();
         }

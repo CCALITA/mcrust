@@ -69,6 +69,7 @@ struct App {
     pub(crate) mesh_queue: Vec<ChunkPos>,
     pub(crate) keys_held: HashSet<KeyCode>,
     pub(crate) cursor_grabbed: bool,
+    pub(crate) skip_frames: u8,
     pub(crate) last_tick: Instant,
     pub(crate) tick_accumulator: Duration,
     pub(crate) state: GameState,
@@ -97,6 +98,7 @@ impl App {
             mesh_queue: Vec::new(),
             keys_held: HashSet::new(),
             cursor_grabbed: false,
+            skip_frames: 0,
             last_tick: Instant::now(),
             tick_accumulator: Duration::ZERO,
             state: GameState::Loading {
@@ -137,6 +139,15 @@ impl App {
         let now = Instant::now();
         let frame_time = now - self.last_tick;
         self.last_tick = now;
+
+        // Skip rendering after resize to let Metal surface stabilize
+        if self.skip_frames > 0 && !matches!(self.state, GameState::Playing) {
+            self.skip_frames -= 1;
+            if let Some(window) = self.window.as_ref() {
+                window.request_redraw();
+            }
+            return;
+        }
 
         match self.state {
             GameState::MainMenu => {
@@ -306,6 +317,8 @@ impl ApplicationHandler for App {
                 if new_size.width > 0 && new_size.height > 0 {
                     self.camera.aspect = new_size.width as f32 / new_size.height as f32;
                 }
+                // Skip next frame to let Metal surface stabilize after reconfigure
+                self.skip_frames = 2;
             }
 
             WindowEvent::KeyboardInput { event, .. } => {
