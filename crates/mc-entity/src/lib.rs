@@ -20,6 +20,7 @@ pub mod equipment;
 pub mod experience;
 pub mod fall_damage;
 pub mod fishing;
+pub mod food;
 pub mod golem;
 pub mod loot;
 pub mod loot_blocks;
@@ -75,6 +76,7 @@ pub use experience::{
 pub use fishing::{
     FishType, FishingAction, FishingLoot, FishingState, FishingSystem, JunkType, TreasureType,
 };
+pub use food::{FoodItem, can_eat, eat_duration, food_count, food_data};
 pub use loot::{LootCondition, LootContext, LootEntry, LootPool, LootTable};
 pub use loot_blocks::block_loot_table;
 pub use loot_mobs::mob_loot_table;
