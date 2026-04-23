@@ -4,6 +4,7 @@
 //! [`ChunkMesh`] construction, [`ParticleSystem`], [`DayNightCycle`] sky, and translucent water.
 
 pub mod ambient_occlusion;
+pub mod beacon_beam;
 pub mod block_break;
 pub mod block_highlight;
 pub mod camera;
