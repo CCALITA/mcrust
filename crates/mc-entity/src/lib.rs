@@ -102,8 +102,8 @@ pub use tool_use::{
     BreakProgress, DurabilityComponent, calculate_break_time, preferred_tool, use_tool,
 };
 pub use trident::{
-    TRIDENT_MELEE_DAMAGE, TRIDENT_THROW_DAMAGE, TridentMode, channeling_strike, loyalty_return,
-    riptide_can_use, riptide_launch, throw_trident,
+    TridentState, channeling_strikes, impaling_bonus, return_velocity, riptide_boost,
+    throw_trident, tick_trident, trident_damage,
 };
 pub use villager::{
     TradeOffer, TradeResult, VillagerData, VillagerProfession, execute_trade, xp_for_level,
