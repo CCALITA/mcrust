@@ -10,6 +10,7 @@ pub mod campfire;
 pub mod cartography;
 pub mod compass;
 pub mod enchant_table;
+pub mod goat_horn;
 pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
@@ -70,4 +71,8 @@ pub use map_item::{MapData, blocks_per_pixel, map_pixel_for_block, map_range, wo
 pub use workstations::{
     GrindstoneResult, StonecutterRecipe, default_stonecutter_recipes, grindstone_disenchant,
     grindstone_repair, loom_apply,
+};
+pub use goat_horn::{
+    GoatHornVariant, horn_cooldown, horn_duration, horn_from_goat_drop, horn_range, horn_sound_id,
+    total_variants,
 };
