@@ -11,6 +11,7 @@ pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
 pub mod item_ids;
+pub mod map_item;
 pub mod potion_data;
 pub mod recipe;
 pub mod recipe_data;
@@ -53,6 +54,7 @@ pub use recipe::{CraftingGrid, Recipe, RecipePattern, RecipeRegistry};
 pub use smithing::{
     SmithingRecipe, SmithingTable, default_smithing_recipes, preserve_enchantments, try_smith,
 };
+pub use map_item::{MapData, blocks_per_pixel, map_pixel_for_block, map_range, world_to_pixel};
 pub use workstations::{
     GrindstoneResult, StonecutterRecipe, default_stonecutter_recipes, grindstone_disenchant,
     grindstone_repair, loom_apply,
