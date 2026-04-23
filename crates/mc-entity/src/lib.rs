@@ -21,6 +21,7 @@ pub mod golem;
 pub mod loot;
 pub mod loot_blocks;
 pub mod loot_mobs;
+pub mod movement_effects;
 pub mod pathfinding;
 pub mod projectile;
 pub mod raid;
