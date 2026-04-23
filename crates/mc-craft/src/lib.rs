@@ -4,6 +4,7 @@
 //! [`Enchantment`] and brewing, anvil/smithing upgrades, and workstation processing.
 
 pub mod anvil;
+pub mod armor_stand;
 pub mod book;
 pub mod brewing;
 pub mod campfire;
