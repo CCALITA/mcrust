@@ -6,6 +6,7 @@
 pub mod block_break;
 pub mod camera;
 pub mod entity_render;
+pub mod fog;
 pub mod frustum;
 pub mod mesh;
 pub mod particle;
@@ -16,6 +17,10 @@ pub mod texture;
 pub mod water;
 
 pub use camera::{Camera, CameraUniform};
+pub use fog::{
+    FogSettings, FogShape, calculate_fog, default_fog, end_fog, fog_for_dimension, nether_fog,
+    underwater_fog,
+};
 pub use entity_render::{
     EntityRenderData, MobModel, MobModelPart, animate_idle, animate_walk, model_for_mob,
 };
