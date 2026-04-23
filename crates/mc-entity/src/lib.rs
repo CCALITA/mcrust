@@ -12,6 +12,7 @@ pub mod component;
 pub mod decoration;
 pub mod difficulty;
 pub mod drowning;
+pub mod elytra;
 pub mod enchant_visual;
 pub mod drops;
 pub mod effects;
