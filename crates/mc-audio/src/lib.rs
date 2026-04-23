@@ -4,6 +4,7 @@
 //! a dimension-aware [`MusicPlayer`], and jukebox [`DiscPlayer`] for music disc playback.
 
 pub mod disc;
+pub mod jukebox;
 pub mod music;
 pub mod sound;
 
