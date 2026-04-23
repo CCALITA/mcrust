@@ -1,13 +1,12 @@
 //! HUD data model and widget rendering system.
-//!
-//! Provides [`HudState`] for health/hunger/XP bar data and [`HudRenderer`] for display,
-//! plus a lightweight [`UiContext`] with [`DrawCommand`]-based widget primitives.
 
 pub mod debug_screen;
 pub mod hotbar;
 pub mod hud;
 pub mod inventory_screen;
+pub mod loading_screen;
 pub mod scoreboard_display;
+pub mod toast;
 pub mod widget;
 
 pub use debug_screen::DebugInfo;
