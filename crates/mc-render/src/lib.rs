@@ -6,6 +6,7 @@
 pub mod block_break;
 pub mod block_highlight;
 pub mod camera;
+pub mod crosshair;
 pub mod entity_render;
 pub mod fog;
 pub mod frustum;
