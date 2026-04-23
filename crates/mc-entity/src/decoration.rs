@@ -1,88 +1,14 @@
-/// Painting variants and banner decorations for in-world entity placement.
+/// Banner decorations and painting placement for in-world entity placement.
+///
+/// For the full painting variant registry, see [`crate::painting`].
+
+use crate::painting;
+
+pub use painting::PaintingVariant;
 
 // ---------------------------------------------------------------------------
-// Painting
+// Painting placement (choose_painting)
 // ---------------------------------------------------------------------------
-
-/// The 20 canonical Minecraft painting variants.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum PaintingVariant {
-    Kebab,
-    Aztec,
-    Alban,
-    Aztec2,
-    Bomb,
-    Plant,
-    Wasteland,
-    Wanderer,
-    Graham,
-    Pool,
-    Courbet,
-    Sunset,
-    Sea,
-    Creebet,
-    Match,
-    Bust,
-    Stage,
-    Void,
-    SkullAndRoses,
-    Fighters,
-}
-
-/// All painting variants in declaration order.
-const ALL_PAINTINGS: [PaintingVariant; 20] = [
-    PaintingVariant::Kebab,
-    PaintingVariant::Aztec,
-    PaintingVariant::Alban,
-    PaintingVariant::Aztec2,
-    PaintingVariant::Bomb,
-    PaintingVariant::Plant,
-    PaintingVariant::Wasteland,
-    PaintingVariant::Wanderer,
-    PaintingVariant::Graham,
-    PaintingVariant::Pool,
-    PaintingVariant::Courbet,
-    PaintingVariant::Sunset,
-    PaintingVariant::Sea,
-    PaintingVariant::Creebet,
-    PaintingVariant::Match,
-    PaintingVariant::Bust,
-    PaintingVariant::Stage,
-    PaintingVariant::Void,
-    PaintingVariant::SkullAndRoses,
-    PaintingVariant::Fighters,
-];
-
-impl PaintingVariant {
-    /// Returns the dimensions `(width, height)` of this painting in blocks.
-    pub fn size(&self) -> (u8, u8) {
-        match self {
-            // 1x1
-            Self::Kebab
-            | Self::Aztec
-            | Self::Alban
-            | Self::Aztec2
-            | Self::Bomb
-            | Self::Plant
-            | Self::Wasteland => (1, 1),
-            // 1x2
-            Self::Wanderer | Self::Graham => (1, 2),
-            // 2x1
-            Self::Pool | Self::Courbet => (2, 1),
-            // 2x2
-            Self::Sunset
-            | Self::Sea
-            | Self::Creebet
-            | Self::Match
-            | Self::Bust
-            | Self::Stage
-            | Self::Void
-            | Self::SkullAndRoses => (2, 2),
-            // 4x2
-            Self::Fighters => (4, 2),
-        }
-    }
-}
 
 /// Simple hash-based pseudo-random number derived from `seed` and `index`.
 fn pseudo_random(seed: u64, index: u64) -> u64 {
@@ -104,14 +30,7 @@ fn pseudo_random(seed: u64, index: u64) -> u64 {
 /// cannot happen because multiple 1x1 paintings always fit for width >= 1 and
 /// height >= 1.
 pub fn choose_painting(available_width: u8, available_height: u8, seed: u64) -> PaintingVariant {
-    let candidates: Vec<PaintingVariant> = ALL_PAINTINGS
-        .iter()
-        .copied()
-        .filter(|p| {
-            let (w, h) = p.size();
-            w <= available_width && h <= available_height
-        })
-        .collect();
+    let candidates = painting::paintings_fitting(available_width, available_height);
 
     if candidates.is_empty() {
         return PaintingVariant::Kebab;
@@ -188,39 +107,37 @@ impl Banner {
 mod tests {
     use super::*;
 
-    // -- Painting sizes -------------------------------------------------------
+    // -- Painting sizes (delegated to painting module) -------------------------
 
     #[test]
     fn painting_sizes_are_correct() {
         // 1x1
-        assert_eq!(PaintingVariant::Kebab.size(), (1, 1));
-        assert_eq!(PaintingVariant::Aztec.size(), (1, 1));
-        assert_eq!(PaintingVariant::Alban.size(), (1, 1));
-        assert_eq!(PaintingVariant::Aztec2.size(), (1, 1));
-        assert_eq!(PaintingVariant::Bomb.size(), (1, 1));
-        assert_eq!(PaintingVariant::Plant.size(), (1, 1));
-        assert_eq!(PaintingVariant::Wasteland.size(), (1, 1));
-
-        // 1x2
-        assert_eq!(PaintingVariant::Wanderer.size(), (1, 2));
-        assert_eq!(PaintingVariant::Graham.size(), (1, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Kebab), (1, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Aztec), (1, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Alban), (1, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Aztec2), (1, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Bomb), (1, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Plant), (1, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Wasteland), (1, 1));
 
         // 2x1
-        assert_eq!(PaintingVariant::Pool.size(), (2, 1));
-        assert_eq!(PaintingVariant::Courbet.size(), (2, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Pool), (2, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Courbet), (2, 1));
 
         // 2x2
-        assert_eq!(PaintingVariant::Sunset.size(), (2, 2));
-        assert_eq!(PaintingVariant::Sea.size(), (2, 2));
-        assert_eq!(PaintingVariant::Creebet.size(), (2, 2));
-        assert_eq!(PaintingVariant::Match.size(), (2, 2));
-        assert_eq!(PaintingVariant::Bust.size(), (2, 2));
-        assert_eq!(PaintingVariant::Stage.size(), (2, 2));
-        assert_eq!(PaintingVariant::Void.size(), (2, 2));
-        assert_eq!(PaintingVariant::SkullAndRoses.size(), (2, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Wanderer), (2, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Graham), (2, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Sunset), (2, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Sea), (2, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Creebet), (2, 1));
+        assert_eq!(painting::painting_size(PaintingVariant::Match), (2, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Bust), (2, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Stage), (2, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Void), (2, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::SkullAndRoses), (2, 2));
 
         // 4x2
-        assert_eq!(PaintingVariant::Fighters.size(), (4, 2));
+        assert_eq!(painting::painting_size(PaintingVariant::Fighters), (4, 2));
     }
 
     // -- choose_painting respects space ---------------------------------------
@@ -228,11 +145,11 @@ mod tests {
     #[test]
     fn choose_painting_fits_within_1x1() {
         for seed in 0..50 {
-            let painting = choose_painting(1, 1, seed);
-            let (w, h) = painting.size();
+            let p = choose_painting(1, 1, seed);
+            let (w, h) = painting::painting_size(p);
             assert!(
                 w <= 1 && h <= 1,
-                "painting {painting:?} does not fit in 1x1"
+                "painting {p:?} does not fit in 1x1"
             );
         }
     }
@@ -240,11 +157,11 @@ mod tests {
     #[test]
     fn choose_painting_fits_within_2x2() {
         for seed in 0..50 {
-            let painting = choose_painting(2, 2, seed);
-            let (w, h) = painting.size();
+            let p = choose_painting(2, 2, seed);
+            let (w, h) = painting::painting_size(p);
             assert!(
                 w <= 2 && h <= 2,
-                "painting {painting:?} ({w}x{h}) does not fit in 2x2"
+                "painting {p:?} ({w}x{h}) does not fit in 2x2"
             );
         }
     }
@@ -252,11 +169,11 @@ mod tests {
     #[test]
     fn choose_painting_fits_within_4x4() {
         for seed in 0..50 {
-            let painting = choose_painting(4, 4, seed);
-            let (w, h) = painting.size();
+            let p = choose_painting(4, 4, seed);
+            let (w, h) = painting::painting_size(p);
             assert!(
                 w <= 4 && h <= 4,
-                "painting {painting:?} ({w}x{h}) does not fit in 4x4"
+                "painting {p:?} ({w}x{h}) does not fit in 4x4"
             );
         }
     }
@@ -265,8 +182,8 @@ mod tests {
     fn choose_painting_only_1x1_for_narrow_space() {
         // Width 1, height 1 — only 1x1 paintings should be chosen.
         for seed in 0..50 {
-            let painting = choose_painting(1, 1, seed);
-            assert_eq!(painting.size(), (1, 1));
+            let p = choose_painting(1, 1, seed);
+            assert_eq!(painting::painting_size(p), (1, 1));
         }
     }
 

@@ -23,6 +23,7 @@ pub mod golem;
 pub mod loot;
 pub mod loot_blocks;
 pub mod loot_mobs;
+pub mod painting;
 pub mod movement_effects;
 pub mod pathfinding;
 pub mod projectile;
@@ -116,6 +117,7 @@ pub use special_mobs::{
 pub use vehicle::{Vehicle, VehicleType, apply_input, boat_tick, minecart_tick};
 
 pub use decoration::{Banner, BannerPattern, PaintingVariant, choose_painting};
+pub use painting::{painting_name, painting_size, paintings_fitting, total_paintings};
 pub use golem::{
     GolemAction, GolemEffect, IronGolem, SnowGolem, check_iron_golem_pattern,
     check_snow_golem_pattern, iron_golem_tick, snow_golem_tick,
