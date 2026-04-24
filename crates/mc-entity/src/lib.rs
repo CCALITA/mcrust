@@ -53,6 +53,7 @@ pub mod tipped_arrow;
 pub mod totem;
 pub mod tool_speed;
 pub mod tool_use;
+pub mod trial_spawner;
 pub mod trident;
 pub mod vehicle;
 pub mod visibility;
@@ -132,6 +133,10 @@ pub use totem::{
 };
 pub use tool_use::{
     BreakProgress, DurabilityComponent, calculate_break_time, preferred_tool, use_tool,
+};
+pub use trial_spawner::{
+    TrialSpawnerState, activate_spawner, max_mobs_for_players, select_mob, spawner_cooldown,
+    tick_spawner, MOB_BOGGED, MOB_BREEZE, MOB_SKELETON, MOB_SPIDER, MOB_ZOMBIE,
 };
 pub use trident::{
     TridentState, channeling_strikes, impaling_bonus, return_velocity, riptide_boost,
