@@ -1,5 +1,6 @@
 //! HUD data model and widget rendering system.
 
+pub mod achievement_tracker;
 pub mod credits;
 pub mod damage_indicator;
 pub mod debug_screen;
