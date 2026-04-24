@@ -17,6 +17,7 @@ pub mod chest_logic;
 pub mod chunk;
 pub mod chunk_manager;
 pub mod climbable;
+pub mod command_block;
 pub mod composter;
 pub mod container;
 pub mod end;
@@ -81,6 +82,10 @@ pub use chunk_manager::ChunkManager;
 pub use climbable::{
     CLIMBING_SPEED, SCAFFOLDING_MAX_DISTANCE, can_place_scaffolding, is_climbable,
     scaffolding_distance, should_scaffolding_fall,
+};
+pub use command_block::{
+    CommandBlock, CommandBlockType, CommandTarget, execute_command_block, parse_command_target,
+    should_execute,
 };
 pub use composter::{
     BONE_MEAL_ID, CompostResult, compost_chance, harvest as composter_harvest, try_compost,
