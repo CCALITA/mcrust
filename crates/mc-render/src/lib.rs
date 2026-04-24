@@ -10,6 +10,7 @@ pub mod camera;
 pub mod chunk_lod;
 pub mod conduit;
 pub mod crosshair;
+pub mod death_screen;
 pub mod dynamic_light;
 pub mod end_crystal;
 pub mod entity_render;
