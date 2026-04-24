@@ -21,6 +21,7 @@ pub mod item_drop_render;
 pub mod lightning;
 pub mod mesh;
 pub mod particle;
+pub mod projectile_trail;
 pub mod renderer;
 pub mod screen_effects;
 pub mod shader;
