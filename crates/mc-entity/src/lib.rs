@@ -29,6 +29,7 @@ pub mod fall_damage;
 pub mod fishing;
 pub mod fishing_rod;
 pub mod food;
+pub mod frost_walker;
 pub mod golem;
 pub mod horse_armor;
 pub mod leash;
@@ -107,6 +108,10 @@ pub use fishing::{
     FishType, FishingAction, FishingLoot, FishingState, FishingSystem, JunkType, TreasureType,
 };
 pub use food::{FoodItem, can_eat, eat_duration, food_count, food_data};
+pub use frost_walker::{
+    MAX_FROST_WALKER_LEVEL, freeze_water_positions, frost_walker_radius,
+    frost_walker_works_in_dimension, frosted_ice_decay_time, prevents_magma_damage,
+};
 pub use loot::{LootCondition, LootContext, LootEntry, LootPool, LootTable};
 pub use loot_blocks::block_loot_table;
 pub use loot_mobs::mob_loot_table;
