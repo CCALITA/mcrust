@@ -5,6 +5,7 @@ pub mod damage_indicator;
 pub mod debug_screen;
 pub mod hotbar;
 pub mod hud;
+pub mod hud_visibility;
 pub mod inventory_screen;
 pub mod loading_screen;
 pub mod scoreboard_display;
