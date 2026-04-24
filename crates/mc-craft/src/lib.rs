@@ -25,6 +25,7 @@ pub mod item_ids;
 pub mod lectern;
 pub mod lodestone;
 pub mod map_item;
+pub mod pot_crafting;
 pub mod potion_data;
 pub mod recipe;
 pub mod recipe_data;
