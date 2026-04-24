@@ -1,6 +1,7 @@
 //! wgpu-based rendering: chunk meshing, sky, entities, particles, and water.
 
 pub mod ambient_occlusion;
+pub mod animated_texture;
 pub mod beacon_beam;
 pub mod beam_effects;
 pub mod block_break;
