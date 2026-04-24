@@ -48,6 +48,7 @@ pub mod special_mobs;
 pub mod statistics;
 pub mod survival;
 pub mod taming;
+pub mod tipped_arrow;
 pub mod totem;
 pub mod tool_speed;
 pub mod tool_use;
@@ -116,6 +117,7 @@ pub use spawning::{
     DEFAULT_HOSTILE_CAP, DEFAULT_PASSIVE_CAP, MobSpawnConfig, SpawnSystem, default_spawn_configs,
 };
 pub use statistics::{StatisticId, StatisticsTracker};
+pub use tipped_arrow::{TippedArrowEffect, arrow_color, create_tipped_arrow, total_arrow_types};
 pub use survival::{
     EXHAUSTION_JUMP, EXHAUSTION_SPRINT_PER_METER, EXHAUSTION_WALK_PER_METER, HungerComponent,
     HungerSystem, food_values,
