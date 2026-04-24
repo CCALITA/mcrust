@@ -161,4 +161,7 @@ pub use tick_scheduler::{ScheduledEvent, ScheduledTick, TickScheduler, TickType}
 pub use tnt::{TntAction, TntEntity, activate_tnt, chain_activation, tick_tnt};
 pub use trees::{birch_tree, oak_tree, place_trees, place_vegetation, spruce_tree};
 pub use weather::{WeatherState, WeatherSystem};
-pub use world_border::WorldBorder;
+pub use world_border::{
+    WorldBorder, border_warning_overlay_alpha, damage_per_tick_outside, distance_to_border,
+    is_outside_border, is_within_warning_zone,
+};
