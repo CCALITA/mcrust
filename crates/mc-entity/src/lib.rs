@@ -43,6 +43,7 @@ pub mod tool_speed;
 pub mod tool_use;
 pub mod trident;
 pub mod vehicle;
+pub mod visibility;
 pub mod villager;
 pub mod villager_job;
 pub mod villager_trades;
