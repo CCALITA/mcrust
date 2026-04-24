@@ -30,6 +30,7 @@ pub mod recipe_data;
 pub mod recipe_data_ext;
 pub mod smithing;
 pub mod smithing_template;
+pub mod sniffer;
 pub mod specialized_furnace;
 pub mod spyglass;
 pub mod workstations;
