@@ -7,6 +7,7 @@ pub mod advancement;
 pub mod ai;
 pub mod armor;
 pub mod behavior;
+pub mod boat;
 pub mod combat;
 pub mod component;
 pub mod crossbow;
@@ -127,6 +128,10 @@ pub use villager_trades::default_trades;
 pub use special_mobs::{
     EndermanState, PotionType, WitchAction, choose_witch_action, is_player_looking_at,
     slime_damage, slime_health, split_on_death, teleport_away,
+};
+pub use boat::{
+    BoatState, BoatType, boat_collision_box, boat_max_speed, dismount as boat_dismount,
+    mount_passenger, tick_boat,
 };
 pub use vehicle::{Vehicle, VehicleType, apply_input, boat_tick, minecart_tick};
 
