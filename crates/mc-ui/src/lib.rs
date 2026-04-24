@@ -10,6 +10,7 @@ pub mod inventory_screen;
 pub mod loading_screen;
 pub mod scoreboard_display;
 pub mod subtitles;
+pub mod tab_list;
 pub mod title_screen;
 pub mod toast;
 pub mod widget;
