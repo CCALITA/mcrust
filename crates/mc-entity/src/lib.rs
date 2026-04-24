@@ -40,6 +40,7 @@ pub mod projectile;
 pub mod raid;
 pub mod scaffolding;
 pub mod shield;
+pub mod soul_speed;
 pub mod spawning;
 pub mod special_mobs;
 pub mod statistics;
