@@ -17,6 +17,7 @@ pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
 pub mod item_ids;
+pub mod lodestone;
 pub mod map_item;
 pub mod potion_data;
 pub mod recipe;
