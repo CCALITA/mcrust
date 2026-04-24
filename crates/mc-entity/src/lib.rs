@@ -29,6 +29,7 @@ pub mod fishing;
 pub mod fishing_rod;
 pub mod food;
 pub mod golem;
+pub mod horse_armor;
 pub mod leash;
 pub mod loot;
 pub mod loot_blocks;
