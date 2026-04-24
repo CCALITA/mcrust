@@ -32,6 +32,7 @@ pub mod loot;
 pub mod loot_blocks;
 pub mod loot_mobs;
 pub mod mending;
+pub mod mob_equipment;
 pub mod painting;
 pub mod movement_effects;
 pub mod pathfinding;
