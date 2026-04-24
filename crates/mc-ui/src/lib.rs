@@ -9,6 +9,7 @@ pub mod hud_visibility;
 pub mod inventory_screen;
 pub mod loading_screen;
 pub mod scoreboard_display;
+pub mod settings_menu;
 pub mod subtitles;
 pub mod tab_list;
 pub mod title_screen;

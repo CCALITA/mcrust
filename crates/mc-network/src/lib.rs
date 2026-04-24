@@ -6,6 +6,7 @@
 pub mod client_conn;
 pub mod command_help;
 pub mod commands;
+pub mod latency_meter;
 pub mod packet;
 pub mod protocol;
 pub mod server;
