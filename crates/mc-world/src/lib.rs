@@ -11,6 +11,7 @@ pub mod biome_terrain;
 pub mod block_entity;
 pub mod block_update;
 pub mod bucket;
+pub mod calibrated_sculk;
 pub mod campfire;
 pub mod caves;
 pub mod chest_logic;
@@ -70,6 +71,10 @@ pub use block_entity::{
 pub use block_update::BlockUpdateQueue;
 pub use bucket::{
     BucketContents, BucketResult, milk_effects, use_bucket_on_block, use_bucket_on_entity,
+};
+pub use calibrated_sculk::{
+    CalibratedSculkSensor, activate, calibrated_range, sensor_redstone_output, should_activate,
+    standard_cooldown_ticks, tick_sensor,
 };
 pub use campfire::{CampfireState, campfire_damage, cooked_item, smoke_height};
 pub use caves::CaveCarver;
