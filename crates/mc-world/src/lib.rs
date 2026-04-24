@@ -165,7 +165,7 @@ pub use save::{
     save_chunk, save_to_chunk, save_world,
 };
 pub use sculk_vibration::{
-    VibrationEvent, calibrated_range, redstone_output_for_frequency, sculk_sensor_range,
+    VibrationEvent, redstone_output_for_frequency, sculk_sensor_range,
     should_sensor_activate, vibration_frequency,
 };
 pub use sensors::{
