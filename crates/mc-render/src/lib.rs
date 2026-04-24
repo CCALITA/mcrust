@@ -27,7 +27,6 @@ pub mod sky;
 pub mod texture;
 pub mod water;
 pub mod water_reflection;
-
 pub use camera::{Camera, CameraUniform};
 pub use entity_render::{
     EntityRenderData, MobModel, MobModelPart, animate_idle, animate_walk, model_for_mob,
@@ -35,7 +34,6 @@ pub use entity_render::{
 pub use fog::{
     FogSettings, FogShape, calculate_fog, default_fog, end_fog, fog_for_dimension, nether_fog,
     underwater_fog,
-};
 pub use frustum::Frustum;
 pub use mesh::{ChunkMesh, NeighborChunks, Vertex};
 pub use particle::{Particle, ParticleSystem, ParticleType};
@@ -43,4 +41,3 @@ pub use renderer::Renderer;
 pub use sky::{DayNightCycle, SkyUniform};
 pub use water::{
     TransparentMeshData, WATER_SHADER_SOURCE, WaterAnimation, separate_transparent_faces,
-};
