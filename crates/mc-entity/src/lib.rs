@@ -32,6 +32,7 @@ pub mod movement_effects;
 pub mod pathfinding;
 pub mod projectile;
 pub mod raid;
+pub mod scaffolding;
 pub mod shield;
 pub mod spawning;
 pub mod special_mobs;
