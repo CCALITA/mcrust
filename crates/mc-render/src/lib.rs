@@ -12,6 +12,7 @@ pub mod conduit;
 pub mod crosshair;
 pub mod end_crystal;
 pub mod entity_render;
+pub mod explosion_particles;
 pub mod fog;
 pub mod frustum;
 pub mod godrays;
