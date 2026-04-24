@@ -15,6 +15,7 @@ pub mod end_crystal;
 pub mod entity_render;
 pub mod explosion_particles;
 pub mod fog;
+pub mod frost_overlay;
 pub mod frustum;
 pub mod godrays;
 pub mod hand_swing;
