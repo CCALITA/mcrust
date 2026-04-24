@@ -22,6 +22,7 @@ pub mod equipment;
 pub mod experience;
 pub mod fall_damage;
 pub mod fishing;
+pub mod fishing_rod;
 pub mod food;
 pub mod golem;
 pub mod loot;
