@@ -15,6 +15,8 @@ pub mod entity_render;
 pub mod fog;
 pub mod frustum;
 pub mod hand_swing;
+pub mod item_drop_render;
+pub mod godrays;
 pub mod lightning;
 pub mod mesh;
 pub mod particle;
