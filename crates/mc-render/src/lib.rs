@@ -7,6 +7,7 @@ pub mod beam_effects;
 pub mod block_break;
 pub mod block_highlight;
 pub mod camera;
+pub mod cherry_particles;
 pub mod chunk_lod;
 pub mod conduit;
 pub mod crosshair;
