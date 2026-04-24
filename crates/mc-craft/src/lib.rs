@@ -32,6 +32,7 @@ pub mod smithing;
 pub mod smithing_template;
 pub mod specialized_furnace;
 pub mod spyglass;
+pub mod vault;
 pub mod workstations;
 
 /// Minimal item representation for crafting.
