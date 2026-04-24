@@ -31,6 +31,7 @@ pub mod sky;
 pub mod texture;
 pub mod water;
 pub mod water_reflection;
+pub mod wind_charge;
 
 pub use camera::{Camera, CameraUniform};
 pub use entity_render::{
