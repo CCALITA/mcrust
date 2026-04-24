@@ -5,6 +5,7 @@
 
 pub mod anvil;
 pub mod armor_stand;
+pub mod beehive_interact;
 pub mod book;
 pub mod brewing;
 pub mod bundle;
