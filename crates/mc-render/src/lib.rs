@@ -14,6 +14,7 @@ pub mod end_crystal;
 pub mod entity_render;
 pub mod fog;
 pub mod frustum;
+pub mod hand_swing;
 pub mod lightning;
 pub mod mesh;
 pub mod particle;
