@@ -18,6 +18,7 @@ pub mod copper_bulb;
 pub mod decorated_pot_break;
 pub mod enchant_table;
 pub mod goat_horn;
+pub mod hanging_sign;
 pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
