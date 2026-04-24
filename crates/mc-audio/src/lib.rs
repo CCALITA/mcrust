@@ -8,6 +8,7 @@ pub mod disc;
 pub mod footsteps;
 pub mod jukebox;
 pub mod music;
+pub mod music_crossfade;
 pub mod noteblock;
 pub mod sound;
 pub mod spatial;
@@ -21,6 +22,10 @@ pub use footsteps::{
 pub use music::{
     DIMENSION_END, DIMENSION_NETHER, DIMENSION_OVERWORLD, MusicAction, MusicPlayer, MusicState,
     MusicTrack,
+};
+pub use music_crossfade::{
+    CrossfadeState, current_volume, default_fade_duration, is_crossfading, next_volume,
+    start_crossfade, tick_crossfade,
 };
 pub use noteblock::{
     NoteBlockInstrument, TOTAL_NOTES, instrument_for_base_block, instrument_name, note_color,
