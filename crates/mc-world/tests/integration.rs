@@ -413,37 +413,44 @@ fn map_from_terrain_has_non_uniform_colors() {
 // ---------------------------------------------------------------------------
 
 #[test]
-fn world_border_clamping_with_shrinking_border() {
-    let mut border = WorldBorder::new(200.0);
+fn world_border_outside_and_warning_zone() {
+    use mc_world::{
+        damage_per_tick_outside, distance_to_border, is_outside_border, is_within_warning_zone,
+    };
 
-    // Position inside is not clamped.
-    let (cx, cz) = border.clamp_position(50.0, 50.0);
-    assert_eq!((cx, cz), (50.0, 50.0));
+    let mut border = WorldBorder::new();
+    border.radius = 100.0; // half-width = 100 blocks from center
 
-    // Start shrinking border from 200 to 100 over 10 seconds.
-    border.set_size(100.0, 10.0);
+    // Center is inside.
+    assert!(!is_outside_border(0.0, 0.0, &border));
 
-    // Tick halfway (5 seconds).
-    border.tick(5.0);
-    assert!((border.size - 150.0).abs() < f64::EPSILON);
+    // Position at edge is not outside (|x - cx| == radius, not >).
+    assert!(!is_outside_border(100.0, 0.0, &border));
 
-    // A position at x=80 was inside at size 200, but should still be inside at 150.
-    assert!(border.is_inside(70.0, 0.0));
+    // Position past edge is outside.
+    assert!(is_outside_border(101.0, 0.0, &border));
 
-    // Tick the rest of the way.
-    border.tick(5.0);
-    assert!((border.size - 100.0).abs() < f64::EPSILON);
+    // Distance to border at center should be 100.0 (radius).
+    let dist = distance_to_border(0.0, 0.0, &border);
+    assert!((dist - 100.0).abs() < f64::EPSILON);
 
-    // Now x=60 is outside (border edge is at 50).
-    assert!(!border.is_inside(60.0, 0.0));
+    // Shrink border and verify warning zone.
+    border.radius = 50.0;
+    border.warning_distance = 5.0;
 
-    // Clamping should bring it to the edge.
-    let (cx2, _cz2) = border.clamp_position(60.0, 0.0);
-    assert!((cx2 - 50.0).abs() < f64::EPSILON);
+    // 3 blocks from edge => inside warning zone.
+    assert!(is_within_warning_zone(47.0, 0.0, &border));
 
-    // Damage should be nonzero outside.
-    let damage = border.damage_at(55.0, 0.0);
-    assert!(damage > 0.0, "should take damage outside border");
+    // 6 blocks from edge => outside warning zone.
+    assert!(!is_within_warning_zone(44.0, 0.0, &border));
+
+    // Damage outside border: 5 blocks out => 0.2 * 5 = 1.0 HP.
+    let d = damage_per_tick_outside(5.0);
+    assert!((d - 1.0).abs() < f32::EPSILON);
+
+    // Damage capped at 5.0 HP.
+    let d_cap = damage_per_tick_outside(100.0);
+    assert!((d_cap - 5.0).abs() < f32::EPSILON);
 }
 
 // ---------------------------------------------------------------------------
