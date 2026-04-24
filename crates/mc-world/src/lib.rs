@@ -4,6 +4,7 @@
 //! weather, farming, fluids, fire, explosions, pistons, and save/load persistence.
 
 pub mod async_chunks;
+pub mod bamboo_blocks;
 pub mod beacon;
 pub mod bed;
 pub mod biome_blend;
@@ -56,6 +57,10 @@ pub mod world_border;
 
 pub use async_chunks::{
     AsyncChunkLoader, ChunkGenConfig, ChunkLoadRequest, generate_chunk_standalone,
+};
+pub use bamboo_blocks::{
+    BambooBlockType, bamboo_block_hardness, bamboo_growth_stages, bamboo_is_flammable,
+    bamboo_max_height_range, bamboo_shoot_to_stalk, total_bamboo_block_types,
 };
 pub use beacon::{
     BeaconEffect, BeaconState, available_effects, beacon_range, is_beacon_base_block, is_in_range,
