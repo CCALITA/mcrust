@@ -15,6 +15,7 @@ pub mod frustum;
 pub mod mesh;
 pub mod particle;
 pub mod renderer;
+pub mod screen_effects;
 pub mod shader;
 pub mod sky;
 pub mod texture;
