@@ -51,6 +51,7 @@ pub mod terrain;
 pub mod tick_scheduler;
 pub mod tnt;
 pub mod trees;
+pub mod waxed_copper;
 pub mod weather;
 pub mod world_border;
 
