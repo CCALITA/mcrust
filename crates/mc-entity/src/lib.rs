@@ -10,6 +10,7 @@ pub mod armor;
 pub mod behavior;
 pub mod boat;
 pub mod breeding;
+pub mod breeze;
 pub mod combat;
 pub mod component;
 pub mod crossbow;
