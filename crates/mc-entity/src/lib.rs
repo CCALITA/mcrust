@@ -14,6 +14,7 @@ pub mod combat;
 pub mod component;
 pub mod crossbow;
 pub mod decoration;
+pub mod depth_strider;
 pub mod difficulty;
 pub mod drowning;
 pub mod elytra;
@@ -79,6 +80,10 @@ pub use crossbow::{
 pub use component::{
     Collider, ComponentStore, Gravity, Health, MobComponent, MobKind, Position, Rotation, Velocity,
     World,
+};
+pub use depth_strider::{
+    MAX_DEPTH_STRIDER_LEVEL, WATER_SPEED_BASE_MULTIPLIER, apply_water_speed,
+    depth_strider_speed_multiplier, swim_speed_with_dolphins_grace,
 };
 pub use difficulty::{Difficulty, regional_difficulty};
 pub use drops::{DropSystem, ItemDrop, XpOrb, spawn_block_drops, spawn_mob_drops};
