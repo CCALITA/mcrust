@@ -12,6 +12,7 @@ pub mod bundle;
 pub mod campfire;
 pub mod cartography;
 pub mod compass;
+pub mod decorated_pot_break;
 pub mod enchant_table;
 pub mod goat_horn;
 pub mod enchanting;
