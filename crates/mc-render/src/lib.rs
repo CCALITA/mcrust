@@ -7,6 +7,7 @@ pub mod block_break;
 pub mod block_highlight;
 pub mod camera;
 pub mod chunk_lod;
+pub mod conduit;
 pub mod crosshair;
 pub mod end_crystal;
 pub mod entity_render;
