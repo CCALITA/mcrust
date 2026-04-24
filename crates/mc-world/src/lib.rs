@@ -42,6 +42,7 @@ pub mod random_tick;
 pub mod redstone;
 pub mod redstone_components;
 pub mod save;
+pub mod sculk_vibration;
 pub mod sensors;
 pub mod sign;
 pub mod spawn;
@@ -152,6 +153,10 @@ pub use redstone_components::{
 pub use save::{
     ChunkSave, SaveError, SectionSave, WorldSave, chunk_to_save, load_chunk, load_world,
     save_chunk, save_to_chunk, save_world,
+};
+pub use sculk_vibration::{
+    VibrationEvent, calibrated_range, redstone_output_for_frequency, sculk_sensor_range,
+    should_sensor_activate, vibration_frequency,
 };
 pub use sensors::{
     DaylightDetector, ObserverState, daylight_signal, observer_check, observer_tick,
