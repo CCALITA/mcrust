@@ -9,6 +9,7 @@ pub mod anvil_damage;
 pub mod armor;
 pub mod behavior;
 pub mod boat;
+pub mod breeding;
 pub mod combat;
 pub mod component;
 pub mod crossbow;
@@ -63,6 +64,10 @@ pub use armor::{
     ArmorMaterial, ArmorPiece, ArmorSet, ArmorSlot, apply_armor_damage, calculate_damage_reduction,
 };
 pub use behavior::{MobAction, MobBehavior, behavior_tick, behavior_tick_with_state};
+pub use breeding::{
+    BREED_COOLDOWN, BreedingState, attempt_breed, baby_grow_time, can_breed, feed_breeding_food,
+    is_adult as breeding_is_adult, tick_breeding,
+};
 pub use combat::{
     DamageEvent, DamageType, apply_damage, attack_cooldown, calculate_fall_damage,
     calculate_knockback, calculate_melee_damage,
