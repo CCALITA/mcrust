@@ -17,6 +17,7 @@ pub mod fog;
 pub mod frustum;
 pub mod godrays;
 pub mod hand_swing;
+pub mod heart_particle;
 pub mod item_drop_render;
 pub mod lightning;
 pub mod mesh;
