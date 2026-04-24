@@ -15,6 +15,7 @@ pub mod cartography;
 pub mod compass;
 pub mod conduit_power;
 pub mod copper_bulb;
+pub mod crafter;
 pub mod decorated_pot_break;
 pub mod enchant_table;
 pub mod goat_horn;
@@ -60,6 +61,7 @@ pub use anvil::{
 };
 pub use brewing::{BrewingIngredient, BrewingRecipe, BrewingStand};
 pub use campfire::{CampfireRecipe, CampfireState, CookingSlot, campfire_recipes};
+pub use crafter::{CrafterState, crafter_cooldown, crafter_eject_direction, trigger_craft};
 pub use cartography::{
     CartographyAction, SimpleMapData, cartography_table, clone_map, extend_map, lock_map,
 };
