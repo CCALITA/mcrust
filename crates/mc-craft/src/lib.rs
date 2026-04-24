@@ -30,6 +30,7 @@ pub mod potion_data;
 pub mod recipe;
 pub mod recipe_data;
 pub mod recipe_data_ext;
+pub mod recovery_compass;
 pub mod smithing;
 pub mod smithing_template;
 pub mod sniffer;
