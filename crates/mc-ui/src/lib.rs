@@ -7,6 +7,7 @@ pub mod hotbar;
 pub mod hud;
 pub mod hud_visibility;
 pub mod inventory_screen;
+pub mod key_bindings;
 pub mod loading_screen;
 pub mod scoreboard_display;
 pub mod settings_menu;
