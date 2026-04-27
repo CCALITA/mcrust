@@ -5,6 +5,7 @@ pub mod animated_texture;
 pub mod beacon_beam;
 pub mod beam_effects;
 pub mod block_break;
+pub mod bubble_column;
 pub mod block_highlight;
 pub mod camera;
 pub mod candle_flame;
