@@ -5,6 +5,7 @@
 
 pub mod advancement;
 pub mod ai;
+pub mod allay_ai;
 pub mod anvil_damage;
 pub mod armor;
 pub mod behavior;
