@@ -27,6 +27,7 @@ pub mod heart_particle;
 pub mod item_drop_render;
 pub mod lightning;
 pub mod mesh;
+pub mod name_tag;
 pub mod particle;
 pub mod projectile_trail;
 pub mod renderer;
