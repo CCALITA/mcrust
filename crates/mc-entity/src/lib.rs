@@ -31,6 +31,7 @@ pub mod fishing;
 pub mod fishing_rod;
 pub mod food;
 pub mod frost_walker;
+pub mod goat;
 pub mod golem;
 pub mod horse_armor;
 pub mod leash;
@@ -170,6 +171,10 @@ pub use vehicle::{Vehicle, VehicleType, apply_input, boat_tick, minecart_tick};
 
 pub use decoration::{Banner, BannerPattern, PaintingVariant, choose_painting};
 pub use painting::{painting_name, painting_size, paintings_fitting, total_paintings};
+pub use goat::{
+    GoatState, drops_horn_on_ram, ram_cooldown_duration, ram_damage, ram_knockback, ram_range,
+    tick_goat,
+};
 pub use golem::{
     GolemAction, GolemEffect, IronGolem, SnowGolem, check_iron_golem_pattern,
     check_snow_golem_pattern, iron_golem_tick, snow_golem_tick,
