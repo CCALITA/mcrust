@@ -63,6 +63,7 @@ pub mod visibility;
 pub mod villager;
 pub mod villager_job;
 pub mod villager_trades;
+pub mod warden_detection;
 pub mod wither;
 
 pub use advancement::{
@@ -177,6 +178,10 @@ pub use golem::{
 pub use leash::{
     LeashState, LlamaCaravan, attach_leash, attempt_join_caravan, caravan_speed_multiplier,
     detach_leash, leash_break_distance,
+};
+pub use warden_detection::{
+    ANGER_THRESHOLD, WardenAnger, add_suspicion, darkness_pulse, sonic_boom_damage,
+    warden_detection_range,
 };
 pub use wither::{
     DamageResult, Wither, WitherPhase, WitherSkull, XP_REWARD, wither_damage, wither_tick,
