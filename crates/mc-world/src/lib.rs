@@ -35,6 +35,7 @@ pub mod light_level;
 pub mod lighting;
 pub mod lightning_rod;
 pub mod map_data;
+pub mod mud_blocks;
 pub mod nether;
 pub mod noise_terrain;
 pub mod noteblock;
