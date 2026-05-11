@@ -26,6 +26,7 @@ pub mod end;
 pub mod explosion;
 pub mod farming;
 pub mod fire;
+pub mod flower_pot;
 pub mod fluid;
 pub mod gravity_block;
 pub mod hopper_logic;
@@ -118,6 +119,9 @@ pub use farming::{CropState, CropType, can_plant_on, harvest, is_hydrated, tick_
 pub use fire::{
     BurningEntity, FireAction, FireState, burn_chance, flammability, is_flammable, on_fire_tick,
     tick_fire,
+};
+pub use flower_pot::{
+    FlowerPot, POTTABLE_PLANTS, can_pot_plant, place_in_pot, pot_collision_box, remove_from_pot,
 };
 pub use fluid::{FluidWorld, process_water_update};
 pub use gravity_block::{
