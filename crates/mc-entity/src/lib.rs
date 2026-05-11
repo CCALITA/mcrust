@@ -68,6 +68,7 @@ pub mod villager_job;
 pub mod villager_trades;
 pub mod warden_detection;
 pub mod wither;
+pub mod wolf_variant;
 
 pub use advancement::{
     ADVANCEMENT_REGISTRY, AdvancementId, AdvancementProperties, AdvancementTracker,
