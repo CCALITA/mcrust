@@ -7,6 +7,7 @@ pub mod beam_effects;
 pub mod block_break;
 pub mod bubble_column;
 pub mod block_highlight;
+pub mod chain_block;
 pub mod camera;
 pub mod candle_flame;
 pub mod cherry_particles;
