@@ -221,7 +221,7 @@ fn tick_bridge_modules(app: &mut App, frame_dt: f32) {
 
     // Survival (hunger/health) tick
     let is_sprinting = app.keys_held.contains(&KeyCode::ControlLeft);
-    app.survival.tick(frame_dt, is_sprinting, 0.0);
+    app.survival.tick(frame_dt, is_sprinting, 0.0, false);
 
     // Progression (distance tracking)
     app.progression.on_distance_walked(0.0);
