@@ -40,6 +40,7 @@ pub mod shader;
 pub mod sky;
 pub mod snow_layer;
 pub mod texture;
+pub mod torch_flame;
 pub mod water;
 pub mod water_reflection;
 pub mod wind_charge;
