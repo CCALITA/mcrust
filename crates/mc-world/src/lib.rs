@@ -7,6 +7,7 @@ pub mod async_chunks;
 pub mod bamboo_blocks;
 pub mod beacon;
 pub mod bed;
+pub mod bell;
 pub mod biome_blend;
 pub mod biome_terrain;
 pub mod block_entity;
