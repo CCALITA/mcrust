@@ -44,6 +44,7 @@ pub mod random_tick;
 pub mod redstone;
 pub mod redstone_components;
 pub mod save;
+pub mod sculk_catalyst;
 pub mod sculk_vibration;
 pub mod sensors;
 pub mod sign;
