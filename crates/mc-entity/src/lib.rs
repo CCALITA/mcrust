@@ -50,6 +50,7 @@ pub mod projectile;
 pub mod raid;
 pub mod scaffolding;
 pub mod shield;
+pub mod slime_block;
 pub mod sniffer_entity;
 pub mod soul_speed;
 pub mod spawning;
@@ -166,6 +167,10 @@ pub use villager_job::{
 };
 pub use villager_trades::default_trades;
 
+pub use slime_block::{
+    slime_block_pushes_entities, slime_block_sticky, slime_bounce_height, slime_bounce_velocity,
+    slime_does_not_stick_to_honey, slime_prevents_fall_damage,
+};
 pub use special_mobs::{
     EndermanState, PotionType, WitchAction, choose_witch_action, is_player_looking_at,
     slime_damage, slime_health, split_on_death, teleport_away,
