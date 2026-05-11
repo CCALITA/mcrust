@@ -25,6 +25,7 @@ pub mod goat_horn;
 pub mod hanging_sign;
 pub mod heavy_core;
 pub mod enchanting;
+pub mod firework_star;
 pub mod furnace;
 pub mod inventory;
 pub mod item_ids;
