@@ -38,6 +38,7 @@ pub mod renderer;
 pub mod screen_effects;
 pub mod shader;
 pub mod sky;
+pub mod snow_layer;
 pub mod texture;
 pub mod water;
 pub mod water_reflection;
