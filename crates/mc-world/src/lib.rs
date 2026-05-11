@@ -45,6 +45,7 @@ pub mod noteblock;
 pub mod ores;
 pub mod piston;
 pub mod pointed_dripstone;
+pub mod pressure_plate;
 pub mod portal_link;
 pub mod rails;
 pub mod random_tick;
@@ -160,6 +161,9 @@ pub use pointed_dripstone::{
 };
 pub use piston::{
     PUSH_LIMIT, PistonState, can_push_block, extend_piston, push_line, retract, retract_piston,
+};
+pub use pressure_plate::{
+    PressurePlateType, plate_activation, plate_deactivation_delay, weighted_signal,
 };
 pub use portal_link::{
     PortalLink, create_portal_frame, find_nearest_portal, nether_coordinate_scale,
