@@ -13,6 +13,7 @@ pub mod block_entity;
 pub mod block_update;
 pub mod bucket;
 pub mod calibrated_sculk;
+pub mod cherry_grove;
 pub mod campfire;
 pub mod caves;
 pub mod chest_logic;
