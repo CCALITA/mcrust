@@ -36,6 +36,7 @@ pub mod lectern;
 pub mod light_level;
 pub mod lighting;
 pub mod lightning_rod;
+pub mod mangrove;
 pub mod map_data;
 pub mod mud_blocks;
 pub mod nether;
