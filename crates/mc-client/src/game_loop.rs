@@ -3,21 +3,30 @@ use std::time::Duration;
 use glam::Vec3;
 use winit::keyboard::KeyCode;
 
+use mc_core::biome::BiomeId;
 use mc_core::block::BlockId;
 use mc_core::pos::{BlockPos, ChunkPos};
 use mc_physics::collision;
 use mc_physics::raycast;
 use mc_render::Camera;
 use mc_render::Renderer;
+use mc_render::crosshair::crosshair_ndc;
+use mc_render::fog::fog_for_dimension;
 use mc_render::frustum::{self, Frustum};
 use mc_render::mesh::{ChunkMesh, NeighborChunks};
 use mc_render::sky::DayNightCycle;
+use mc_ui::debug_screen::{DebugInfo, direction_name, format_debug_lines, time_to_hhmm};
+use mc_ui::hotbar::{HotbarData, hotbar_layout};
 use mc_world::ChunkManager;
+use mc_world::biome_blend::biome_base_colors;
 
 use crate::player::{
     GRAVITY, JUMP_VELOCITY, REACH_DISTANCE, SNEAK_SPEED, SPRINT_SPEED, WALK_SPEED,
 };
 use crate::{App, GameState, TICK_DURATION, VOID_DEATH_Y};
+
+/// Frame counter for throttled logging (fog, debug screen).
+static FRAME_COUNTER: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 
 // ---------------------------------------------------------------------------
 // Mesh queue processing
@@ -68,7 +77,16 @@ pub fn render_scene(
     camera: &Camera,
     sky: &DayNightCycle,
     chunk_meshes: &[ChunkMesh],
+    screen_w: f32,
+    screen_h: f32,
 ) {
+    // Compute fog settings for the current dimension (overworld, render distance 8)
+    let fog = fog_for_dimension(0, 8);
+    let frame = FRAME_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    if frame % 60 == 0 {
+        log::debug!("Fog start={:.1} end={:.1}", fog.start, fog.end);
+    }
+
     let vp = camera.view_projection_matrix();
     let frustum = Frustum::from_view_projection(vp);
 
@@ -117,6 +135,9 @@ pub fn render_scene(
             }
         }
     }
+
+    // Compute crosshair NDC coordinates (will be used for GPU drawing later)
+    let _crosshair = crosshair_ndc(screen_w, screen_h);
 }
 
 // ---------------------------------------------------------------------------
@@ -187,11 +208,70 @@ pub fn playing_frame(app: &mut App, frame_time: Duration) -> Option<GameState> {
     // --- Bridge module ticks ---
     tick_bridge_modules(app, frame_dt);
 
+    // --- Hotbar layout ---
+    // Build HotbarData from inventory state and compute layout for future rendering.
+    let mut hotbar_data = HotbarData::new();
+    hotbar_data.select(app.hud.selected_slot);
+    // Populate selected slot item if present
+    if let Some((item_id, count)) = app.inventory.selected_item() {
+        hotbar_data.set_slot(
+            app.hud.selected_slot,
+            mc_ui::hotbar::HotbarSlot {
+                item_id,
+                count,
+                durability: None,
+            },
+        );
+    }
+    let _hotbar_layout = hotbar_layout(1280.0, 720.0);
+
+    // --- Biome colors ---
+    // Get biome base colors for a placeholder biome (Plains) for future fog tinting.
+    let biome_colors = biome_base_colors(BiomeId::Plains);
+    let _grass_tinted_fog = biome_colors.grass;
+
     // Update HUD from bridge modules
     sync_hud(app);
 
     // Render
-    render_scene(&app.renderer, &app.camera, &app.sky, &app.chunk_meshes);
+    render_scene(&app.renderer, &app.camera, &app.sky, &app.chunk_meshes, 1280.0, 720.0);
+
+    // --- Debug screen ---
+    // Build and log debug info every 60 frames when F3 overlay is active.
+    if app.hud.show_debug {
+        let frame = FRAME_COUNTER.load(std::sync::atomic::Ordering::Relaxed);
+        if frame % 60 == 0 {
+            let player_chunk = ChunkPos::from_block(
+                app.player.position.x.floor() as i32,
+                app.player.position.z.floor() as i32,
+            );
+            let _dir_name = direction_name(app.player.yaw.to_degrees());
+            let _time_str = time_to_hhmm(app.sky.time_of_day);
+            let debug_info = DebugInfo {
+                fps: 60.0,
+                x: app.player.position.x,
+                y: app.player.position.y,
+                z: app.player.position.z,
+                chunk_x: player_chunk.x,
+                chunk_z: player_chunk.z,
+                facing_yaw: app.player.yaw.to_degrees(),
+                facing_pitch: app.player.pitch.to_degrees(),
+                biome: "plains".to_string(),
+                block_light: 15,
+                sky_light: 15,
+                loaded_chunks: app.world.loaded_chunks().count(),
+                entity_count: 0,
+                dimension: "overworld".to_string(),
+                day: 1,
+                time_of_day: app.sky.time_of_day,
+                seed: 42,
+            };
+            let lines = format_debug_lines(&debug_info);
+            for line in lines.iter().take(3) {
+                log::debug!("F3: {}", line);
+            }
+        }
+    }
 
     // Check for void death or survival death
     if app.player.position.y < VOID_DEATH_Y {
