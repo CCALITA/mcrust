@@ -38,6 +38,7 @@ pub mod food;
 pub mod frost_walker;
 pub mod goat;
 pub mod golem;
+pub mod honey_block;
 pub mod horse_armor;
 pub mod leash;
 pub mod loot;
