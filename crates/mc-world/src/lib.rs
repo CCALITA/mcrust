@@ -26,6 +26,7 @@ pub mod composter;
 pub mod container;
 pub mod daylight_detector;
 pub mod end;
+pub mod end_gateway;
 pub mod explosion;
 pub mod farming;
 pub mod fire;
@@ -121,6 +122,10 @@ pub use container::{
     SlotContent, add_to_container, find_slot_for_item, transfer_item,
 };
 pub use end::EndTerrainGen;
+pub use end_gateway::{
+    EndGateway, first_gateway_target, gateway_beam_color, gateway_cooldown,
+    gateway_teleport_destination,
+};
 pub use explosion::{
     CHARGED_CREEPER_POWER, CREEPER_POWER, ExplosionResult, TNT_POWER, apply_explosion,
     block_resistance, calculate_entity_damage, calculate_explosion,
