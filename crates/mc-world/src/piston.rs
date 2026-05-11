@@ -12,6 +12,44 @@ pub struct PistonState {
     pub sticky: bool,
 }
 
+impl PistonState {
+    /// Creates a new retracted piston facing the given direction.
+    pub fn new(facing: u8, sticky: bool) -> Self {
+        Self {
+            extended: false,
+            facing,
+            sticky,
+        }
+    }
+}
+
+/// Returns the maximum number of blocks a piston can push.
+pub fn push_limit() -> u8 {
+    PUSH_LIMIT as u8
+}
+
+/// Extends a piston if the block count in front does not exceed the push limit.
+///
+/// Mutates `state.extended` to `true` on success. Returns `false` if
+/// `blocks_count` exceeds the push limit.
+pub fn piston_extend(state: &mut PistonState, blocks_count: u8) -> bool {
+    if blocks_count > push_limit() {
+        return false;
+    }
+    state.extended = true;
+    true
+}
+
+/// Retracts a sticky piston. Returns `true` if the piston was extended and
+/// is now retracted, `false` if it was already retracted or is not sticky.
+pub fn piston_retract_sticky(state: &mut PistonState) -> bool {
+    if !state.extended || !state.sticky {
+        return false;
+    }
+    state.extended = false;
+    true
+}
+
 /// Returns `true` if the given block can be pushed by a piston.
 ///
 /// Most solid blocks are pushable. Bedrock and obsidian cannot be moved.
@@ -442,5 +480,71 @@ mod tests {
         assert!(!state.extended);
         assert_eq!(state.facing, 0);
         assert!(!state.sticky);
+    }
+
+    #[test]
+    fn piston_state_new_creates_retracted_piston() {
+        let state = PistonState::new(3, true);
+        assert!(!state.extended);
+        assert_eq!(state.facing, 3);
+        assert!(state.sticky);
+    }
+
+    #[test]
+    fn push_limit_returns_twelve() {
+        assert_eq!(push_limit(), 12);
+    }
+
+    #[test]
+    fn piston_extend_succeeds_within_limit() {
+        let mut state = PistonState::new(4, false);
+        assert!(piston_extend(&mut state, 12));
+        assert!(state.extended);
+    }
+
+    #[test]
+    fn piston_extend_fails_over_limit() {
+        let mut state = PistonState::new(4, false);
+        assert!(!piston_extend(&mut state, 13));
+        assert!(!state.extended);
+    }
+
+    #[test]
+    fn piston_extend_zero_blocks() {
+        let mut state = PistonState::new(0, false);
+        assert!(piston_extend(&mut state, 0));
+        assert!(state.extended);
+    }
+
+    #[test]
+    fn piston_retract_sticky_succeeds() {
+        let mut state = PistonState::new(2, true);
+        state.extended = true;
+        assert!(piston_retract_sticky(&mut state));
+        assert!(!state.extended);
+    }
+
+    #[test]
+    fn piston_retract_sticky_fails_if_not_extended() {
+        let mut state = PistonState::new(2, true);
+        assert!(!piston_retract_sticky(&mut state));
+    }
+
+    #[test]
+    fn piston_retract_sticky_fails_if_not_sticky() {
+        let mut state = PistonState::new(2, false);
+        state.extended = true;
+        assert!(!piston_retract_sticky(&mut state));
+        assert!(state.extended, "non-sticky piston should remain extended");
+    }
+
+    #[test]
+    fn can_push_block_obsidian_returns_false() {
+        assert!(!can_push_block(BlockId::Obsidian));
+    }
+
+    #[test]
+    fn can_push_block_bedrock_returns_false() {
+        assert!(!can_push_block(BlockId::Bedrock));
     }
 }

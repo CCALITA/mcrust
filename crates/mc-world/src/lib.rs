@@ -161,7 +161,8 @@ pub use pointed_dripstone::{
     dripstone_fall_damage, max_stalactite_length,
 };
 pub use piston::{
-    PUSH_LIMIT, PistonState, can_push_block, extend_piston, push_line, retract, retract_piston,
+    PUSH_LIMIT, PistonState, can_push_block, extend_piston, piston_extend, piston_retract_sticky,
+    push_limit, push_line, retract, retract_piston,
 };
 pub use portal_link::{
     PortalLink, create_portal_frame, find_nearest_portal, nether_coordinate_scale,
