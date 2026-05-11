@@ -19,6 +19,7 @@ pub mod crossbow;
 pub mod decoration;
 pub mod depth_strider;
 pub mod difficulty;
+pub mod display_name;
 pub mod drowning;
 pub mod elytra;
 pub mod enchant_visual;
