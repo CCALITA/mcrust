@@ -32,6 +32,7 @@ pub mod hopper_logic;
 pub mod lectern;
 pub mod light_level;
 pub mod lighting;
+pub mod lightning_rod;
 pub mod map_data;
 pub mod nether;
 pub mod noise_terrain;
