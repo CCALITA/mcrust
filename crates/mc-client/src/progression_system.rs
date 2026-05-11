@@ -8,6 +8,7 @@
 use mc_entity::advancement::{ADVANCEMENT_REGISTRY, AdvancementTracker, AdvancementTrigger};
 use mc_entity::experience::{self, ExperienceComponent};
 use mc_entity::statistics::{StatisticId, StatisticsTracker};
+use mc_entity::tool_speed::{ToolTier, ToolType, can_harvest, correct_tool_for_block};
 
 /// Aggregated progression state for a single player, combining XP tracking,
 /// advancement progress, and game statistics.
@@ -15,6 +16,8 @@ pub struct ProgressionState {
     pub xp: ExperienceComponent,
     pub advancements: AdvancementTracker,
     pub stats: StatisticsTracker,
+    pub blocks_mined_with_correct_tool: u32,
+    pub blocks_mined_with_wrong_tool: u32,
 }
 
 impl ProgressionState {
@@ -25,6 +28,8 @@ impl ProgressionState {
             xp: ExperienceComponent::new(),
             advancements: AdvancementTracker::new(),
             stats: StatisticsTracker::new(),
+            blocks_mined_with_correct_tool: 0,
+            blocks_mined_with_wrong_tool: 0,
         }
     }
 
@@ -34,6 +39,8 @@ impl ProgressionState {
     ///
     /// Awards XP (if the block yields any), increments the `BlocksMined`
     /// statistic, and pushes a `BlockMined` advancement trigger.
+    /// Also tracks correct-tool usage (defaults to correct since held tool
+    /// info is not yet available at the call site).
     pub fn on_block_mined(&mut self, block_id: u16) {
         let xp = experience::xp_from_block(block_id);
         if xp > 0 {
@@ -42,6 +49,9 @@ impl ProgressionState {
         self.stats.increment(StatisticId::BlocksMined, 1);
         self.advancements
             .push_trigger(AdvancementTrigger::BlockMined(block_id));
+
+        // Default to correct-tool since we don't have held tool info yet.
+        self.blocks_mined_with_correct_tool += 1;
     }
 
     /// Called when the player kills a mob.
@@ -81,6 +91,41 @@ impl ProgressionState {
         self.stats.increment(StatisticId::Jumps, 1);
     }
 
+    // -- Tool effectiveness helpers ------------------------------------------
+
+    /// Returns `true` if the player can harvest (get drops from) the given
+    /// block with the specified tool type and tier.
+    ///
+    /// Wraps [`can_harvest`] with enum conversion from raw numeric ids.
+    pub fn can_player_harvest(
+        &self,
+        block_id: u16,
+        held_tool_type: u8,
+        held_tool_tier: u8,
+    ) -> bool {
+        let tool = tool_type_from_id(held_tool_type);
+        let tier = tool_tier_from_id(held_tool_tier);
+        can_harvest(block_id, tool, tier)
+    }
+
+    /// Returns `true` if the held tool matches the preferred tool for the block.
+    pub fn is_correct_tool(&self, block_id: u16, tool_type: u8) -> bool {
+        let preferred = correct_tool_for_block(block_id);
+        let held = tool_type_from_id(tool_type);
+        held == preferred
+    }
+
+    /// Ratio of blocks mined with the correct tool vs total blocks mined.
+    ///
+    /// Returns `1.0` when no blocks have been mined yet (no data).
+    pub fn tool_efficiency_ratio(&self) -> f32 {
+        let total = self.blocks_mined_with_correct_tool + self.blocks_mined_with_wrong_tool;
+        if total == 0 {
+            return 1.0;
+        }
+        self.blocks_mined_with_correct_tool as f32 / total as f32
+    }
+
     // -- Advancement processing ----------------------------------------------
 
     /// Process all pending advancement triggers and return the display names
@@ -103,6 +148,36 @@ impl ProgressionState {
     /// Progress toward the next level as a value in `[0.0, 1.0)`.
     pub fn hud_xp_progress(&self) -> f32 {
         self.xp.progress
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Enum conversion helpers
+// ---------------------------------------------------------------------------
+
+/// Convert a raw `u8` tool type id to [`ToolType`]. Unknown ids map to `None`.
+fn tool_type_from_id(id: u8) -> ToolType {
+    match id {
+        0 => ToolType::None,
+        1 => ToolType::Pickaxe,
+        2 => ToolType::Axe,
+        3 => ToolType::Shovel,
+        4 => ToolType::Sword,
+        5 => ToolType::Hoe,
+        _ => ToolType::None,
+    }
+}
+
+/// Convert a raw `u8` tool tier id to [`ToolTier`]. Unknown ids map to `Wood`.
+fn tool_tier_from_id(id: u8) -> ToolTier {
+    match id {
+        0 => ToolTier::Wood,
+        1 => ToolTier::Stone,
+        2 => ToolTier::Iron,
+        3 => ToolTier::Gold,
+        4 => ToolTier::Diamond,
+        5 => ToolTier::Netherite,
+        _ => ToolTier::Wood,
     }
 }
 
@@ -216,5 +291,81 @@ mod tests {
         assert_eq!(state.hud_level(), 1);
         let expected = 3.0 / 9.0;
         assert!((state.hud_xp_progress() - expected).abs() < f32::EPSILON);
+    }
+
+    // -- Tool effectiveness tests -------------------------------------------
+
+    #[test]
+    fn can_player_harvest_iron_ore_with_stone_pickaxe() {
+        let state = ProgressionState::new();
+        // Stone pickaxe (type=1, tier=1) can harvest iron ore (block 15)
+        assert!(state.can_player_harvest(15, 1, 1));
+    }
+
+    #[test]
+    fn cannot_harvest_iron_ore_with_wood_pickaxe() {
+        let state = ProgressionState::new();
+        // Wood pickaxe (type=1, tier=0) cannot harvest iron ore
+        assert!(!state.can_player_harvest(15, 1, 0));
+    }
+
+    #[test]
+    fn can_harvest_dirt_with_anything() {
+        let state = ProgressionState::new();
+        // Dirt (block 3) has no harvest requirement
+        assert!(state.can_player_harvest(3, 0, 0));
+    }
+
+    #[test]
+    fn is_correct_tool_pickaxe_for_stone() {
+        let state = ProgressionState::new();
+        // Stone (block 1) prefers pickaxe (type 1)
+        assert!(state.is_correct_tool(1, 1));
+    }
+
+    #[test]
+    fn is_correct_tool_axe_for_oak_log() {
+        let state = ProgressionState::new();
+        // Oak log (block 17) prefers axe (type 2)
+        assert!(state.is_correct_tool(17, 2));
+    }
+
+    #[test]
+    fn is_correct_tool_wrong_tool_returns_false() {
+        let state = ProgressionState::new();
+        // Stone (block 1) prefers pickaxe, not shovel (type 3)
+        assert!(!state.is_correct_tool(1, 3));
+    }
+
+    #[test]
+    fn on_block_mined_increments_correct_tool_counter() {
+        let mut state = ProgressionState::new();
+        state.on_block_mined(1);
+        state.on_block_mined(3);
+        assert_eq!(state.blocks_mined_with_correct_tool, 2);
+        assert_eq!(state.blocks_mined_with_wrong_tool, 0);
+    }
+
+    #[test]
+    fn tool_efficiency_ratio_no_blocks_returns_one() {
+        let state = ProgressionState::new();
+        assert!((state.tool_efficiency_ratio() - 1.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn tool_efficiency_ratio_all_correct() {
+        let mut state = ProgressionState::new();
+        state.blocks_mined_with_correct_tool = 10;
+        state.blocks_mined_with_wrong_tool = 0;
+        assert!((state.tool_efficiency_ratio() - 1.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn tool_efficiency_ratio_mixed() {
+        let mut state = ProgressionState::new();
+        state.blocks_mined_with_correct_tool = 3;
+        state.blocks_mined_with_wrong_tool = 1;
+        let expected = 3.0 / 4.0;
+        assert!((state.tool_efficiency_ratio() - expected).abs() < f32::EPSILON);
     }
 }
