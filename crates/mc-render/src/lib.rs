@@ -41,6 +41,7 @@ pub mod projectile_trail;
 pub mod renderer;
 pub mod screen_effects;
 pub mod shader;
+pub mod shulker_box_render;
 pub mod sky;
 pub mod snow_layer;
 pub mod texture;
