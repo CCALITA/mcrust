@@ -14,6 +14,7 @@ pub mod breeding;
 pub mod breeze;
 pub mod camel;
 pub mod cat_gift;
+pub mod chorus_plant;
 pub mod combat;
 pub mod component;
 pub mod crossbow;
