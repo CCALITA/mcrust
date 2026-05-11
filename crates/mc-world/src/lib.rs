@@ -24,6 +24,7 @@ pub mod climbable;
 pub mod command_block;
 pub mod composter;
 pub mod container;
+pub mod daylight_detector;
 pub mod end;
 pub mod explosion;
 pub mod farming;
