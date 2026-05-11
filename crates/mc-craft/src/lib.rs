@@ -33,6 +33,7 @@ pub mod recipe;
 pub mod recipe_data;
 pub mod recipe_data_ext;
 pub mod recovery_compass;
+pub mod respawn_anchor;
 pub mod smithing;
 pub mod smithing_template;
 pub mod sniffer;
