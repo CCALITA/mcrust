@@ -1,6 +1,6 @@
-use mc_core::item::{ToolTier, ToolType};
 use mc_core::pos::BlockPos;
-use mc_entity::tool_use::{self, BreakProgress};
+use mc_entity::tool_speed::{ToolType, ToolTier, mining_speed, break_time};
+use mc_entity::tool_use::BreakProgress;
 use mc_render::block_break::BlockBreakOverlay;
 
 // ---------------------------------------------------------------------------
@@ -53,7 +53,7 @@ impl BlockBreaker {
         tool_type: u8,
         tool_tier: u8,
     ) {
-        let total_time = calculate_break_speed(block_hardness, tool_type, tool_tier);
+        let total_time = actual_break_time(block_hardness, tool_type, tool_tier);
         let bp = BlockPos::new(block_pos.0, block_pos.1, block_pos.2);
         self.progress = Some(BreakProgress::new(bp, total_time));
         self.current_block = Some(block_pos);
@@ -111,22 +111,22 @@ impl Default for BlockBreaker {
 // calculate_break_speed
 // ---------------------------------------------------------------------------
 
-/// Wrapper around [`mc_entity::tool_use::calculate_break_time`] that accepts
-/// raw `u8` encodings for tool type and tier.
+/// Wrapper around [`mc_entity::tool_speed::mining_speed`] that accepts raw `u8`
+/// encodings for tool type and tier.
 ///
 /// Encoding for `tool_type`:
-///   0 = Pickaxe, 1 = Axe, 2 = Shovel, 3 = Sword, 4 = Hoe, 5 = Shears, _ = None
+///   0 = None, 1 = Pickaxe, 2 = Axe, 3 = Shovel, 4 = Sword, 5 = Hoe
 ///
 /// Encoding for `tool_tier`:
-///   0 = Wood, 1 = Stone, 2 = Iron, 3 = Gold, 4 = Diamond, _ = None
+///   0 = Wood, 1 = Stone, 2 = Iron, 3 = Gold, 4 = Diamond, 5 = Netherite
 pub fn calculate_break_speed(hardness: f32, tool_type: u8, tool_tier: u8) -> f32 {
-    let tt = match tool_type {
-        0 => ToolType::Pickaxe,
-        1 => ToolType::Axe,
-        2 => ToolType::Shovel,
-        3 => ToolType::Sword,
-        4 => ToolType::Hoe,
-        5 => ToolType::Shears,
+    let tool = match tool_type {
+        0 => ToolType::None,
+        1 => ToolType::Pickaxe,
+        2 => ToolType::Axe,
+        3 => ToolType::Shovel,
+        4 => ToolType::Sword,
+        5 => ToolType::Hoe,
         _ => ToolType::None,
     };
 
@@ -136,17 +136,24 @@ pub fn calculate_break_speed(hardness: f32, tool_type: u8, tool_tier: u8) -> f32
         2 => ToolTier::Iron,
         3 => ToolTier::Gold,
         4 => ToolTier::Diamond,
-        _ => ToolTier::None,
+        5 => ToolTier::Netherite,
+        _ => ToolTier::Wood,
     };
 
-    // For the bridge we treat any non-None tool type as "preferred" for
-    // simplicity. A more accurate version would check preferred_tool, but
-    // the caller already knows whether the tool matches.
-    let is_preferred = !matches!(tt, ToolType::None);
+    mining_speed(hardness, tool, tier, 0)
+}
 
-    // No efficiency or haste through this bridge (those come from
-    // enchantments / effects which the caller can layer on top).
-    tool_use::calculate_break_time(hardness, tt, tier, is_preferred, 0, 0)
+// ---------------------------------------------------------------------------
+// actual_break_time
+// ---------------------------------------------------------------------------
+
+/// Compute the actual break time (in seconds) for a block given its hardness
+/// and the player's current tool.
+///
+/// Uses the same `tool_type`/`tool_tier` encoding as [`calculate_break_speed`].
+pub fn actual_break_time(hardness: f32, tool_type: u8, tool_tier: u8) -> f32 {
+    let speed = calculate_break_speed(hardness, tool_type, tool_tier);
+    break_time(hardness, speed)
 }
 
 // ---------------------------------------------------------------------------
@@ -167,7 +174,7 @@ mod tests {
     #[test]
     fn start_breaking_sets_current_block() {
         let mut bb = BlockBreaker::new();
-        bb.start_breaking((10, 64, 20), 1.5, 0, 2);
+        bb.start_breaking((10, 64, 20), 1.5, 1, 2);
         assert_eq!(bb.current_block, Some((10, 64, 20)));
         assert_eq!(bb.overlay.stage, Some(0));
         assert_eq!(bb.overlay.block_pos, Some((10, 64, 20)));
@@ -176,7 +183,7 @@ mod tests {
     #[test]
     fn tick_advances_breaking() {
         let mut bb = BlockBreaker::new();
-        bb.start_breaking((0, 0, 0), 1.5, 0, 2);
+        bb.start_breaking((0, 0, 0), 1.5, 1, 2);
 
         let result = bb.tick(0.01, true);
         assert!(matches!(result, BreakResult::Breaking(_)));
@@ -192,7 +199,7 @@ mod tests {
     #[test]
     fn tick_cancels_when_not_aiming() {
         let mut bb = BlockBreaker::new();
-        bb.start_breaking((5, 5, 5), 1.0, 0, 2);
+        bb.start_breaking((5, 5, 5), 1.0, 1, 2);
 
         let result = bb.tick(0.01, false);
         assert_eq!(result, BreakResult::Cancelled);
@@ -204,7 +211,7 @@ mod tests {
     fn tick_returns_broken_when_complete() {
         let mut bb = BlockBreaker::new();
         // Torch has hardness 0.0 -> instant break (0.05s)
-        bb.start_breaking((1, 2, 3), 0.0, 6, 6);
+        bb.start_breaking((1, 2, 3), 0.0, 255, 255);
 
         let result = bb.tick(0.05, true);
         assert_eq!(result, BreakResult::Broken((1, 2, 3)));
@@ -214,26 +221,41 @@ mod tests {
     #[test]
     fn cancel_clears_state() {
         let mut bb = BlockBreaker::new();
-        bb.start_breaking((7, 8, 9), 3.0, 0, 4);
+        bb.start_breaking((7, 8, 9), 3.0, 1, 4);
         bb.cancel();
         assert!(bb.current_block.is_none());
         assert!(bb.overlay.stage.is_none());
     }
 
     #[test]
-    fn calculate_break_speed_wraps_tool_use() {
-        // Stone hardness 1.5, iron pickaxe (type=0, tier=2)
-        let time = calculate_break_speed(1.5, 0, 2);
-        // Preferred: base = 1.5*1.5 = 2.25, speed = 6.0 => 2.25/6.0 = 0.375
-        assert!((time - 0.375).abs() < 0.001);
+    fn calculate_break_speed_wraps_tool_speed() {
+        // Stone hardness 1.5, iron pickaxe (type=1, tier=2)
+        // mining_speed ignores hardness; Iron tier speed_multiplier = 6.0
+        let speed = calculate_break_speed(1.5, 1, 2);
+        assert!((speed - 6.0).abs() < 0.001);
     }
 
     #[test]
     fn calculate_break_speed_no_tool() {
-        // Stone hardness 1.5, no tool (type=255, tier=255)
-        let time = calculate_break_speed(1.5, 255, 255);
-        // Not preferred: base = 1.5*5.0 = 7.5, speed = 1.0 => 7.5
-        assert!((time - 7.5).abs() < 0.001);
+        // No tool (type=0 maps to None) => base speed 1.0
+        let speed = calculate_break_speed(1.5, 0, 0);
+        assert!((speed - 1.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn actual_break_time_iron_pickaxe_on_stone() {
+        // Stone hardness 1.5, iron pickaxe (type=1, tier=2)
+        // speed = 6.0, break_time = 1.5 * 1.5 / 6.0 = 0.375
+        let time = actual_break_time(1.5, 1, 2);
+        assert!((time - 0.375).abs() < 0.001);
+    }
+
+    #[test]
+    fn actual_break_time_bare_hand() {
+        // Stone hardness 1.5, bare hand (type=0)
+        // speed = 1.0, break_time = 1.5 * 1.5 / 1.0 = 2.25
+        let time = actual_break_time(1.5, 0, 0);
+        assert!((time - 2.25).abs() < 0.001);
     }
 
     #[test]
