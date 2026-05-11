@@ -39,6 +39,7 @@ pub mod smithing_template;
 pub mod sniffer;
 pub mod specialized_furnace;
 pub mod spyglass;
+pub mod trial_key;
 pub mod vault;
 pub mod workstations;
 
