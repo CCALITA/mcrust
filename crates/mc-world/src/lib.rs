@@ -57,6 +57,7 @@ pub mod structures;
 pub mod suspicious_block;
 pub mod terrain;
 pub mod tick_scheduler;
+pub mod target_block;
 pub mod tnt;
 pub mod trees;
 pub mod waxed_copper;
