@@ -1,6 +1,7 @@
 //! Bridge between the client game loop and world-level tick systems
 //! (weather transitions and scheduled block/entity events).
 
+use mc_world::random_tick::{select_random_tick_positions, RANDOM_TICK_SPEED};
 use mc_world::{ScheduledEvent, TickScheduler, WeatherSystem};
 
 /// Aggregates world-tick subsystems so the client game loop can advance
@@ -9,6 +10,7 @@ pub struct WorldTickState {
     weather: WeatherSystem,
     scheduler: TickScheduler,
     tick_count: u64,
+    explosion_queue: Vec<((f32, f32, f32), f32)>,
 }
 
 /// Maximum number of scheduled events processed in a single tick to
@@ -22,12 +24,15 @@ impl WorldTickState {
             weather: WeatherSystem::new(seed),
             scheduler: TickScheduler::new(),
             tick_count: 0,
+            explosion_queue: Vec::new(),
         }
     }
 
     /// Advance all world-tick subsystems by one game tick.
     ///
     /// * Advances the weather state machine.
+    /// * Selects random tick positions for crop growth and block updates.
+    /// * Drains any queued explosions.
     /// * Advances the tick scheduler and drains up to
     ///   [`MAX_EVENTS_PER_TICK`] events (excess events are dropped for
     ///   this tick to keep frame times bounded).
@@ -36,6 +41,22 @@ impl WorldTickState {
 
         // Weather
         self.weather.tick();
+
+        // Random tick — select positions for the current tick.
+        let random_positions =
+            select_random_tick_positions(0, 0, 0, 42, self.tick_count, RANDOM_TICK_SPEED);
+        if self.tick_count % 600 == 0 {
+            log::info!(
+                "Random tick: {} positions selected (tick {})",
+                random_positions.len(),
+                self.tick_count
+            );
+        }
+
+        // Explosion queue — drain and log each pending explosion.
+        for ((x, y, z), power) in self.explosion_queue.drain(..) {
+            log::info!("Explosion at ({},{},{}) power={}", x, y, z, power);
+        }
 
         // Scheduler — drain events, capping to avoid runaway processing.
         let events = self.scheduler.advance();
@@ -70,6 +91,11 @@ impl WorldTickState {
     pub fn schedule_block_update(&mut self, pos: (i32, i32, i32), delay: u32) {
         self.scheduler
             .schedule(ScheduledEvent::BlockUpdate(pos), delay);
+    }
+
+    /// Queue an explosion to be processed on the next tick.
+    pub fn queue_explosion(&mut self, pos: (f32, f32, f32), power: f32) {
+        self.explosion_queue.push((pos, power));
     }
 
     /// The total number of ticks elapsed since world creation.
