@@ -1,5 +1,6 @@
 use mc_core::block::BlockId;
 use mc_craft::{Inventory, ItemStack, SlotItem};
+use mc_entity::food::food_data;
 use mc_entity::spawn_block_drops;
 
 const HOTBAR_SIZE: usize = 9;
@@ -46,7 +47,7 @@ impl PlayerInventory {
     }
 
     /// Consume up to `count` items from the currently selected hotbar slot.
-    pub fn consume_selected(&mut self, count: u8) {
+    pub fn consume_from_selected(&mut self, count: u8) {
         let _ = self.inner.remove_from_slot(self.selected_slot, count);
     }
 
@@ -73,8 +74,43 @@ impl PlayerInventory {
     /// selected slot is empty.
     pub fn on_block_place(&mut self) -> Option<u16> {
         let item_id = self.selected_item()?.0;
-        self.consume_selected(1);
+        self.consume_from_selected(1);
         Some(item_id)
+    }
+
+    /// Returns an array of 9 hotbar slots, each containing `(item_id, count)`
+    /// if the slot is occupied, or `None` if empty.
+    #[must_use]
+    pub fn hotbar_items(&self) -> [Option<(u16, u8)>; 9] {
+        let mut slots = [None; 9];
+        for i in 0..HOTBAR_SIZE {
+            slots[i] = self.inner.get_slot(i).as_ref().map(|s| (s.item, s.count));
+        }
+        slots
+    }
+
+    /// Returns the `item_id` in the currently selected hotbar slot,
+    /// or `None` if the slot is empty.
+    #[must_use]
+    pub fn selected_item_id(&self) -> Option<u16> {
+        self.selected_item().map(|(id, _)| id)
+    }
+
+    /// Remove 1 from the selected slot count and return the `item_id`.
+    /// Returns `None` if the selected slot is empty. Used for eating.
+    pub fn consume_selected(&mut self) -> Option<u16> {
+        let item_id = self.selected_item()?.0;
+        self.consume_from_selected(1);
+        Some(item_id)
+    }
+
+    /// Returns `true` if the currently selected item is a food item
+    /// (has an entry in the food data registry).
+    #[must_use]
+    pub fn selected_is_food(&self) -> bool {
+        self.selected_item_id()
+            .and_then(food_data)
+            .is_some()
     }
 
     /// Check whether the inventory contains at least one of `item_id`.
@@ -137,7 +173,7 @@ mod tests {
     fn consume_selected_reduces_count() {
         let mut inv = PlayerInventory::new();
         inv.add_item(42, 5);
-        inv.consume_selected(2);
+        inv.consume_from_selected(2);
         assert_eq!(inv.selected_item(), Some((42, 3)));
     }
 
@@ -145,7 +181,7 @@ mod tests {
     fn consume_selected_clears_slot_when_exhausted() {
         let mut inv = PlayerInventory::new();
         inv.add_item(42, 3);
-        inv.consume_selected(3);
+        inv.consume_from_selected(3);
         assert!(inv.selected_item().is_none());
     }
 
@@ -213,5 +249,84 @@ mod tests {
         inv.add_item(5, 64);
         inv.add_item(5, 10);
         assert_eq!(inv.item_count(5), 74);
+    }
+
+    #[test]
+    fn hotbar_items_returns_all_nine_slots() {
+        let mut inv = PlayerInventory::new();
+        inv.add_item(10, 5);
+        inv.add_item(20, 3);
+        let hotbar = inv.hotbar_items();
+        assert_eq!(hotbar[0], Some((10, 5)));
+        assert_eq!(hotbar[1], Some((20, 3)));
+        for slot in &hotbar[2..] {
+            assert!(slot.is_none());
+        }
+    }
+
+    #[test]
+    fn hotbar_items_empty_inventory() {
+        let inv = PlayerInventory::new();
+        let hotbar = inv.hotbar_items();
+        for slot in &hotbar {
+            assert!(slot.is_none());
+        }
+    }
+
+    #[test]
+    fn selected_item_id_returns_id() {
+        let mut inv = PlayerInventory::new();
+        inv.add_item(42, 5);
+        assert_eq!(inv.selected_item_id(), Some(42));
+    }
+
+    #[test]
+    fn selected_item_id_returns_none_when_empty() {
+        let inv = PlayerInventory::new();
+        assert!(inv.selected_item_id().is_none());
+    }
+
+    #[test]
+    fn consume_selected_returns_item_and_decrements() {
+        let mut inv = PlayerInventory::new();
+        inv.add_item(42, 3);
+        let result = inv.consume_selected();
+        assert_eq!(result, Some(42));
+        assert_eq!(inv.selected_item(), Some((42, 2)));
+    }
+
+    #[test]
+    fn consume_selected_returns_none_when_empty() {
+        let mut inv = PlayerInventory::new();
+        assert!(inv.consume_selected().is_none());
+    }
+
+    #[test]
+    fn consume_selected_clears_slot_at_one() {
+        let mut inv = PlayerInventory::new();
+        inv.add_item(42, 1);
+        let result = inv.consume_selected();
+        assert_eq!(result, Some(42));
+        assert!(inv.selected_item().is_none());
+    }
+
+    #[test]
+    fn selected_is_food_true_for_food_item() {
+        let mut inv = PlayerInventory::new();
+        inv.add_item(3000, 1); // apple
+        assert!(inv.selected_is_food());
+    }
+
+    #[test]
+    fn selected_is_food_false_for_non_food() {
+        let mut inv = PlayerInventory::new();
+        inv.add_item(1, 1); // not a food item
+        assert!(!inv.selected_is_food());
+    }
+
+    #[test]
+    fn selected_is_food_false_when_empty() {
+        let inv = PlayerInventory::new();
+        assert!(!inv.selected_is_food());
     }
 }
