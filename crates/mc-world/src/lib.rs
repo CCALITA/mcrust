@@ -63,6 +63,7 @@ pub mod terrain;
 pub mod tick_scheduler;
 pub mod target_block;
 pub mod tnt;
+pub mod tripwire;
 pub mod trees;
 pub mod waxed_copper;
 pub mod weather;
@@ -197,6 +198,10 @@ pub use structures::StructureGenerator;
 pub use terrain::FlatWorldGen;
 pub use tick_scheduler::{ScheduledEvent, ScheduledTick, TickScheduler, TickType};
 pub use tnt::{TntAction, TntEntity, activate_tnt, chain_activation, tick_tnt};
+pub use tripwire::{
+    TripwireHook, check_tripwire, tripwire_breaks_on_cut, tripwire_max_length,
+    tripwire_signal_strength,
+};
 pub use trees::{birch_tree, oak_tree, place_trees, place_vegetation, spruce_tree};
 pub use weather::{WeatherState, WeatherSystem};
 pub use world_border::{
