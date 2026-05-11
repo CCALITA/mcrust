@@ -159,6 +159,8 @@ impl App {
                     &self.camera,
                     &self.sky,
                     &self.chunk_meshes,
+                    1280.0,
+                    720.0,
                 );
             }
 
@@ -207,6 +209,8 @@ impl App {
                     &self.camera,
                     &self.sky,
                     &self.chunk_meshes,
+                    1280.0,
+                    720.0,
                 );
 
                 // Transition to Playing once enough chunks are loaded
@@ -235,6 +239,8 @@ impl App {
                     &self.camera,
                     &self.sky,
                     &self.chunk_meshes,
+                    1280.0,
+                    720.0,
                 );
             }
 
@@ -259,6 +265,8 @@ impl App {
                     &self.camera,
                     &self.sky,
                     &self.chunk_meshes,
+                    1280.0,
+                    720.0,
                 );
             }
         }
