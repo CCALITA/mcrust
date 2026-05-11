@@ -12,6 +12,7 @@ pub mod behavior;
 pub mod boat;
 pub mod breeding;
 pub mod breeze;
+pub mod camel;
 pub mod combat;
 pub mod component;
 pub mod crossbow;
@@ -163,6 +164,10 @@ pub use villager_trades::default_trades;
 pub use special_mobs::{
     EndermanState, PotionType, WitchAction, choose_witch_action, is_player_looking_at,
     slime_damage, slime_health, split_on_death, teleport_away,
+};
+pub use camel::{
+    CamelState, camel_dash_boost, camel_dash_cooldown, camel_max_passengers,
+    camel_sit_duration, camel_step_height, tick_camel,
 };
 pub use boat::{
     BoatState, BoatType, boat_collision_box, boat_max_speed, dismount as boat_dismount,
