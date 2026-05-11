@@ -7,6 +7,7 @@ pub mod anvil;
 pub mod armor_stand;
 pub mod beehive_interact;
 pub mod book;
+pub mod brush_tool;
 pub mod brewing;
 pub mod bundle;
 pub mod cake;
