@@ -21,6 +21,7 @@ pub mod decorated_pot_break;
 pub mod enchant_table;
 pub mod goat_horn;
 pub mod hanging_sign;
+pub mod heavy_core;
 pub mod enchanting;
 pub mod furnace;
 pub mod inventory;
