@@ -13,6 +13,7 @@ pub mod cake;
 pub mod campfire;
 pub mod cartography;
 pub mod compass;
+pub mod composter;
 pub mod conduit_power;
 pub mod copper_bulb;
 pub mod crafter;
