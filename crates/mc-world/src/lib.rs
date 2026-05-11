@@ -39,6 +39,7 @@ pub mod noise_terrain;
 pub mod noteblock;
 pub mod ores;
 pub mod piston;
+pub mod pointed_dripstone;
 pub mod portal_link;
 pub mod rails;
 pub mod random_tick;
@@ -143,6 +144,10 @@ pub use noteblock::{
     is_playing, play_note, tune,
 };
 pub use ores::OreGenerator;
+pub use pointed_dripstone::{
+    DripstoneDirection, DripstoneThickness, dripstone_drip_lava, dripstone_drip_water,
+    dripstone_fall_damage, max_stalactite_length,
+};
 pub use piston::{
     PUSH_LIMIT, PistonState, can_push_block, extend_piston, push_line, retract, retract_piston,
 };
