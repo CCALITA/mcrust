@@ -13,6 +13,7 @@ pub mod bundle;
 pub mod cake;
 pub mod campfire;
 pub mod cartography;
+pub mod chiseled_bookshelf;
 pub mod compass;
 pub mod composter;
 pub mod conduit_power;
