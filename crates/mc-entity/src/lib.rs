@@ -61,6 +61,7 @@ pub mod tool_speed;
 pub mod tool_use;
 pub mod trial_spawner;
 pub mod trident;
+pub mod turtle_egg;
 pub mod vehicle;
 pub mod visibility;
 pub mod villager;
