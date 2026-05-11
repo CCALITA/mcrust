@@ -18,6 +18,7 @@ pub mod crosshair;
 pub mod death_screen;
 pub mod dynamic_light;
 pub mod end_crystal;
+pub mod end_rod_particle;
 pub mod entity_render;
 pub mod explosion_particles;
 pub mod firework_visual;
