@@ -43,6 +43,7 @@ pub mod mud_blocks;
 pub mod nether;
 pub mod noise_terrain;
 pub mod noteblock;
+pub mod observer;
 pub mod ores;
 pub mod piston;
 pub mod pointed_dripstone;
