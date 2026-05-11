@@ -20,6 +20,7 @@ pub mod dynamic_light;
 pub mod end_crystal;
 pub mod entity_render;
 pub mod explosion_particles;
+pub mod firework_visual;
 pub mod fog;
 pub mod frost_overlay;
 pub mod frustum;
