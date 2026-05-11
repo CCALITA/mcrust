@@ -3,6 +3,7 @@
 pub mod amethyst_render;
 pub mod ambient_occlusion;
 pub mod animated_texture;
+pub mod banner_render;
 pub mod beacon_beam;
 pub mod beam_effects;
 pub mod block_break;
