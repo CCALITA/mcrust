@@ -34,6 +34,7 @@ pub mod fire;
 pub mod flower_pot;
 pub mod fluid;
 pub mod game_rules;
+pub mod gen_metrics;
 pub mod gravity_block;
 pub mod hopper_logic;
 pub mod lectern;
