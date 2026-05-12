@@ -21,6 +21,7 @@ pub mod crossbow;
 pub mod decoration;
 pub mod depth_strider;
 pub mod difficulty;
+pub mod difficulty_scaling;
 pub mod display_name;
 pub mod dragon_breath;
 pub mod drowning;
