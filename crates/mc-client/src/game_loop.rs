@@ -84,7 +84,7 @@ pub fn render_scene(
     let fog = fog_for_dimension(0, 8);
     let frame = FRAME_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
     if frame % 60 == 0 {
-        log::debug!("Fog start={:.1} end={:.1}", fog.start, fog.end);
+        log::info!("Fog start={:.1} end={:.1} color=[{:.2},{:.2},{:.2}]", fog.start, fog.end, fog.color[0], fog.color[1], fog.color[2]);
     }
 
     let vp = camera.view_projection_matrix();
@@ -338,11 +338,23 @@ fn tick_bridge_modules(app: &mut App, frame_dt: f32) {
 
 /// Syncs HUD state from bridge modules.
 fn sync_hud(app: &mut App, frame_dt: f32) {
-    app.hud.health = app.survival.hud_health();
-    app.hud.hunger = app.survival.hud_hunger();
+    let health = app.survival.hud_health();
+    let hunger = app.survival.hud_hunger();
+    app.hud.health = health;
+    app.hud.hunger = hunger;
     app.hud.armor = app.survival.hud_armor();
     app.hud.xp_level = app.progression.hud_level();
     app.hud.xp_progress = app.progression.hud_xp_progress();
+    let air = app.survival.air_fraction();
+
+    let frame = FRAME_COUNTER.load(std::sync::atomic::Ordering::Relaxed);
+    if frame % 100 == 0 {
+        log::info!(
+            "[HUD] HP:{:.0}/20 Hunger:{}/20 Air:{:.0}% XP:L{} Mobs:{}",
+            health, hunger, air * 100.0, app.hud.xp_level,
+            app.mob_world.mob_count(),
+        );
+    }
     app.hud.player_pos = (
         app.player.position.x,
         app.player.position.y,
@@ -467,7 +479,12 @@ pub fn tick(app: &mut App, dt: f32) {
     app.player.position += resolved;
 
     // Fall damage — must come after collision resolution.
+    let health_before = app.survival.hud_health();
     app.survival.update_fall(app.player.velocity.y, app.player.on_ground, dt);
+    let health_after = app.survival.hud_health();
+    if health_after < health_before {
+        log::info!("Fall damage! HP: {:.0} -> {:.0}", health_before, health_after);
+    }
 
     if app.player.on_ground {
         app.player.velocity.y = 0.0;
