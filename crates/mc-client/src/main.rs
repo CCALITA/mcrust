@@ -362,7 +362,14 @@ impl ApplicationHandler for App {
                 ..
             } => {
                 if matches!(self.state, GameState::Playing) && self.cursor_grabbed {
-                    game_loop::place_block(self);
+                    if self.inventory.selected_is_food() && self.survival.hud_hunger() < 20 {
+                        if let Some(id) = self.inventory.consume_selected() {
+                            let _ = self.survival.eat_item(id);
+                        }
+                        log::info!("Ate food");
+                    } else {
+                        game_loop::place_block(self);
+                    }
                 }
             }
 
