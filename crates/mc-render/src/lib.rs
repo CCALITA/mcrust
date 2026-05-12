@@ -1,5 +1,6 @@
 //! wgpu-based rendering: chunk meshing, sky, entities, particles, and water.
 
+pub mod buffer_pool;
 pub mod amethyst_render;
 pub mod ambient_occlusion;
 pub mod animated_texture;
