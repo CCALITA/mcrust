@@ -49,6 +49,7 @@ pub mod mending;
 pub mod mob_equipment;
 pub mod painting;
 pub mod movement_effects;
+pub mod object_pool;
 pub mod ominous;
 pub mod pathfinding;
 pub mod projectile;
