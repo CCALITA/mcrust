@@ -231,7 +231,7 @@ pub fn playing_frame(app: &mut App, frame_time: Duration) -> Option<GameState> {
     let _grass_tinted_fog = biome_colors.grass;
 
     // Update HUD from bridge modules
-    sync_hud(app);
+    sync_hud(app, frame_dt);
 
     // Render
     render_scene(&app.renderer, &app.camera, &app.sky, &app.chunk_meshes, 1280.0, 720.0);
@@ -296,12 +296,22 @@ fn tick_bridge_modules(app: &mut App, frame_dt: f32) {
     app.mob_world
         .tick(app.player.position, app.sky.time_of_day, frame_dt);
 
+    // Additional mob AI pass (direction-based movement toward/from player).
+    app.mob_world.apply_mob_ai(app.player.position, frame_dt);
+
     // Weather + world tick scheduler
     app.world_state.tick(frame_dt);
 
+    // Determine if the player is underwater (eye position submerged in water).
+    let px = app.player.position.x.floor() as i32;
+    let py = app.player.position.y.floor() as i32;
+    let pz = app.player.position.z.floor() as i32;
+    let eye_block = app.world.get_block(mc_core::pos::BlockPos::new(px, py + 1, pz));
+    let is_underwater = eye_block == mc_core::block::BlockId::Water;
+
     // Survival (hunger/health) tick
     let is_sprinting = app.keys_held.contains(&KeyCode::ControlLeft);
-    app.survival.tick(frame_dt, is_sprinting, 0.0, false);
+    app.survival.tick(frame_dt, is_sprinting, 0.0, is_underwater);
 
     // Progression (distance tracking)
     app.progression.on_distance_walked(0.0);
@@ -327,7 +337,7 @@ fn tick_bridge_modules(app: &mut App, frame_dt: f32) {
 }
 
 /// Syncs HUD state from bridge modules.
-fn sync_hud(app: &mut App) {
+fn sync_hud(app: &mut App, frame_dt: f32) {
     app.hud.health = app.survival.hud_health();
     app.hud.hunger = app.survival.hud_hunger();
     app.hud.armor = app.survival.hud_armor();
@@ -338,6 +348,9 @@ fn sync_hud(app: &mut App) {
         app.player.position.y,
         app.player.position.z,
     );
+
+    // Advance the damage indicator overlay fade.
+    app.survival.tick_indicator(frame_dt);
 }
 
 // ---------------------------------------------------------------------------
@@ -452,6 +465,9 @@ pub fn tick(app: &mut App, dt: f32) {
 
     app.player.on_ground = frame_vel.y < 0.0 && resolved.y.abs() < 1e-6;
     app.player.position += resolved;
+
+    // Fall damage — must come after collision resolution.
+    app.survival.update_fall(app.player.velocity.y, app.player.on_ground, dt);
 
     if app.player.on_ground {
         app.player.velocity.y = 0.0;

@@ -89,7 +89,7 @@ impl MobWorld {
     /// - Hostile mobs (kind discriminant < 4) move toward the player.
     /// - Passive mobs (kind discriminant >= 4) wander with a small random offset.
     /// - Mobs beyond the AI range (64 blocks) do not move.
-    fn apply_mob_ai(&mut self, player_pos: Vec3, dt: f32) {
+    pub fn apply_mob_ai(&mut self, player_pos: Vec3, dt: f32) {
         const HOSTILE_SPEED: f32 = 0.05;
         const PASSIVE_SPEED: f32 = 0.02;
         const AI_RANGE: f32 = 64.0;
