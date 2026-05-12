@@ -43,6 +43,7 @@ pub mod mangrove;
 pub mod map_data;
 pub mod mud_blocks;
 pub mod nether;
+pub mod nether_portal_link;
 pub mod noise_terrain;
 pub mod noteblock;
 pub mod observer;
