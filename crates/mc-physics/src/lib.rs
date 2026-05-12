@@ -6,5 +6,6 @@
 pub mod aabb;
 pub mod collision;
 pub mod raycast;
+pub mod spatial_hash;
 
 pub use raycast::{RaycastHit, raycast};
