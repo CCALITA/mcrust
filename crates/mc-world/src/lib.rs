@@ -19,6 +19,7 @@ pub mod campfire;
 pub mod caves;
 pub mod chest_logic;
 pub mod chunk;
+pub mod chunk_format;
 pub mod chunk_manager;
 pub mod climbable;
 pub mod command_block;
