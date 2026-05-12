@@ -21,6 +21,7 @@ pub mod conduit_power;
 pub mod copper_bulb;
 pub mod crafter;
 pub mod decorated_pot_break;
+pub mod enchant_compat;
 pub mod enchant_table;
 pub mod goat_horn;
 pub mod hanging_sign;
