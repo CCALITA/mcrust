@@ -49,6 +49,7 @@ pub mod mending;
 pub mod mob_equipment;
 pub mod painting;
 pub mod movement_effects;
+pub mod ominous;
 pub mod pathfinding;
 pub mod projectile;
 pub mod raid;
@@ -133,6 +134,10 @@ pub use pathfinding::{AStarResult, find_path};
 pub use projectile::{
     Projectile, ProjectileEvent, ProjectileType, arrow_damage, ender_pearl_teleport_damage,
     snowball_knockback, tick_projectile,
+};
+pub use ominous::{
+    OminousState, apply_ominous_bottle, bad_omen_max_level, ominous_trial_activation,
+    tick_ominous, trigger_raid_on_village_enter,
 };
 pub use raid::{Raid, RaidEvent, RaidWave, default_raid_waves};
 pub use spawning::{
