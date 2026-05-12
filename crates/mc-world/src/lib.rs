@@ -42,6 +42,7 @@ pub mod lighting;
 pub mod lightning_rod;
 pub mod mangrove;
 pub mod map_data;
+pub mod mesh_cache;
 pub mod mud_blocks;
 pub mod nether;
 pub mod nether_portal_link;
