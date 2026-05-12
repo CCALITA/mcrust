@@ -14,6 +14,7 @@ pub mod camera;
 pub mod candle_flame;
 pub mod cherry_particles;
 pub mod chunk_lod;
+pub mod color_grading;
 pub mod conduit;
 pub mod crosshair;
 pub mod death_screen;
