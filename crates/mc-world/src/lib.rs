@@ -32,6 +32,7 @@ pub mod farming;
 pub mod fire;
 pub mod flower_pot;
 pub mod fluid;
+pub mod game_rules;
 pub mod gravity_block;
 pub mod hopper_logic;
 pub mod lectern;
@@ -139,6 +140,7 @@ pub use flower_pot::{
     FlowerPot, POTTABLE_PLANTS, can_pot_plant, place_in_pot, pot_collision_box, remove_from_pot,
 };
 pub use fluid::{FluidWorld, process_water_update};
+pub use game_rules::{GameRules, get_rule, list_rules, set_rule};
 pub use gravity_block::{
     FallingBlock, FallingBlockAction, check_should_fall, is_gravity_block, on_block_update,
     tick_falling,
