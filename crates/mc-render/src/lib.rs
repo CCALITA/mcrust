@@ -33,6 +33,7 @@ pub mod glass_pane;
 pub mod godrays;
 pub mod greedy_mesh;
 pub mod hand_swing;
+pub mod instanced;
 pub mod heart_particle;
 pub mod item_drop_render;
 pub mod mipmap;
