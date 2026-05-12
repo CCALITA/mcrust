@@ -29,6 +29,7 @@ pub mod firework_visual;
 pub mod fog;
 pub mod frost_overlay;
 pub mod frustum;
+pub mod frustum_opt;
 pub mod glass_pane;
 pub mod godrays;
 pub mod greedy_mesh;
