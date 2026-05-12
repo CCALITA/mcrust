@@ -31,6 +31,7 @@ pub mod godrays;
 pub mod hand_swing;
 pub mod heart_particle;
 pub mod item_drop_render;
+pub mod mipmap;
 pub mod mob_pose;
 pub mod lightning;
 pub mod mesh;
