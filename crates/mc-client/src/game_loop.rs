@@ -80,6 +80,9 @@ pub fn render_scene(
     screen_w: f32,
     screen_h: f32,
 ) {
+    if renderer.is_none() {
+        return;
+    }
     // Compute fog settings for the current dimension (overworld, render distance 8)
     let fog = fog_for_dimension(0, 8);
     let frame = FRAME_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -155,7 +158,7 @@ pub fn playing_frame(app: &mut App, frame_time: Duration) -> Option<GameState> {
     if !app.cursor_grabbed {
         app.grab_cursor();
         // Use max() so a concurrent resize event cannot shrink the window
-        app.skip_frames = app.skip_frames.max(3);
+        app.skip_frames = app.skip_frames.max(5);
         if let Some(window) = app.window.as_ref() {
             window.request_redraw();
         }

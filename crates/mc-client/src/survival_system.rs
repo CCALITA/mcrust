@@ -133,14 +133,18 @@ impl SurvivalState {
     ///
     /// Call each frame with the current vertical velocity, ground state, and dt.
     /// Damage is applied (via `take_damage`) when the player lands after falling.
-    pub fn update_fall(&mut self, velocity_y: f32, on_ground: bool, dt: f32) {
-        if !on_ground && velocity_y < 0.0 {
-            self.fall_distance += -velocity_y * dt;
-        } else if on_ground && self.fall_distance > 0.0 {
+    pub fn update_fall(&mut self, velocity_y: f32, on_ground: bool, _dt: f32) {
+        if !on_ground && velocity_y < -0.5 {
+            // Only count significant downward velocity as falling (ignore walking on slopes)
+            // Use a conservative estimate: 1 block per 0.05s at terminal velocity
+            self.fall_distance += (-velocity_y * 0.05).min(2.0);
+        } else if on_ground && self.fall_distance > 3.0 {
             let raw = calculate_fall_damage_ex(self.fall_distance, 0) as f32;
             if raw > 0.0 {
                 self.take_damage(raw);
             }
+            self.fall_distance = 0.0;
+        } else if on_ground {
             self.fall_distance = 0.0;
         }
     }

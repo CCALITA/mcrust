@@ -248,7 +248,9 @@ impl App {
                 let frame_dt = frame_time.as_secs_f32();
                 let new_timer = respawn_timer + frame_dt;
 
-                log::info!("You died! Press Space to respawn.");
+                if respawn_timer < 0.01 {
+                    log::info!("You died! Press Space to respawn.");
+                }
 
                 // Update respawn timer
                 self.state = GameState::Dead {
@@ -328,7 +330,7 @@ impl ApplicationHandler for App {
                     self.camera.aspect = new_size.width as f32 / new_size.height as f32;
                 }
                 // Skip next frame to let Metal surface stabilize after reconfigure
-                self.skip_frames = 2;
+                self.skip_frames = 4;
             }
 
             WindowEvent::KeyboardInput { event, .. } => {

@@ -432,6 +432,10 @@ impl Renderer {
         sky: &DayNightCycle,
         chunk_meshes: &[&ChunkMesh],
     ) -> Result<(), wgpu::SurfaceError> {
+        if self.size.0 == 0 || self.size.1 == 0 {
+            return Ok(());
+        }
+
         let uniform = camera.uniform();
         self.queue
             .write_buffer(&self.camera_buffer, 0, bytemuck::cast_slice(&[uniform]));
