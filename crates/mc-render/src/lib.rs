@@ -37,6 +37,7 @@ pub mod frustum_opt;
 pub mod glass_pane;
 pub mod godrays;
 pub mod greedy_mesh;
+pub mod gpu_timing;
 pub mod hand_swing;
 pub mod instanced;
 pub mod heart_particle;
