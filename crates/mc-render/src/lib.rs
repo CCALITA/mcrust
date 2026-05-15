@@ -2,6 +2,7 @@
 
 pub mod amethyst_render;
 pub mod ambient_occlusion;
+pub mod ao_vertex;
 pub mod animated_texture;
 pub mod banner_render;
 pub mod beacon_beam;
