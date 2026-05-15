@@ -20,6 +20,7 @@ pub mod chunk_lod;
 pub mod color_grading;
 pub mod conduit;
 pub mod crosshair;
+pub mod debug_colors;
 pub mod death_screen;
 pub mod draw_batcher;
 pub mod dynamic_light;
