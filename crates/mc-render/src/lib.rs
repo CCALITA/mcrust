@@ -53,6 +53,7 @@ pub mod pipeline_stage;
 pub mod projectile_trail;
 pub mod render_stats;
 pub mod render_pass_manager;
+pub mod render_target;
 pub mod renderer;
 pub mod screen_effects;
 pub mod shader;
