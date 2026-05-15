@@ -47,6 +47,7 @@ pub mod snow_layer;
 pub mod texture;
 pub mod texture_coords;
 pub mod torch_flame;
+pub mod uniform_layout;
 pub mod water;
 pub mod water_reflection;
 pub mod wind_charge;
