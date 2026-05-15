@@ -43,6 +43,7 @@ pub mod screen_effects;
 pub mod shader;
 pub mod shulker_box_render;
 pub mod sky;
+pub mod sky_gradient;
 pub mod snow_layer;
 pub mod texture;
 pub mod texture_coords;
