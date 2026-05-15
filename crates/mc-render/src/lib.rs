@@ -46,6 +46,7 @@ pub mod lightning;
 pub mod mesh;
 pub mod name_tag;
 pub mod overlay_pipeline;
+pub mod overlay_shader;
 pub mod pale_garden;
 pub mod particle;
 pub mod profiler;
