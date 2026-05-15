@@ -40,6 +40,7 @@ pub mod particle;
 pub mod projectile_trail;
 pub mod renderer;
 pub mod screen_effects;
+pub mod screen_quad;
 pub mod shader;
 pub mod shulker_box_render;
 pub mod sky;
