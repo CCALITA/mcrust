@@ -8,6 +8,7 @@ pub mod banner_render;
 pub mod beacon_beam;
 pub mod beam_effects;
 pub mod block_break;
+pub mod block_tint;
 pub mod bubble_column;
 pub mod block_highlight;
 pub mod chain_block;
