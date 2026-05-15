@@ -24,6 +24,7 @@ pub mod entity_render;
 pub mod explosion_particles;
 pub mod firework_visual;
 pub mod fog;
+pub mod fog_shader;
 pub mod frost_overlay;
 pub mod frustum;
 pub mod glass_pane;
