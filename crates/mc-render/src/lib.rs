@@ -38,6 +38,7 @@ pub mod name_tag;
 pub mod pale_garden;
 pub mod particle;
 pub mod projectile_trail;
+pub mod render_target;
 pub mod renderer;
 pub mod screen_effects;
 pub mod shader;
