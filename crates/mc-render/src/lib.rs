@@ -49,6 +49,7 @@ pub mod overlay_pipeline;
 pub mod pale_garden;
 pub mod particle;
 pub mod profiler;
+pub mod pipeline_stage;
 pub mod projectile_trail;
 pub mod render_stats;
 pub mod render_pass_manager;
