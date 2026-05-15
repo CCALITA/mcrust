@@ -59,6 +59,7 @@ pub mod renderer;
 pub mod screen_effects;
 pub mod shader;
 pub mod shadow_map;
+pub mod shader_variants;
 pub mod shulker_box_render;
 pub mod sky;
 pub mod snow_layer;
