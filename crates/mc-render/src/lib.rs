@@ -28,6 +28,7 @@ pub mod frost_overlay;
 pub mod frustum;
 pub mod glass_pane;
 pub mod godrays;
+pub mod gpu_timing;
 pub mod hand_swing;
 pub mod heart_particle;
 pub mod item_drop_render;
