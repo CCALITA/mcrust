@@ -16,6 +16,7 @@ pub mod cherry_particles;
 pub mod chunk_lod;
 pub mod conduit;
 pub mod crosshair;
+pub mod debug_colors;
 pub mod death_screen;
 pub mod dynamic_light;
 pub mod end_crystal;
