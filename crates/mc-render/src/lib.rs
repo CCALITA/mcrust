@@ -49,6 +49,7 @@ pub mod texture_coords;
 pub mod torch_flame;
 pub mod water;
 pub mod water_reflection;
+pub mod water_shader_new;
 pub mod wind_charge;
 
 pub use camera::{Camera, CameraUniform};
